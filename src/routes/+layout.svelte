@@ -13,13 +13,13 @@
 
 <div class="flex flex-col h-full bg-caribbean_current-500">
 	<header>
-		<NavigationMenu>
-			<NavigationMenuList class="flex items-center justify-between">
+		<NavigationMenu class="w-full">
+			<NavigationMenuList class="flex items-center justify-between bg-caribbean_current-500 w-full">
 				{#each headerLinks as page }
-					<NavigationMenuItem>
-						<NavigationMenuLink>
+					<NavigationMenuItem class="flex-1">
+						<NavigationMenuLink class="w-full">
 							{#snippet child()}
-								<a href={page.link} class={navigationMenuTriggerStyle()} >{page.name}</a>
+								<a href={page.link} class="{navigationMenuTriggerStyle()} !bg-caribbean_current-500 hover:!bg-caribbean_current-400 text-white text-3xl" >{page.name}</a>
 							{/snippet}
 						</NavigationMenuLink>
 					</NavigationMenuItem>	
