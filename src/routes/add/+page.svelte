@@ -29,7 +29,7 @@
 	}
 
 	$inspect(email);
-	let tabSelector = $state(
+	let tabSelector = $derived(
 			{
 			triggers:[
 				{value:"accedi",text:"Accedi"},
