@@ -28,7 +28,8 @@
 		total = await response.json();
 	}
 
-	$inspect(email);
+	$inspect("Email: " + email+"\nPassword: "+password);
+
 	let tabSelector = $derived(
 			{
 			triggers:[
@@ -41,13 +42,15 @@
 					description:"",
 					content:[{
 						text:"Email",
-						var:email,
+						get var(){return email},
+						set var(value){email = value},
 						placeholder:"pino@outlook.it"
 
 					},
 					{
 						text:"Password",
-						var:password,
+						get var(){return password},
+						set var(value){password = value},
 						placeholder:""
 
 					}
@@ -60,13 +63,15 @@
 					description:"",
 					content:[{
 						text:"Email",
-						var:email,
+						get var(){return email},
+						set var(value){email = value},
 						placeholder:"pino@outlook.it"
 
 					},
 					{
 						text:"Password",
-						var:password,
+						get var(){return password},
+						set var(value){password = value},
 						placeholder:""
 
 					}
