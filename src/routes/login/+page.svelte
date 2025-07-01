@@ -8,8 +8,10 @@
   	import TabsList from "$lib/components/ui/tabs/tabs-list.svelte";
   	import TabsContent from "$lib/components/ui/tabs/tabs-content.svelte";
  	import Card from "$lib/components/ui/card/card.svelte";
-  import CardHeader from "$lib/components/ui/card/card-header.svelte";
-  import { CardTitle, CardDescription, CardContent, CardFooter } from "$lib/components/ui/card/index";
+	import CardHeader from "$lib/components/ui/card/card-header.svelte";
+	import { CardTitle, CardDescription, CardContent, CardFooter } from "$lib/components/ui/card/index";
+	import { page } from "$app/state";
+	import { initializeAnalytics } from "firebase/analytics";
 
 	let a = $state(0);
 	let b = $state(0);
@@ -29,6 +31,7 @@
 	}
 
 	$inspect("Email: " + email+"\nPassword: "+password);
+	let logo = "src/images/Logo5.1.png";
 
 	let tabSelector = $derived(
 			{
@@ -82,11 +85,17 @@
 				]
 			}
 	);
-	
+	let initialValue = $derived.by(()=>{
+		let val = page.url.searchParams.get("id");
+		if(val === null) return "accedi"
+		else return val;
+		}
+	)
+	$inspect(initialValue);
 </script>
-<div>
-	<div class="flex items-center justify-center ">
-		<Tabs value={tabSelector.triggers[0].value} class="w-[400px]">
+<div class="bg-cafe_noir-900 flex h-screen">
+
+		<Tabs value={initialValue} class="flex justify-center items-center gap-4 flex-col p-50">
 			<div class="flex items-center justify-center">
 				<!-- creo una lista di tab per cambiare la visibilità delle stesse -->
 				<TabsList class="bg-caribbean_current-400">
@@ -98,7 +107,7 @@
 			<!-- creo un contenuto per ogni trigger -->
 			{#each tabSelector.contents as card,i }
 				<TabsContent value ={tabSelector.triggers[i].value}>
-					<Card class="w-full max-w-sm bg-caribbean_current-400">
+					<Card class="w-700 max-w-sm bg-caribbean_current-400">
 						<CardHeader>
 							<CardTitle class="text-white">{card.title}</CardTitle>
 							<CardDescription class="text-white">{card.description}</CardDescription>
@@ -116,5 +125,8 @@
 				</TabsContent>		
 			{/each}
 		</Tabs>
+		<div class=" bg-teal-800 flex items-center justify-center text-white text-2xl  w-full">
+        	<a href="/"><img src={logo} alt="logo" class="h-70 w-full"></a>
+    	</div>
+	
 	</div>
-</div>

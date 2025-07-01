@@ -1,5 +1,12 @@
+<script>
+  import { goto } from "$app/navigation";
+  import Button from "$lib/components/ui/button/button.svelte";
 
-<div class="flex flex-col items-center justify-center ">
+
+
+</script>
+
+<div class="flex flex-col items-center justify-center bg-cafe_noir-900 p-10">
   
   <section class="text-center max-w-2xl">
       <h1 class="flex justify-center">
@@ -19,10 +26,12 @@
 
   <br><br><br>
 
-  <a href={"/login"} class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded shadow inline-block transition-colors">
+  <!-- <a href={"/login"} class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded shadow inline-block transition-colors">
     Registrati Ora
-  </a>
-
+  </a> -->
+  <Button onclick={()=>goto("/login?id=registrati")}>
+    Registrati ora
+  </Button>
   <br><br><br>
 
 </div>
