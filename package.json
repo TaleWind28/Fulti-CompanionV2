@@ -40,12 +40,14 @@
 		"vite-plugin-devtools-json": "^0.2.0"
 	},
 	"dependencies": {
+		"@fortawesome/fontawesome-svg-core": "^6.7.2",
 		"@radix-ui/react-slot": "^1.2.3",
 		"class-variance-authority": "^0.7.1",
 		"date-fns": "^4.1.0",
 		"dotenv": "^16.6.0",
 		"firebase": "^11.9.1",
 		"lucide-react": "^0.523.0",
-		"react-day-picker": "^9.7.0"
+		"react-day-picker": "^9.7.0",
+		"svelte-fa": "^4.0.4"
 	}
 }
