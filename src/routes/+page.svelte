@@ -1,5 +1,6 @@
 <script>
   import { goto } from "$app/navigation";
+  import Grid from "$lib/components/grid.svelte";
   import Button from "$lib/components/ui/button/button.svelte";
   import {faDiceD20,faCloud, faKhanda, faScroll, faBookSkull, faBookBookmark} from '@fortawesome/free-solid-svg-icons';   
 
