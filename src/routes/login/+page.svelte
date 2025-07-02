@@ -11,23 +11,42 @@
 	import CardHeader from "$lib/components/ui/card/card-header.svelte";
 	import { CardTitle, CardDescription, CardContent, CardFooter } from "$lib/components/ui/card/index";
 	import { page } from "$app/state";
-	import { initializeAnalytics } from "firebase/analytics";
+  import { goto } from "$app/navigation";
 
-	let a = $state(0);
-	let b = $state(0);
-	let total = $state(0);
 	let email = $state("");
 	let password = $state("");
-	async function add() {
-		const response = await fetch('/api/add', {
-			method: 'POST',
-			body: JSON.stringify({ a, b }),
-			headers: {
-				'content-type': 'application/json'
-			}
-		});
+	let username = $state("");
 
-		total = await response.json();
+
+	async function login(){
+		const response = await fetch('/api/login',{
+			method:'POST',
+			body: JSON.stringify({email, password}),
+			headers:{
+				'content-type': 'applicatiion/json'
+			}
+		})
+		let risposta = await response.json();
+		console.log(risposta);
+		if (response.status=== 200)goto('/');
+		else{
+			console.log(response.status+" : "+ response.statusText);
+		}
+		console.log(risposta);
+	}
+
+	async function register() {
+		const response = await fetch('api/login',{
+			method:'PUT',
+			body:JSON.stringify({username,email,password}),
+			headers:{
+				'content-type':'application/json'
+			}
+		})
+
+		let risposta = await response.json();
+		if (response.status === 200)goto('/');
+		else console.log(response.statusText);
 	}
 
 	$inspect("Email: " + email+"\nPassword: "+password);
@@ -44,6 +63,7 @@
 					title:"Accedi al tuo Account",
 					description:"",
 					content:[{
+						
 						text:"Email",
 						get var(){return email},
 						set var(value){email = value},
@@ -51,6 +71,7 @@
 
 					},
 					{
+						
 						text:"Password",
 						get var(){return password},
 						set var(value){password = value},
@@ -59,12 +80,20 @@
 					}
 					],
 					footerText:"Accedi",
-					clickFun:()=>{console.log("accesso")}
+					clickFun:login
 				},
 				{
 					title:"Crea un Account",
 					description:"",
-					content:[{
+					content:[
+					{
+						text:"Username",
+						get var(){return username},
+						set var(value){username = value},
+						placeholder:"TaleWind28"
+
+					},
+					{
 						text:"Email",
 						get var(){return email},
 						set var(value){email = value},
@@ -72,6 +101,7 @@
 
 					},
 					{
+						
 						text:"Password",
 						get var(){return password},
 						set var(value){password = value},
@@ -80,7 +110,7 @@
 					}
 					],
 					footerText:"Registrati",
-					clickFun:()=>{console.log("registrazione")}
+					clickFun:register
 				}
 				]
 			}
@@ -119,7 +149,7 @@
 							{/each}
 						</CardContent>
 						<CardFooter class="w-full">
-							<Button onclick={card.clickFun}>{card.footerText}</Button>
+							<Button type="submit" onclick={card.clickFun}>{card.footerText}</Button>
 						</CardFooter>
 					</Card>
 				</TabsContent>		

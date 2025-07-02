@@ -65,9 +65,6 @@ const features = [
 
   <br><br><br>
 
-  <!-- <a href={"/login"} class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded shadow inline-block transition-colors">
-    Registrati Ora
-  </a> -->
   <Button onclick={()=>goto("/login?id=registrati")}>
     Registrati ora
   </Button>
