@@ -6,12 +6,24 @@
 	import { navigationMenuTriggerStyle } from '$lib/components/ui/navigation-menu/navigation-menu-trigger.svelte';
 	import NavigationMenu from '$lib/components/ui/navigation-menu/navigation-menu.svelte';
 	import '../app.css';
-	import { user } from '$lib/firebase';
+
+  	import { onMount } from 'svelte';
+  	import { afterNavigate } from '$app/navigation';
+  	import { user } from '$lib/stores/user';
 		
 	let { children } = $props();
 	let poweredSrc = "src/images/Powered by Fabula Ultima Logo.png";
 	let logo = "src/images/Logo5.1.png";
 	let headerLinks =[{link:"/",name:"Campagne"},{link:"/",name:"Schede Personaggio"},{link:"/",name:"Generatore di Oggetti"},{link:"/",name:"Bestiario"}];
+	
+	
+	afterNavigate(()=>{
+		// console.log("monto");
+		console.log($user);	
+		// console.log("utente",$user?.displayName,user);
+
+	})
+
 </script>
 
 

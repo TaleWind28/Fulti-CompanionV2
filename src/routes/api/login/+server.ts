@@ -8,9 +8,10 @@ export const POST: RequestHandler = async ({request})=>{
 	console.log(email,password);
 	const loginSuccess = await login(email,password);
 	if (loginSuccess && loginSuccess.user){
+		const user = loginSuccess.user;
 		return json({
-			message:"Accesso effettuato con successo",
-			data:null
+			message:"Login effettuato con successo",
+			data:user
 		},
 		{
 			status:200
@@ -20,7 +21,6 @@ export const POST: RequestHandler = async ({request})=>{
 	else {
 		return json({
 			message:"Something went wrong",
-
 		},
 		{
 			status:400

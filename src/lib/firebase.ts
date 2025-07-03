@@ -55,29 +55,7 @@ export async function logout() {
   }
 }
 
-export const user:Writable<User | null> = writable(null);
+
 export const loading :Writable<boolean>= writable(true);
 
-onAuthStateChanged(auth, (firebaseUser) => {
-  user.set(firebaseUser);
-  loading.set(false);
-});
-
 export const isAuthenticated = writable(false);
-
-// Funzione per inizializzare il listener
-export function initAuthListener() {
-  onAuthStateChanged(auth, (firebaseUser) => {
-    console.log('Auth state changed:', firebaseUser?.email || 'No user');
-    
-    // Aggiorna tutti gli stores
-    user.set(firebaseUser);
-    loading.set(false);
-    isAuthenticated.set(!!firebaseUser);
-  });
-}
-
-// Utility functions
-export function getCurrentUser() {
-  return auth.currentUser;
-}

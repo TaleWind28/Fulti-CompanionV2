@@ -12,15 +12,12 @@
 	import { CardTitle, CardDescription, CardContent, CardFooter } from "$lib/components/ui/card/index";
 	import { page } from "$app/state";
   	import { goto } from "$app/navigation";
-	import { onMount } from "svelte";
-	import { initAuthListener } from "$lib/firebase";
+  	import { user } from "$lib/stores/user";
 
 	let email = $state("");
 	let password = $state("");
 	let username = $state("");
-	onMount(()=>{
-		initAuthListener();
-	})
+
 	
 	
 	async function login(){
@@ -31,7 +28,14 @@
 				'content-type': 'applicatiion/json'
 			}
 		})
-		if (response.status=== 200) goto('/');
+		//se la richiesta ha avuto successo allora posso continuare
+		if (response.ok){
+			const {data} = await response.json();
+			console.log(data,"user");
+			user.set(data);
+			console.log($user);
+			goto('/');
+		} 
 		else{
 			console.log(response.status+" : "+ response.statusText);
 		}
