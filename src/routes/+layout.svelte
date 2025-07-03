@@ -6,23 +6,28 @@
 	import { navigationMenuTriggerStyle } from '$lib/components/ui/navigation-menu/navigation-menu-trigger.svelte';
 	import NavigationMenu from '$lib/components/ui/navigation-menu/navigation-menu.svelte';
 	import '../app.css';
-
   	import { onMount } from 'svelte';
-  	import { afterNavigate } from '$app/navigation';
   	import { user } from '$lib/stores/user';
+	import {  onAuthStateChanged } from 'firebase/auth';
+	import { auth, logout } from '$lib/firebase';
+	import * as MenuBar from '$lib/components/ui/menubar/index';
+  import Menubar from '$lib/components/ui/menubar/menubar.svelte';
+  	
 		
 	let { children } = $props();
 	let poweredSrc = "src/images/Powered by Fabula Ultima Logo.png";
 	let logo = "src/images/Logo5.1.png";
 	let headerLinks =[{link:"/",name:"Campagne"},{link:"/",name:"Schede Personaggio"},{link:"/",name:"Generatore di Oggetti"},{link:"/",name:"Bestiario"}];
 	
-	
-	afterNavigate(()=>{
-		// console.log("monto");
-		console.log($user);	
-		// console.log("utente",$user?.displayName,user);
 
+	onMount(()=>{
+		const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+			user.set(firebaseUser);
+		});
+		console.log($user);
+		return unsubscribe;
 	})
+
 
 </script>
 
@@ -55,7 +60,7 @@
 			</NavigationMenu>
 
 			<!-- Nome Utente a destra -->
-			<div class="flex-none">
+			<div class="flex-none px-5">
 				{#if !$user}
 				<a href="/login" class="bg-caribbean_current-600 hover:bg-caribbean_current-700 text-white px-4 py-2 rounded-md font-medium flex items-center gap-2">
 					Registrati/Accedi
@@ -64,12 +69,20 @@
 					</svg>
 				</a>
 				{:else}
-					<a href="/login" class="bg-caribbean_current-600 hover:bg-caribbean_current-700 text-white px-4 py-2 rounded-md font-medium flex items-center gap-2">
-						{$user.displayName}
-						<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
-						</svg>
-					</a>
+					<MenuBar.Root class="bg-caribbean_current-600 hover:bg-caribbean_current-700 text- rounded-md font-medium flex items-center">
+						<MenuBar.Menu>
+							<MenuBar.Trigger >
+							{$user.displayName}
+						</MenuBar.Trigger>
+						<MenuBar.Content>
+							<MenuBar.Item>
+								pino
+							</MenuBar.Item>
+						</MenuBar.Content>
+					</MenuBar.Menu>
+						
+					</MenuBar.Root>
+					
 				{/if}
 			</div>
 		</header>

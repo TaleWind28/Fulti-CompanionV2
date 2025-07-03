@@ -18,16 +18,13 @@ export const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
-
 //npm install -g firebase-tools
-
 export const auth = getAuth(app);
 
 export async function login(email:string, password:string){
   if(email===null || password === null) return null;
   return signInWithEmailAndPassword(auth, email,password);
 }
-
 
 export async function registerUser(email: string, password: string, username: string) {
   try {

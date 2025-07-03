@@ -3,6 +3,7 @@
 	"tailwind": {
 		"css": "src\\app.css",
 		"baseColor": "slate"
+
 	},
 	"aliases": {
 		"components": "$lib/components",

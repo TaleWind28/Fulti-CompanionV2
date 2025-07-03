@@ -13,6 +13,7 @@
 	import { page } from "$app/state";
   	import { goto } from "$app/navigation";
   	import { user } from "$lib/stores/user";
+  import { login, registerUser } from "$lib/firebase";
 
 	let email = $state("");
 	let password = $state("");
@@ -20,39 +21,14 @@
 
 	
 	
-	async function login(){
-		const response = await fetch('/api/login',{
-			method:'POST',
-			body: JSON.stringify({email, password}),
-			headers:{
-				'content-type': 'applicatiion/json'
-			}
-		})
-		//se la richiesta ha avuto successo allora posso continuare
-		if (response.ok){
-			const {data} = await response.json();
-			console.log(data,"user");
-			user.set(data);
-			console.log($user);
-			goto('/');
-		} 
-		else{
-			console.log(response.status+" : "+ response.statusText);
-		}
-		
+	async function firebaseLogin(){
+		login(email,password)
+		.then(()=>goto('/'))
+		.catch((error)=>{alert(error)});
 	}
 
-	async function register() {
-		const response = await fetch('api/login',{
-			method:'PUT',
-			body:JSON.stringify({username,email,password}),
-			headers:{
-				'content-type':'application/json'
-			}
-		})
-
-		if (response.status === 204)goto('/');
-		else console.log(response.statusText);
+	async function firebaseRegister() {
+		registerUser(email,password,username);
 	}
 
 	let logo = "src/images/Logo5.1.png";
@@ -85,7 +61,7 @@
 					}
 					],
 					footerText:"Accedi",
-					clickFun:login
+					clickFun:firebaseLogin
 				},
 				{
 					title:"Crea un Account",
@@ -115,7 +91,7 @@
 					}
 					],
 					footerText:"Registrati",
-					clickFun:register
+					clickFun:firebaseRegister
 				}
 				]
 			}
