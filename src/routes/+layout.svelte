@@ -6,12 +6,12 @@
 	import { navigationMenuTriggerStyle } from '$lib/components/ui/navigation-menu/navigation-menu-trigger.svelte';
 	import NavigationMenu from '$lib/components/ui/navigation-menu/navigation-menu.svelte';
 	import '../app.css';
+	import { user } from '$lib/firebase';
+		
 	let { children } = $props();
-	let poweredSrc = "src/images/Powered by Fabula Ultima Logo.png" ;
+	let poweredSrc = "src/images/Powered by Fabula Ultima Logo.png";
 	let logo = "src/images/Logo5.1.png";
 	let headerLinks =[{link:"/",name:"Campagne"},{link:"/",name:"Schede Personaggio"},{link:"/",name:"Generatore di Oggetti"},{link:"/",name:"Bestiario"}];
-	let isLogged = $state(false);
-	let  username = $state("Username");
 </script>
 
 
@@ -44,7 +44,7 @@
 
 			<!-- Nome Utente a destra -->
 			<div class="flex-none">
-				{#if !isLogged}
+				{#if !$user}
 				<a href="/login" class="bg-caribbean_current-600 hover:bg-caribbean_current-700 text-white px-4 py-2 rounded-md font-medium flex items-center gap-2">
 					Registrati/Accedi
 					<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -53,7 +53,7 @@
 				</a>
 				{:else}
 					<a href="/login" class="bg-caribbean_current-600 hover:bg-caribbean_current-700 text-white px-4 py-2 rounded-md font-medium flex items-center gap-2">
-						{username}
+						{$user.displayName}
 						<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
 						</svg>

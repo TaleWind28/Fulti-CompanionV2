@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { login, registerUser } from '$lib/firebase';
+import {login, registerUser } from '$lib/firebase';
 
 //login
 export const POST: RequestHandler = async ({request})=>{
@@ -10,7 +10,7 @@ export const POST: RequestHandler = async ({request})=>{
 	if (loginSuccess && loginSuccess.user){
 		return json({
 			message:"Accesso effettuato con successo",
-			data:{email, password}
+			data:null
 		},
 		{
 			status:200
@@ -34,16 +34,18 @@ export const PUT: RequestHandler = async ({request})=>{
 	const {username,email,password} = await request.json();
 	console.log(email,password);
 	const registrationSuccess = await registerUser(email,password,username);
-	if (registrationSuccess && registrationSuccess.user) return json(
+	if (registrationSuccess && registrationSuccess.user){
+		
+	return json(
 		{
 			message:"Registrazione effettuata con successo",
-			data:{email,password}
+			data:null
 		},
 		{
 			status:200
 		}
 	)
-	else return json(
+	}else return json(
 		{
 			message:"Something went wrong",
 		},
@@ -52,3 +54,4 @@ export const PUT: RequestHandler = async ({request})=>{
 		}
 	)
 }
+

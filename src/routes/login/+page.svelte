@@ -11,13 +11,18 @@
 	import CardHeader from "$lib/components/ui/card/card-header.svelte";
 	import { CardTitle, CardDescription, CardContent, CardFooter } from "$lib/components/ui/card/index";
 	import { page } from "$app/state";
-  import { goto } from "$app/navigation";
+  	import { goto } from "$app/navigation";
+	import { onMount } from "svelte";
+	import { initAuthListener } from "$lib/firebase";
 
 	let email = $state("");
 	let password = $state("");
 	let username = $state("");
-
-
+	onMount(()=>{
+		initAuthListener();
+	})
+	
+	
 	async function login(){
 		const response = await fetch('/api/login',{
 			method:'POST',
@@ -26,13 +31,11 @@
 				'content-type': 'applicatiion/json'
 			}
 		})
-		let risposta = await response.json();
-		console.log(risposta);
-		if (response.status=== 200)goto('/');
+		if (response.status=== 200) goto('/');
 		else{
 			console.log(response.status+" : "+ response.statusText);
 		}
-		console.log(risposta);
+		
 	}
 
 	async function register() {
@@ -44,12 +47,10 @@
 			}
 		})
 
-		let risposta = await response.json();
-		if (response.status === 200)goto('/');
+		if (response.status === 204)goto('/');
 		else console.log(response.statusText);
 	}
 
-	$inspect("Email: " + email+"\nPassword: "+password);
 	let logo = "src/images/Logo5.1.png";
 
 	let tabSelector = $derived(

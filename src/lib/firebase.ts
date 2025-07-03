@@ -1,7 +1,8 @@
 import { initializeApp } from "firebase/app";
 
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut} from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, type User, onAuthStateChanged} from "firebase/auth";
 import {updateProfile } from "firebase/auth";
+import { writable, type Writable } from "svelte/store";
 
 // Configurazione Firebase utilizzando le variabili d'ambiente
 export const firebaseConfig = {
@@ -40,7 +41,7 @@ export async function registerUser(email: string, password: string, username: st
     
     return userCredential;
   } catch (error) {
-    return null;
+    return null;    
   }
 }
 
@@ -52,4 +53,31 @@ export async function logout() {
       console.error("Errore durante il logout:", error);
       throw error;
   }
+}
+
+export const user:Writable<User | null> = writable(null);
+export const loading :Writable<boolean>= writable(true);
+
+onAuthStateChanged(auth, (firebaseUser) => {
+  user.set(firebaseUser);
+  loading.set(false);
+});
+
+export const isAuthenticated = writable(false);
+
+// Funzione per inizializzare il listener
+export function initAuthListener() {
+  onAuthStateChanged(auth, (firebaseUser) => {
+    console.log('Auth state changed:', firebaseUser?.email || 'No user');
+    
+    // Aggiorna tutti gli stores
+    user.set(firebaseUser);
+    loading.set(false);
+    isAuthenticated.set(!!firebaseUser);
+  });
+}
+
+// Utility functions
+export function getCurrentUser() {
+  return auth.currentUser;
 }
