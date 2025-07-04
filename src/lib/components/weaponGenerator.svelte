@@ -29,6 +29,14 @@
     let formulaRow = $state(["[DES+VIG]","TM+10","100z"]);
     let thirdRowElement = $state(["Categoria","*","#Mani","*","Range"]);
     let weaponImageUrl = $state();
+
+    async function handleDownload() {
+        console.log("scarico");
+    }
+
+    async function handleExport() {
+        console.log("esporto");
+    }
 </script>
 
 <div class="flex flex-row gap-5">
@@ -271,7 +279,7 @@
                     </div>
                     <hr>
                     <div class="px-2 break-words w-150">
-                        
+
                     </div>
                 </div>
             </div>
@@ -279,8 +287,18 @@
             
         </div>
         <span class="flex flex-row">
-            <Fa icon={faDownload} class="cursor-pointer px-2 w-auto"></Fa>
-            <Fa icon={faFileExport} class="cursor-pointer px-2 w-auto"></Fa>
+            <span>
+                <button onclick={handleDownload}>
+                    <Fa icon={faDownload} class="cursor-pointer px-2 w-auto"/>
+                </button>
+            </span>
+            
+            <span>
+                <button onclick={handleExport}>
+                    <Fa icon={faFileExport} class="cursor-pointer px-2 w-auto"></Fa>
+                </button>
+            </span>
+            
         </span>
     </div>
         <!--
