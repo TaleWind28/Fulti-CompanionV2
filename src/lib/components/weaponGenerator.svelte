@@ -6,6 +6,10 @@
     import Checkbox from "./ui/checkbox/checkbox.svelte";
     import Label from "./ui/label/label.svelte";
     import Textarea from "./ui/textarea/textarea.svelte";
+    import ImageUploader2 from "./imageUploader2.svelte";
+  import Fa from "svelte-fa";
+  import { faDownload, faFileExcel, faFileExport } from "@fortawesome/free-solid-svg-icons";
+
 
     //fetchare db
     const fruits = [
@@ -21,8 +25,14 @@
     const triggerContent = $derived(
         fruits.find((f) => f.value === value)?.label ?? "Select a fruit"
     );
+
+    let formulaRow = $state(["[DES+VIG]","TM+10","100z"]);
+    let thirdRowElement = $state(["Categoria","*","#Mani","*","Range"]);
+    let weaponImageUrl = $state();
 </script>
+
 <div class="flex flex-row gap-5">
+
     <!-- Generatore -->
     <Card.Root class="w-150 bg-cafe_noir-700 border-0">
         <Card.Header class="">
@@ -231,26 +241,52 @@
     </Card.Root>
 
     <!-- ImageProcesor -->
+    <div>
+        <div  id={"pippo"} class="bg-white border h-auto ">
+            <div class="bg-cafe_noir-700 grid grid-cols-6">
+                <p class="col-span-1 px-2">
+                    pippo
+                </p>
+                <span class="grid grid-cols-3  col-span-5 gap-30 px-10">
+                    {#each ["PRECISIONE","DANNO","COSTO"] as header}
+                        <p> {header} </p>
+                    {/each}
+                </span>
+            </div>
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <ImageUploader2 padre="weaponGenerator" dimensions={"w-25 h-25 border-r"} fill={true} bind:imageUrl = {weaponImageUrl}/>
+                </div>
+                <div class="flex-1">
+                    <div class="justify-around bg-cafe_noir-800 flex ">
+                        {#each formulaRow as formula}
+                            <p> {formula} </p>
+                        {/each}
+                    </div>
+                    <hr>
+                    <div class="flex flex-row items-center justify-between px-2 ">
+                        {#each thirdRowElement as element }
+                            <p class="text-center"> {element} </p>
+                        {/each}
+                    </div>
+                    <hr>
+                    <div class="px-2 break-words w-150">
+                        
+                    </div>
+                </div>
+            </div>
+        
+            
+        </div>
+        <span class="flex flex-row">
+            <Fa icon={faDownload} class="cursor-pointer px-2 w-auto"></Fa>
+            <Fa icon={faFileExport} class="cursor-pointer px-2 w-auto"></Fa>
+        </span>
+    </div>
+        <!--
+        <RunesButton text="" icon={faDownload} style="cursor-pointer px-2" additionalStyle="w-auto" color= "" clickFun={()=>exportHtmlToImage(displayWeaponName)}/>
+        <RunesButton text="" icon={faFileExport} style="cursor-pointer px-2" additionalStyle="w-auto" color= "" clickFun={handleExport}/> -->
 
-    <Table.Root class="bg-white">
-        <!-- <Table.Caption>La tua arma</Table.Caption> -->
-    <Table.Header class="bg-cafe_noir-700">
-        <Table.Row>
-        <Table.Head class="w-[100px]">Arma</Table.Head>
-        <Table.Head>Costo</Table.Head>
-        <Table.Head>Precisione</Table.Head>
-        <Table.Head class="text-right">Danno</Table.Head>
-        </Table.Row>
-    </Table.Header>
-    <Table.Body>
-        <Table.Row>
-        <Table.Cell class="font-medium">INV001</Table.Cell>
-        <Table.Cell>Paid</Table.Cell>
-        <Table.Cell>Credit Card</Table.Cell>
-        <Table.Cell class="text-right">$250.00</Table.Cell>
-        </Table.Row>
-    </Table.Body>
-    </Table.Root>
 </div>
 
 
