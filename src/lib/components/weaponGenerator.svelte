@@ -25,7 +25,7 @@
 
 <Card.Root class="w-200 bg-cafe_noir-700 border-0">
     <Card.Header class="">
-        <Card.Title>Generatore di Armi  </Card.Title>
+        <Card.Title>Generatore di Armi</Card.Title>
     </Card.Header>
     <Card.Content class=" py-5 flex flex-col gap-5 bg-white">
         <!-- Prima riga: Arma base, Nome e Marziale -->
@@ -186,4 +186,6 @@
         </div>
     </Card.Content>
 </Card.Root>
+
+<!-- ImageProcessor -->
 
