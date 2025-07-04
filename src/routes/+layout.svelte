@@ -69,18 +69,23 @@
 					</svg>
 				</a>
 				{:else}
-					<MenuBar.Root class="bg-caribbean_current-600 hover:bg-caribbean_current-700 text- rounded-md font-medium flex items-center">
+					<MenuBar.Root class="bg-caribbean_current-600 hover:bg-caribbean_current-700 text- rounded-md font-medium flex items-center border-0">
 						<MenuBar.Menu>
-							<MenuBar.Trigger >
-							{$user.displayName}
-						</MenuBar.Trigger>
-						<MenuBar.Content>
-							<MenuBar.Item>
-								pino
-							</MenuBar.Item>
-						</MenuBar.Content>
-					</MenuBar.Menu>
-						
+							<MenuBar.Trigger class="focus:!bg-caribbean_current-700 focus:!text-white data-[state=open]:!bg-caribbean_current-700 data-[state=open]:!text-white hover:!bg-caribbean_current-700 hover:!text-white text-white">
+								{$user.displayName}
+							</MenuBar.Trigger>
+							<MenuBar.Content class="!bg-lion_900  !min-w-[200px] !w-auto !p-2">
+								<MenuBar.Item>
+									Vai al tuo profilo
+								</MenuBar.Item>
+								<MenuBar.Item>
+									<button onclick={logout}>
+										Logout
+									</button>
+								</MenuBar.Item>
+							</MenuBar.Content>
+
+						</MenuBar.Menu>
 					</MenuBar.Root>
 					
 				{/if}
