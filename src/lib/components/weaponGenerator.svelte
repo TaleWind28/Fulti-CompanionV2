@@ -7,10 +7,9 @@
     import Label from "./ui/label/label.svelte";
     import Textarea from "./ui/textarea/textarea.svelte";
     import ImageUploader2 from "./imageUploader2.svelte";
-  import Fa from "svelte-fa";
-  import { faDownload, faFileExcel, faFileExport } from "@fortawesome/free-solid-svg-icons";
-  import { base } from "$app/paths";
-
+    import Fa from "svelte-fa";
+    import { faDownload, faFileExport } from "@fortawesome/free-solid-svg-icons";
+  
 
     //fetchare db
     const fruits = [
@@ -21,12 +20,25 @@
         { value: "pineapple", label: "Pineapple" }
     ];
 
+    //qualità da fetchare
     const qualities = [
-        {value:"Antistatus",label:"PippoBaudo",effect:"pino"},
-        {value:"q2",label:"PippoBudo",effect:"ino"},
-        {value:"q3",label:"PippoBdo",effect:"pin"},
-        {value:"q4",label:"PippoBau",effect:"pno"},
+        {value:"Antistatus",label:"PippoBaudo",effect:"pino",price:100},
+        {value:"q2",label:"PippoBudo",effect:"ino",price:10},
+        {value:"q3",label:"PippoBdo",effect:"pin",price:1},
+        {value:"q4",label:"PippoBau",effect:"pno",price:20},
     ]
+
+    //tipi di danno da fetchare
+    const damageTypes = [
+        {value:"fisico",label:"Fisico"},{value:"aria",label:"Aria"},{value:"fulmine",label:"Fulmine"},{value:"ombra",label:"Ombra"},{value:"terra",label:"Terra"},
+        {value:"fuoco",label:"Fuoco"},{value:"ghiaccio",label:"Ghiaccio"},{value:"luce",label:"Luce"},{value:"veleno",label:"Veleno"}
+    ];
+
+    //numero di mani da fetchare
+    const handNumber = [{value:"Una Mano",label:"Una Mano"},{value:"Due Mani",label:"Due Mani"}];
+    
+    //attributi da fetchare
+    const attributes = [{value:"DES",label:"DES"},{value:"VIG",label:"VIG"},{value:"INT",label:"INT"},{value:"VOL",label:"VOL"}];
 
     let value = $state("");
     //logica della select
@@ -34,23 +46,76 @@
         fruits.find((f) => f.value === value)?.label ?? "Select a fruit"
     );
 
-    //variabili da fetchare
-    let formulaRow = $state(["[DES+VIG]","TM+10","100z"]);
-    let thirdRowElement = $state(["Categoria","*","#Mani","*","Range"]);
+    
     
     //logica della select per le qualità
     let baseQuality = $state("");
     const triggerQuality = $derived(
         qualities.find((q)=> q.value === baseQuality)?.label ?? "Scegli una qualità"
     )
+
+    let selectedHands = $state("");
+    const triggerHands = $derived(
+        handNumber.find((h)=>h.value === selectedHands)?.label ?? "# di mani"
+    )
+
+    let attr1 = $state("VIG");
+    
+    const triggerAttr1 = $derived(
+        attributes.find(attr=>attr.value === attr1)?.label ?? "Attr1"
+    );
+    let attr2 = $state("VIG");
+
+    const triggerAttr2 = $derived(
+        attributes.find(attr=>attr.value === attr2)?.label ?? "Attr2"
+    );
+
+    let damageType = $state("fisico");
+    const triggerDamageType = $derived(
+        damageTypes.find(dt => dt.value === damageType)?.label ?? "Tipo di Danno"
+    )
+    
+    //imageProcessor
     let customQuality = $state("");
     let quality = $derived.by(()=>{
         if(customQuality!=="")return customQuality
         else return qualities.find((q)=> q.value === baseQuality)?.effect ?? "Nessuna Qualità";
     });
 
+    let customCost = $state(0);
+    let weaponCost = $state(0);
+    let additionalDamage = $state(false);
+    let additionalAccuracy = $state(false);
+    let weaponDamage =$state(0);
+
+    let weaponName = $state("");
+
+    let accuracy = $derived.by(()=>{
+        if(additionalAccuracy)return "+"+1;
+        else return "";
+    }
+
+    )
+
+    let damage = $derived.by(()=>{
+        let additions = 0;
+        if(additionalDamage)additions += 4;
+        return weaponDamage+additions;
+    })
+
+    let cost = $derived.by(()=>{
+        let additions = customCost;
+        if(customQuality === "") additions += (qualities.find((q)=>q.value=== baseQuality)?.price ?? 0);
+        if(additionalAccuracy)additions += 100;
+        if(additionalDamage)additions += 200;
+        return additions+weaponCost;
+    }); 
+
     let weaponImageUrl = $state();
     
+    //variabili da fetchare
+    let formulaRow = $derived(["["+attr1+" + "+attr2+"]"+accuracy,"[ TM+"+damage+"]"+damageType,cost+"z"]);
+    let thirdRowElement = $derived(["Categoria","*",selectedHands,"*","Range"]);
 
     async function handleDownload() {
         console.log("scarico");
@@ -104,7 +169,7 @@
                 <!-- nome arma -->
                 <span class="flex flex-col gap-2 ">
                     <Label for="nome_arma">Nome</Label>
-                    <Input type="text" id="nome_arma" placeholder="Nome Arma"/>
+                    <Input type="text" id="nome_arma" placeholder="Nome Arma" bind:value={weaponName}/>
                 </span>
             </div>
 
@@ -113,20 +178,19 @@
                 <!-- Tipo di danno -->
                 <span class="flex flex-col gap-2">
                     <Label for="nome_arma">Tipo di danno</Label>
-                    <Select.Root type="single" name="favoriteFruit" bind:value>
+                    <Select.Root type="single" name="favoriteFruit" bind:value={damageType}>
                         <Select.Trigger class="w-auto min-w-30">
-                            {triggerContent}
+                            {triggerDamageType}
                         </Select.Trigger>
                         <Select.Content>
                             <Select.Group>
-                                <Select.Label>Fruits</Select.Label>
-                                {#each fruits as fruit (fruit.value)}
+                                <Select.Label>Tipi di Danno</Select.Label>
+                                {#each damageTypes as dt (dt.value)}
                                     <Select.Item
-                                    value={fruit.value}
-                                    label={fruit.label}
-                                    disabled={fruit.value === "grapes"}
+                                    value={dt.value}
+                                    label={dt.label}
                                     >
-                                        {fruit.label}
+                                        {dt.label}
                                     </Select.Item>
                                 {/each}
                             </Select.Group>
@@ -136,21 +200,20 @@
 
                 <!-- Numero di Mani -->
                 <span class="flex flex-col gap-2">
-                    <Label for="nome_arma">Numero di mani</Label>
-                    <Select.Root type="single" name="favoriteFruit" bind:value>
+                    <Label for="nome_arma">Numero mani</Label>
+                    <Select.Root type="single" name="favoriteFruit" bind:value={selectedHands}>
                         <Select.Trigger class="w-auto min-w-30">
-                            {triggerContent}
+                            {triggerHands}
                         </Select.Trigger>
                         <Select.Content>
                             <Select.Group>
-                                <Select.Label>Fruits</Select.Label>
-                                {#each fruits as fruit (fruit.value)}
+                                <Select.Label>#Mani</Select.Label>
+                                {#each handNumber as hand (hand.value)}
                                     <Select.Item
-                                    value={fruit.value}
-                                    label={fruit.label}
-                                    disabled={fruit.value === "grapes"}
+                                    value={hand.value}
+                                    label={hand.label}
                                     >
-                                        {fruit.label}
+                                        {hand.label}
                                     </Select.Item>
                                 {/each}
                             </Select.Group>
@@ -161,20 +224,19 @@
                 <!-- Prima Caratteristica -->
                 <span class="flex flex-col gap-2">
                     <Label for="nome_arma">Attr1</Label>
-                    <Select.Root type="single" name="favoriteFruit" bind:value>
+                    <Select.Root type="single" name="favoriteFruit" bind:value={attr1}>
                         <Select.Trigger class="w-auto min-w-30">
-                            {triggerContent}
+                            {triggerAttr1}
                         </Select.Trigger>
                         <Select.Content>
                             <Select.Group>
-                                <Select.Label>Fruits</Select.Label>
-                                {#each fruits as fruit (fruit.value)}
+                                <Select.Label>Caratteritiche</Select.Label>
+                                {#each attributes as attr (attr.value)}
                                     <Select.Item
-                                    value={fruit.value}
-                                    label={fruit.label}
-                                    disabled={fruit.value === "grapes"}
+                                    value={attr.value}
+                                    label={attr.label}
                                     >
-                                        {fruit.label}
+                                        {attr.label}
                                     </Select.Item>
                                 {/each}
                             </Select.Group>
@@ -185,20 +247,19 @@
                 <!-- Seconda Caratteristica -->
                 <span class="flex flex-col gap-2">
                     <Label for="nome_arma">Attr2</Label>
-                    <Select.Root type="single" name="favoriteFruit" bind:value>
+                    <Select.Root type="single" name="favoriteFruit" bind:value={attr2}>
                         <Select.Trigger class="w-auto min-w-30">
-                            {triggerContent}
+                            {triggerAttr2}
                         </Select.Trigger>
                         <Select.Content>
-                            <Select.Group>
-                                <Select.Label>Fruits</Select.Label>
-                                {#each fruits as fruit (fruit.value)}
+                                <Select.Group>
+                                <Select.Label>Caratteritiche</Select.Label>
+                                {#each attributes as attr (attr.value)}
                                     <Select.Item
-                                    value={fruit.value}
-                                    label={fruit.label}
-                                    disabled={fruit.value === "grapes"}
+                                    value={attr.value}
+                                    label={attr.label}
                                     >
-                                        {fruit.label}
+                                        {attr.label}
                                     </Select.Item>
                                 {/each}
                             </Select.Group>
@@ -236,8 +297,8 @@
 
                 <!-- Prezzo -->
                 <span class="flex flex-col gap-5 w-30 items-center">
-                    <Label for="price">Costo Qualità</Label>
-                    <Input id="price" type="number" min="0" class="w-20"/>  
+                    <Label for="price">Costi Aggiuntivi</Label>
+                    <Input id="price" type="number" min="0" class="w-20" bind:value={customCost}/>  
                 </span>
 
 
@@ -246,12 +307,12 @@
                     <Label class="border-0"> Qualità Personalizzata</Label>
                     <!-- Accuracy -->
                     <span class="flex flex-row gap-2">
-                        <Checkbox id="damageMod"></Checkbox>
+                        <Checkbox id="damageMod" bind:checked={additionalDamage}></Checkbox>
                         <Label for="damageMod">+4 Danno</Label>
                     </span>
                     <!-- Damage -->  
                     <span class="flex flex-row gap-2">
-                        <Checkbox id="accuracyMod"></Checkbox>
+                        <Checkbox id="accuracyMod" bind:checked={additionalAccuracy} ></Checkbox>
                         <Label for="accuracymod">+1 Precisione</Label>
                     </span>
                 </div>
@@ -276,7 +337,7 @@
         <div  id={"pippo"} class="bg-white border h-auto ">
             <div class="bg-cafe_noir-700 grid grid-cols-6">
                 <p class="col-span-1 px-2">
-                    pippo
+                    {weaponName}
                 </p>
                 <span class="grid grid-cols-3  col-span-5 gap-30 px-10">
                     {#each ["PRECISIONE","DANNO","COSTO"] as header}
