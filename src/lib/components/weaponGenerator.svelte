@@ -9,6 +9,7 @@
     import ImageUploader2 from "./imageUploader2.svelte";
   import Fa from "svelte-fa";
   import { faDownload, faFileExcel, faFileExport } from "@fortawesome/free-solid-svg-icons";
+  import { base } from "$app/paths";
 
 
     //fetchare db
@@ -21,10 +22,10 @@
     ];
 
     const qualities = [
-        {value:"q1",label:"PippoBaudo"},
-        {value:"q2",label:"PippoBudo"},
-        {value:"q3",label:"PippoBdo"},
-        {value:"q4",label:"PippoBau"},
+        {value:"Antistatus",label:"PippoBaudo",effect:"pino"},
+        {value:"q2",label:"PippoBudo",effect:"ino"},
+        {value:"q3",label:"PippoBdo",effect:"pin"},
+        {value:"q4",label:"PippoBau",effect:"pno"},
     ]
 
     let value = $state("");
@@ -37,17 +38,17 @@
     let formulaRow = $state(["[DES+VIG]","TM+10","100z"]);
     let thirdRowElement = $state(["Categoria","*","#Mani","*","Range"]);
     
-    const triggerQuality = $derived(
-        qualities.find((q)=> q.value === value)?.label ?? "Scegli una qualità"
-    )
-
-    
+    //logica della select per le qualità
     let baseQuality = $state("");
+    const triggerQuality = $derived(
+        qualities.find((q)=> q.value === baseQuality)?.label ?? "Scegli una qualità"
+    )
     let customQuality = $state("");
-    
     let quality = $derived.by(()=>{
-        
+        if(customQuality!=="")return customQuality
+        else return qualities.find((q)=> q.value === baseQuality)?.effect ?? "Nessuna Qualità";
     });
+
     let weaponImageUrl = $state();
     
 
@@ -212,7 +213,7 @@
                 <!-- Qualità Standard -->
                 <span class="flex flex-col gap-2">
                     <Label>Qualità</Label>
-                    <Select.Root type="single" name="qualità" bind:value>
+                    <Select.Root type="single" name="qualità" bind:value = {baseQuality}>
                     <Select.Trigger class="w-50 min-w-50">
                         {triggerQuality}
                     </Select.Trigger>
@@ -261,7 +262,7 @@
             <div class="flex flex-row gap-30 justify-start w-full">
                 <span class="flex flex-col gap-4 w-full">
                     <Label> Qualità Personalizzata</Label>
-                    <Textarea >
+                    <Textarea bind:value={customQuality}>
 
                     </Textarea>
                 </span>
