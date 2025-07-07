@@ -9,7 +9,9 @@
     import ImageUploader2 from "./imageUploader2.svelte";
     import Fa from "svelte-fa";
     import { faDownload, faFileExport } from "@fortawesome/free-solid-svg-icons";
-  
+   
+
+    
 
     //fetchare db
     const fruits = [
@@ -34,6 +36,269 @@
         {value:"fuoco",label:"Fuoco"},{value:"ghiaccio",label:"Ghiaccio"},{value:"luce",label:"Luce"},{value:"veleno",label:"Veleno"}
     ];
 
+    //Armi Base da fetchare dal db
+    const baseWeapons = [
+        // Pesanti
+            {name:"Pesanti"},
+        {
+            name: "Martello di Ferro",
+            cost: 200,
+            accuracy: "[VIG + VIG]",
+            damage: 6,
+            type: "Fisico",
+            category: "Pesanti",
+            quality: "Nessuna Qualità",
+            distance: "Mischia",
+            hands:"una mano"
+
+        },
+        {
+            name: "Ascia",
+            cost: 250,
+            accuracy: "[VIG + VIG]",
+            damage: 10,
+            type: "Fisico",
+            category: "Pesanti",
+            quality: "Nessuna Qualità",
+            distance: "Mischia",
+            hands:"una mano"
+        },
+        {
+            name: "Ascia da Guerra",
+            cost: 250,
+            accuracy: "[VIG + VIG]",
+            damage: 14,
+            type: "Fisico",
+            category: "Pesanti",
+            quality: "Nessuna Qualità",
+            distance: "Mischia",
+            hands:"Due mani"
+        },
+        
+        // Pugnali
+            {name:"Pugnali"},
+        {
+            name: "Pugnale d'Acciaio",
+            cost: 150,
+            accuracy: "[DES + INT] +1",
+            damage: 4,
+            type: "Fisico",
+            category: "Pugnali",
+            quality: "Nessuna Qualità",
+            distance: "Mischia",
+            hands:"una mano"
+        },
+        
+        // Da Rissa
+            {name:"Da Rissa"},
+        {
+            name: "Colpo Senz'Armi",
+            cost: 0,
+            accuracy: "[DES + VIG]",
+            damage: 0,
+            type: "Fisico",
+            category: "Da Rissa",
+            quality: "Nessuna Qualità",
+            distance: "Mischia",
+            hands:"una mano"
+        },
+        {
+            name: "Improvvisata (Misc.)",
+            cost: 0,
+            accuracy: "[DES + VIG]",
+            damage: 2,
+            type: "Fisico",
+            category: "Da Rissa",
+            quality: "Nessuna Qualità",
+            distance: "Mischia",
+            hands:"una mano"
+        },
+        {
+            name: "Tirapugni di Ferro",
+            cost: 150,
+            accuracy: "[DES + VIG]",
+            damage: 6,
+            type: "Fisico",
+            category: "Da Rissa",
+            quality: "Nessuna Qualità",
+            distance: "Mischia",
+            hands:"una mano"
+        },
+        
+        // Spada
+            {name:"Spada"},
+        {
+            name: "Katana",
+            cost: 200,
+            accuracy: "[DES + INT] +1",
+            damage: 10,
+            type: "Fisico",
+            category: "Spada",
+            quality: "Nessuna Qualità",
+            distance: "Mischia",
+            hands:"Due mani"
+        },
+        {
+            name: "Spada di Bronzo",
+            cost: 200,
+            accuracy: "[DES + VIG] +1",
+            damage: 6,
+            type: "Fisico",
+            category: "Spada",
+            quality: "Nessuna Qualità",
+            distance: "Mischia",
+            hands:"Una mano"
+        },
+        {
+            name: "Spadone",
+            cost: 200,
+            accuracy: "[DES + VIG] +1",
+            damage: 10,
+            type: "Fisico",
+            category: "Spada",
+            quality: "Nessuna Qualità",
+            distance: "Mischia",
+            hands:"Due mani"
+        },
+        {
+            name: "Stocco",
+            cost: 200,
+            accuracy: "[DES + INT] +1",
+            damage: 6,
+            type: "Fisico",
+            category: "Spada",
+            quality: "Nessuna Qualità",
+            distance: "Mischia",
+            hands:"Una mano"
+        },
+        // Arcana
+            {name:"Arcana"},
+        {
+            name: "Bastone",
+            cost: 100,
+            accuracy: "[VOL + VOL]",
+            damage: 6,
+            type: "Fisico",
+            category: "Arcana",
+            quality: "Nessuna Qualità",
+            distance: "Mischia",
+            hands:"Due mani"
+        },
+        {
+            name: "Tomo",
+            cost: 100,
+            accuracy: "[INT + INT]",
+            damage: 6,
+            type: "Fisico",
+            category: "Arcana",
+            quality: "Nessuna Qualità",
+            distance: "Mischia",
+            hands:"Due mani"
+        },
+        
+        // Arco
+            {name:"Arco"},
+        {
+            name: "Balestra",
+            cost: 150,
+            accuracy: "[DES + INT]",
+            damage: 8,
+            type: "Fisico",
+            category: "Arco",
+            quality: "Nessuna Qualità",
+            distance: "Distanza",
+            hands:"Due mani"
+        },
+        {
+            name: "Arco Corto",
+            cost: 200,
+            accuracy: "[DES + DES]",
+            damage: 8,
+            type: "Fisico",
+            category: "Arco",
+            quality: "Nessuna Qualità",
+            distance: "Distanza",
+            hands:"Due mani"
+        },
+        
+        // Flagello
+            {name:"Flagello"},
+        {
+            name: "Frusta-Catena",
+            cost: 150,
+            accuracy: "[DES + DES]",
+            damage: 8,
+            type: "Fisico",
+            category: "Flagello",
+            quality: "Nessuna Qualità",
+            distance: "Mischia",
+            hands:"Due mani"
+        },
+        
+        // Da Fuoco
+            {name:"Da Fuoco"},
+        {
+            name: "Pistola",
+            cost: 250,
+            accuracy: "[DES + INT]",
+            damage: 8,
+            type: "Fisico",
+            category: "Da Fuoco",
+            quality: "Nessuna Qualità",
+            distance: "Distanza",
+            hands:"Una mano"
+        },
+        
+        {name:"Lancia"},
+        {
+            name: "Lancia Leggera",
+            cost: 200,
+            accuracy: "[DES + VIG]",
+            damage: 8,
+            type: "Fisico",
+            category: "Lancia",
+            quality: "Nessuna Qualità",
+            distance: "Mischia",
+            hands:"Una mano"
+        },
+        {
+            name: "Lancia Pesante",
+            cost: 200,
+            accuracy: "[DES + VIG]",
+            damage: 12,
+            type: "Fisico",
+            category: "Lancia",
+            quality: "Nessuna Qualità",
+            distance: "Mischia",
+            hands:"Due mani"
+        },
+        
+        // Da Lancio
+        {name:"Da Lancio"},
+        {
+            name: "Improvvisata (Dist.)",
+            cost: 0,
+            accuracy: "[DES + VIG]",
+            damage: 2,
+            type: "Fisico",
+            category: "Da Lancio",
+            quality: "Nessuna Qualità",
+            distance: "Distanza",
+            hands:"Una mano"
+        },
+        {
+            name: "Shuriken",
+            cost: 150,
+            accuracy: "[DES + INT]",
+            damage: 4,
+            type: "Fisico",
+            category: "Da Lancio",
+            quality: "Nessuna Qualità",
+            distance: "Distanza",
+            hands:"Una mano"
+        }
+    ];
+
     //numero di mani da fetchare
     const handNumber = [{value:"Una Mano",label:"Una Mano"},{value:"Due Mani",label:"Due Mani"}];
     
@@ -52,6 +317,11 @@
     let baseQuality = $state("");
     const triggerQuality = $derived(
         qualities.find((q)=> q.value === baseQuality)?.label ?? "Scegli una qualità"
+    );
+
+    let weapon = $state("");
+    const triggerWeapon = $derived(
+        baseWeapons.find(w =>w.name === weapon)?.name ?? "Scegli un'arma"
     )
 
     let selectedHands = $state("");
@@ -141,20 +411,20 @@
                 <!-- Arma Base -->
                 <span class="flex flex-col gap-2 ">
                     <Label for="arma_base">Arma</Label>
-                    <Select.Root type="single" name="arma_base" bind:value>
+                    <Select.Root type="single" name="arma_base" bind:value={weapon}>
                         <Select.Trigger class="w-[180px]">
-                            {triggerContent}
+                            {triggerWeapon}
                         </Select.Trigger>
                         <Select.Content>
                             <Select.Group >
                                 <Select.Label>Fruits</Select.Label>
-                                {#each fruits as fruit (fruit.value)}
+                                {#each baseWeapons as weapon (weapon.name)}
                                     <Select.Item
-                                    value={fruit.value}
-                                    label={fruit.label}
-                                    disabled={fruit.value === "grapes"}
+                                    value={weapon.name}
+                                    label={weapon.name}
+                                    disabled={weapon.name==="Pesanti" || weapon.name==="Pugnali" ||weapon.name==="Da Rissa" ||weapon.name==="Spada" ||weapon.name==="Arcana" || weapon.name ==="Arco"||weapon.name==="Flagello" ||weapon.name==="Da Fuoco" ||weapon.name==="Lancia" || weapon.name ==="Da Lancio"}
                                     >
-                                        {fruit.label}
+                                        {weapon.name}
                                     </Select.Item>
                                 {/each}
                             </Select.Group>
