@@ -10,6 +10,7 @@
     import Fa from "svelte-fa";
     import { faDownload, faFileExport } from "@fortawesome/free-solid-svg-icons";
   import { ssrDynamicImportKey } from "vite/module-runner";
+  import { WholeWord } from "lucide-react";
    
 
     
@@ -52,7 +53,7 @@
         category: "Pesanti",
         quality: "Nessuna Qualità",
         range: "Mischia",
-        hands: "una mano"
+        hands: "Una Mano"
     },
     {
         name: "Ascia",
@@ -64,7 +65,7 @@
         category: "Pesanti",
         quality: "Nessuna Qualità",
         range: "Mischia",
-        hands: "una mano"
+        hands: "Una Mano"
     },
     {
         name: "Ascia da Guerra",
@@ -76,7 +77,7 @@
         category: "Pesanti",
         quality: "Nessuna Qualità",
         range: "Mischia",
-        hands: "Due mani"
+        hands: "Due Mani"
     },
     
     // Pugnali
@@ -91,7 +92,7 @@
         category: "Pugnali",
         quality: "Nessuna Qualità",
         range: "Mischia",
-        hands: "una mano"
+        hands: "Una Mano"
     },
     
     // Da Rissa
@@ -106,7 +107,7 @@
         category: "Da Rissa",
         quality: "Nessuna Qualità",
         range: "Mischia",
-        hands: "una mano"
+        hands: "Una Mano"
     },
     {
         name: "Improvvisata (Misc.)",
@@ -118,7 +119,7 @@
         category: "Da Rissa",
         quality: "Nessuna Qualità",
         range: "Mischia",
-        hands: "una mano"
+        hands: "Una Mano"
     },
     {
         name: "Tirapugni di Ferro",
@@ -130,7 +131,7 @@
         category: "Da Rissa",
         quality: "Nessuna Qualità",
         range: "Mischia",
-        hands: "una mano"
+        hands: "Una Mano"
     },
     
     // Spada
@@ -145,7 +146,7 @@
         category: "Spada",
         quality: "Nessuna Qualità",
         range: "Mischia",
-        hands: "Due mani"
+        hands: "Due Mani"
     },
     {
         name: "Spada di Bronzo",
@@ -157,7 +158,7 @@
         category: "Spada",
         quality: "Nessuna Qualità",
         range: "Mischia",
-        hands: "Una mano"
+        hands: "Una Mano"
     },
     {
         name: "Spadone",
@@ -169,7 +170,7 @@
         category: "Spada",
         quality: "Nessuna Qualità",
         range: "Mischia",
-        hands: "Due mani"
+        hands: "Due Mani"
     },
     {
         name: "Stocco",
@@ -181,7 +182,7 @@
         category: "Spada",
         quality: "Nessuna Qualità",
         range: "Mischia",
-        hands: "Una mano"
+        hands: "Una Mano"
     },
     
     // Arcana
@@ -196,7 +197,7 @@
         category: "Arcana",
         quality: "Nessuna Qualità",
         range: "Mischia",
-        hands: "Due mani"
+        hands: "Due Mani"
     },
     {
         name: "Tomo",
@@ -208,7 +209,7 @@
         category: "Arcana",
         quality: "Nessuna Qualità",
         range: "Mischia",
-        hands: "Due mani"
+        hands: "Due Mani"
     },
     
     // Arco
@@ -223,7 +224,7 @@
         category: "Arco",
         quality: "Nessuna Qualità",
         range: "Distanza",
-        hands: "Due mani"
+        hands: "Due Mani"
     },
     {
         name: "Arco Corto",
@@ -235,7 +236,7 @@
         category: "Arco",
         quality: "Nessuna Qualità",
         range: "Distanza",
-        hands: "Due mani"
+        hands: "Due Mani"
     },
     
     // Flagello
@@ -250,7 +251,7 @@
         category: "Flagello",
         quality: "Nessuna Qualità",
         range: "Mischia",
-        hands: "Due mani"
+        hands: "Due Mani"
     },
     
     // Da Fuoco
@@ -265,7 +266,7 @@
         category: "Da Fuoco",
         quality: "Nessuna Qualità",
         range: "Distanza",
-        hands: "Una mano"
+        hands: "Una Mano"
     },
     
     {name:"Lancia"},
@@ -279,7 +280,7 @@
         category: "Lancia",
         quality: "Nessuna Qualità",
         range: "Mischia",
-        hands: "Una mano"
+        hands: "Una Mano"
     },
     {
         name: "Lancia Pesante",
@@ -291,7 +292,7 @@
         category: "Lancia",
         quality: "Nessuna Qualità",
         range: "Mischia",
-        hands: "Due mani"
+        hands: "Due Mani"
     },
     
     // Da Lancio
@@ -306,7 +307,7 @@
         category: "Da Lancio",
         quality: "Nessuna Qualità",
         range: "Distanza",
-        hands: "Una mano"
+        hands: "Una Mano"
     },
     {
         name: "Shuriken",
@@ -318,9 +319,10 @@
         category: "Da Lancio",
         quality: "Nessuna Qualità",
         range: "Distanza",
-        hands: "Una mano"
+        hands: "Una Mano"
     }
-];
+    ];
+
     //numero di mani da fetchare
     const handNumber = [{value:"Una Mano",label:"Una Mano"},{value:"Due Mani",label:"Due Mani"}];
     
@@ -375,13 +377,29 @@
     });
 
     let customCost = $state(0);
-    let weaponCost = $state(0);
+    let weaponCost = $derived(
+        baseWeapons.find(w => w.name === weapon)?.cost ?? 0
+    );
+
     let additionalDamage = $state(false);
     let additionalAccuracy = $state(false);
-    let weaponDamage =$state(0);
+    let weaponDamage =$derived(
+        baseWeapons.find(w=> w.name === weapon)?.damage ?? 0
+    );
 
+    let category = $derived(
+        baseWeapons.find(w => w.name === weapon)?.category ?? "Nessuna Categoria"
+    );
+
+    $effect(()=>{
+        let changedWeapon = baseWeapons.find(w => w.name === weapon);
+        if(changedWeapon === undefined || changedWeapon.attr1 === undefined || changedWeapon.attr2 === undefined)return;
+        attr1 = changedWeapon.attr1;
+        attr2 = changedWeapon.attr2;
+        selectedHands = changedWeapon.hands;
+
+    })
     let weaponName = $state("");
-
     let accuracy = $derived.by(()=>{
         if(additionalAccuracy)return "+"+1;
         else return "";
@@ -407,7 +425,7 @@
     
     //variabili da fetchare
     let formulaRow = $derived(["["+attr1+" + "+attr2+"]"+accuracy,"[ TM+"+damage+"]"+damageType,cost+"z"]);
-    let thirdRowElement = $derived(["Categoria","*",selectedHands,"*","Range"]);
+    let thirdRowElement = $derived([category,"*",selectedHands,"*","Range"]);
 
     async function handleDownload() {
         console.log("scarico");
