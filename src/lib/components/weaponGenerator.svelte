@@ -20,15 +20,36 @@
         { value: "pineapple", label: "Pineapple" }
     ];
 
+    const qualities = [
+        {value:"q1",label:"PippoBaudo"},
+        {value:"q2",label:"PippoBudo"},
+        {value:"q3",label:"PippoBdo"},
+        {value:"q4",label:"PippoBau"},
+    ]
+
     let value = $state("");
     //logica della select
     const triggerContent = $derived(
         fruits.find((f) => f.value === value)?.label ?? "Select a fruit"
     );
 
+    //variabili da fetchare
     let formulaRow = $state(["[DES+VIG]","TM+10","100z"]);
     let thirdRowElement = $state(["Categoria","*","#Mani","*","Range"]);
+    
+    const triggerQuality = $derived(
+        qualities.find((q)=> q.value === value)?.label ?? "Scegli una qualità"
+    )
+
+    
+    let baseQuality = $state("");
+    let customQuality = $state("");
+    
+    let quality = $derived.by(()=>{
+        
+    });
     let weaponImageUrl = $state();
+    
 
     async function handleDownload() {
         console.log("scarico");
@@ -37,6 +58,7 @@
     async function handleExport() {
         console.log("esporto");
     }
+
 </script>
 
 <div class="flex flex-row gap-5">
@@ -192,18 +214,18 @@
                     <Label>Qualità</Label>
                     <Select.Root type="single" name="qualità" bind:value>
                     <Select.Trigger class="w-50 min-w-50">
-                        {triggerContent}
+                        {triggerQuality}
                     </Select.Trigger>
                     <Select.Content>
                         <Select.Group>
-                            <Select.Label>Fruits</Select.Label>
-                            {#each fruits as fruit (fruit.value)}
+                            <Select.Label>Qualità Standard</Select.Label>
+                            {#each qualities as quality (quality.value)}
                                 <Select.Item
-                                value={fruit.value}
-                                label={fruit.label}
-                                disabled={fruit.value === "grapes"}
+                                value={quality.value}
+                                label={quality.label}
+                                disabled={quality.value === "grapes"}
                                 >
-                                    {fruit.label}
+                                    {quality.label}
                                 </Select.Item>
                             {/each}
                         </Select.Group>
@@ -279,7 +301,7 @@
                     </div>
                     <hr>
                     <div class="px-2 break-words w-150">
-
+                        {quality}
                     </div>
                 </div>
             </div>
@@ -301,10 +323,6 @@
             
         </span>
     </div>
-        <!--
-        <RunesButton text="" icon={faDownload} style="cursor-pointer px-2" additionalStyle="w-auto" color= "" clickFun={()=>exportHtmlToImage(displayWeaponName)}/>
-        <RunesButton text="" icon={faFileExport} style="cursor-pointer px-2" additionalStyle="w-auto" color= "" clickFun={handleExport}/> -->
-
 </div>
 
 
