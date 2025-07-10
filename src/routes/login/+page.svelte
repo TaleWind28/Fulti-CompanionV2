@@ -28,7 +28,9 @@
 	}
 
 	async function firebaseRegister() {
-		registerUser(email,password,username);
+		registerUser(email,password,username)
+		.then(()=>goto('/'))
+		.catch((error)=>{alert(error)});
 	}
 
 	let logo = "src/images/Logo5.1.png";

@@ -32,13 +32,15 @@ export async function registerUser(email: string, password: string, username: st
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     
     // Aggiorna il profilo con l'username
+    if (username === null) throw new Error("invalid username");
     await updateProfile(userCredential.user, {
       displayName: username
     });
     
     return userCredential;
   } catch (error) {
-    return null;    
+    console.log(error,"errore");
+    throw error;    
   }
 }
 
