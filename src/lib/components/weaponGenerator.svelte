@@ -1,7 +1,6 @@
 <script lang="ts">
     import * as Select from "$lib/components/ui/select/index.js";
     import * as Card from "$lib/components/ui/card/index.js"        
-    import * as Table from "$lib/components/ui/table/index.js";
     import Input from "./ui/input/input.svelte";
     import Checkbox from "./ui/checkbox/checkbox.svelte";
     import Label from "./ui/label/label.svelte";
@@ -9,20 +8,15 @@
     import ImageUploader2 from "./imageUploader2.svelte";
     import Fa from "svelte-fa";
     import { faDownload, faFileExport } from "@fortawesome/free-solid-svg-icons";
-  import { ssrDynamicImportKey } from "vite/module-runner";
-  import { WholeWord } from "lucide-react";
-   
-
-    
+  import { onMount } from "svelte";
 
     //fetchare db
-    const fruits = [
-        { value: "apple", label: "Apple" },
-        { value: "banana", label: "Banana" },
-        { value: "blueberry", label: "Blueberry" },
-        { value: "grapes", label: "Grapes" },
-        { value: "pineapple", label: "Pineapple" }
-    ];
+    let data = [];
+    onMount( async ()=>{
+        const response = await fetch('$lib/api/weaponGenerator/');
+        data = await response.json();
+        console.log(data);
+    });
 
     //qualità da fetchare
     const qualities = [
@@ -38,7 +32,6 @@
         {value:"fuoco",label:"Fuoco"},{value:"ghiaccio",label:"Ghiaccio"},{value:"luce",label:"Luce"},{value:"veleno",label:"Veleno"}
     ];
 
-    
     //Armi Base da fetchare dal db
     const baseWeapons = [
     // Pesanti
@@ -329,14 +322,6 @@
     //attributi da fetchare
     const attributes = [{value:"DES",label:"DES"},{value:"VIG",label:"VIG"},{value:"INT",label:"INT"},{value:"VOL",label:"VOL"}];
 
-    let value = $state("");
-    //logica della select
-    const triggerContent = $derived(
-        fruits.find((f) => f.value === value)?.label ?? "Select a fruit"
-    );
-
-    
-    
     //logica della select per le qualità
     let baseQuality = $state("");
     const triggerQuality = $derived(
@@ -358,6 +343,7 @@
     const triggerAttr1 = $derived(
         attributes.find(attr=>attr.value === attr1)?.label ?? "Attr1"
     );
+
     let attr2 = $state("VIG");
 
     const triggerAttr2 = $derived(
@@ -393,12 +379,14 @@
 
     $effect(()=>{
         let changedWeapon = baseWeapons.find(w => w.name === weapon);
+        console.log(changedWeapon,"effect");
         if(changedWeapon === undefined || changedWeapon.attr1 === undefined || changedWeapon.attr2 === undefined)return;
         attr1 = changedWeapon.attr1;
         attr2 = changedWeapon.attr2;
         selectedHands = changedWeapon.hands;
 
     })
+
     let weaponName = $state("");
     let accuracy = $derived.by(()=>{
         if(additionalAccuracy)return "+"+1;
@@ -434,7 +422,7 @@
     async function handleExport() {
         console.log("esporto");
     }
-
+        $inspect(weapon,"arma selezionata");
 </script>
 
 <div class="flex flex-row gap-5">
