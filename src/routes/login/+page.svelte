@@ -14,6 +14,7 @@
   	import { goto } from "$app/navigation";
   	import { user } from "$lib/stores/user";
   import { login, registerUser } from "$lib/firebase";
+    import { enhance } from "$app/forms";
 
 	let email = $state("");
 	let password = $state("");
@@ -45,9 +46,11 @@
 				{
 					title:"Accedi al tuo Account",
 					description:"",
+					action:'?/login',
 					content:[{
 						
 						text:"Email",
+						name:'email',
 						get var(){return email},
 						set var(value){email = value},
 						placeholder:"pino@outlook.it"
@@ -56,6 +59,7 @@
 					{
 						
 						text:"Password",
+						name:'password',
 						get var(){return password},
 						set var(value){password = value},
 						placeholder:""
@@ -68,9 +72,11 @@
 				{
 					title:"Crea un Account",
 					description:"",
+					action:'?/register',
 					content:[
 					{
 						text:"Username",
+						name:'username',
 						get var(){return username},
 						set var(value){username = value},
 						placeholder:"TaleWind28"
@@ -78,6 +84,7 @@
 					},
 					{
 						text:"Email",
+						name:'email',
 						get var(){return email},
 						set var(value){email = value},
 						placeholder:"pino@outlook.it"
@@ -86,6 +93,7 @@
 					{
 						
 						text:"Password",
+						name:'password',
 						get var(){return password},
 						set var(value){password = value},
 						placeholder:""
@@ -119,24 +127,27 @@
 			</div>
 			<!-- creo un contenuto per ogni trigger -->
 			{#each tabSelector.contents as card,i }
-				<TabsContent value ={tabSelector.triggers[i].value}>
-					<Card class="w-700 max-w-sm bg-caribbean_current-400">
-						<CardHeader>
-							<CardTitle class="text-white">{card.title}</CardTitle>
-							<CardDescription class="text-white">{card.description}</CardDescription>
-						</CardHeader>
-						<CardContent class="text-white">
-							{#each card.content as element }
-								<p>{element.text}</p>
-								<Input bind:value={element.var} placeholder={element.placeholder} class="text-black"/>
-							{/each}
-						</CardContent>
-						<CardFooter class="w-full">
-							<Button type="submit" onclick={card.clickFun}>{card.footerText}</Button>
-						</CardFooter>
-					</Card>
-				</TabsContent>		
+				<form method = 'POST' use:enhance>
+					<TabsContent value ={tabSelector.triggers[i].value}>
+						<Card class="w-700 max-w-sm bg-caribbean_current-400">
+							<CardHeader>
+								<CardTitle class="text-white">{card.title}</CardTitle>
+								<CardDescription class="text-white">{card.description}</CardDescription>
+							</CardHeader>
+							<CardContent class="text-white">
+								{#each card.content as element }
+									<p>{element.text}</p>
+									<Input name={element.name} bind:value={element.var} placeholder={element.placeholder} class="text-black"/>
+								{/each}
+							</CardContent>
+							<CardFooter class="w-full">
+								<Button type="submit" formaction={card.action}>{card.footerText}</Button>
+							</CardFooter>
+						</Card>
+					</TabsContent>		
+				</form>
 			{/each}
+
 		</Tabs>
 		<div class=" bg-teal-800 flex items-center justify-center text-white text-2xl  w-full">
         	<a href="/"><img src={logo} alt="logo" class="h-70 w-full"></a>
