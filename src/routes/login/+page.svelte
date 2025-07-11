@@ -127,7 +127,7 @@
 			</div>
 			<!-- creo un contenuto per ogni trigger -->
 			{#each tabSelector.contents as card,i }
-				<form method = 'POST' use:enhance>
+				<form onsubmit={card.clickFun}>				
 					<TabsContent value ={tabSelector.triggers[i].value}>
 						<Card class="w-700 max-w-sm bg-caribbean_current-400">
 							<CardHeader>
@@ -135,13 +135,13 @@
 								<CardDescription class="text-white">{card.description}</CardDescription>
 							</CardHeader>
 							<CardContent class="text-white">
-								{#each card.content as element }
-									<p>{element.text}</p>
-									<Input name={element.name} bind:value={element.var} placeholder={element.placeholder} class="text-black"/>
+								{#each card.content as content}
+									<p>{content.text}</p>
+									<Input name={content.name} type={content.name === 'password' || content.name === 'email' ? content.name:''} bind:value={content.var} placeholder={content.placeholder} class="text-black"/>
 								{/each}
 							</CardContent>
 							<CardFooter class="w-full">
-								<Button type="submit" formaction={card.action}>{card.footerText}</Button>
+								<Button type="submit">{card.footerText}</Button>
 							</CardFooter>
 						</Card>
 					</TabsContent>		

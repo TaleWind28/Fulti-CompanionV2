@@ -10,412 +10,146 @@
     import { faDownload, faFileExport } from "@fortawesome/free-solid-svg-icons";
   import { onMount } from "svelte";
   import { json } from "@sveltejs/kit";
+    import type { Quality, SelectionItem, Weapon } from "$lib";
 
     //fetchare db
     let data = [];
 
-    onMount( async ()=>{
-        const response = await fetch('$lib/api/weaponGenerator/');
-        data = await response.json();
-        console.log(data);
+     // Fetch dei dati iniziali
+    onMount(async () => {
+        try {
+            console.log("initialFetch");
+            const response = await fetch('/api/weaponGenerator');
+            const data = await response.json();
+            
+            baseWeapons = data.baseWeapons;
+            qualities = data.qualities;
+            damageTypes = data.damageTypes;
+            attributes = data.attributes;
+            handNumber = data.handNumber;
+            
+            console.log('Dati caricati:', data);
+            weapon = "Martello di Ferro";
+            calculateResults()
+        } catch (error) {
+            console.error('Errore nel caricamento dati:', error);
+        }
     });
 
     //qualità da fetchare
-    const qualities = [
-        {value:"Antistatus",label:"PippoBaudo",effect:"pino",price:100},
-        {value:"q2",label:"PippoBudo",effect:"ino",price:10},
-        {value:"q3",label:"PippoBdo",effect:"pin",price:1},
-        {value:"q4",label:"PippoBau",effect:"pno",price:20},
-    ]
-
+    let qualities:Quality[] = $state([]);
     //tipi di danno da fetchare
-    const damageTypes = [
-        {value:"fisico",label:"Fisico"},{value:"aria",label:"Aria"},{value:"fulmine",label:"Fulmine"},{value:"ombra",label:"Ombra"},{value:"terra",label:"Terra"},
-        {value:"fuoco",label:"Fuoco"},{value:"ghiaccio",label:"Ghiaccio"},{value:"luce",label:"Luce"},{value:"veleno",label:"Veleno"}
-    ];
-
-    //Armi Base da fetchare dal db
-    const baseWeapons = [
-    // Pesanti
-    {name:"Pesanti"},
-    {
-        name: "Martello di Ferro",
-        cost: 200,
-        attr1: "VIG",
-        attr2: "VIG",
-        damage: 6,
-        type: "Fisico",
-        category: "Pesanti",
-        quality: "Nessuna Qualità",
-        range: "Mischia",
-        hands: "Una Mano"
-    },
-    {
-        name: "Ascia",
-        cost: 250,
-        attr1: "VIG",
-        attr2: "VIG",
-        damage: 10,
-        type: "Fisico",
-        category: "Pesanti",
-        quality: "Nessuna Qualità",
-        range: "Mischia",
-        hands: "Una Mano"
-    },
-    {
-        name: "Ascia da Guerra",
-        cost: 250,
-        attr1: "VIG",
-        attr2: "VIG",
-        damage: 14,
-        type: "Fisico",
-        category: "Pesanti",
-        quality: "Nessuna Qualità",
-        range: "Mischia",
-        hands: "Due Mani"
-    },
-    
-    // Pugnali
-    {name:"Pugnali"},
-    {
-        name: "Pugnale d'Acciaio",
-        cost: 150,
-        attr1: "DES",
-        attr2: "INT",
-        damage: 4,
-        type: "Fisico",
-        category: "Pugnali",
-        quality: "Nessuna Qualità",
-        range: "Mischia",
-        hands: "Una Mano"
-    },
-    
-    // Da Rissa
-    {name:"Da Rissa"},
-    {
-        name: "Colpo Senz'Armi",
-        cost: 0,
-        attr1: "DES",
-        attr2: "VIG",
-        damage: 0,
-        type: "Fisico",
-        category: "Da Rissa",
-        quality: "Nessuna Qualità",
-        range: "Mischia",
-        hands: "Una Mano"
-    },
-    {
-        name: "Improvvisata (Misc.)",
-        cost: 0,
-        attr1: "DES",
-        attr2: "VIG",
-        damage: 2,
-        type: "Fisico",
-        category: "Da Rissa",
-        quality: "Nessuna Qualità",
-        range: "Mischia",
-        hands: "Una Mano"
-    },
-    {
-        name: "Tirapugni di Ferro",
-        cost: 150,
-        attr1: "DES",
-        attr2: "VIG",
-        damage: 6,
-        type: "Fisico",
-        category: "Da Rissa",
-        quality: "Nessuna Qualità",
-        range: "Mischia",
-        hands: "Una Mano"
-    },
-    
-    // Spada
-    {name:"Spada"},
-    {
-        name: "Katana",
-        cost: 200,
-        attr1: "DES",
-        attr2: "INT",
-        damage: 10,
-        type: "Fisico",
-        category: "Spada",
-        quality: "Nessuna Qualità",
-        range: "Mischia",
-        hands: "Due Mani"
-    },
-    {
-        name: "Spada di Bronzo",
-        cost: 200,
-        attr1: "DES",
-        attr2: "VIG",
-        damage: 6,
-        type: "Fisico",
-        category: "Spada",
-        quality: "Nessuna Qualità",
-        range: "Mischia",
-        hands: "Una Mano"
-    },
-    {
-        name: "Spadone",
-        cost: 200,
-        attr1: "DES",
-        attr2: "VIG",
-        damage: 10,
-        type: "Fisico",
-        category: "Spada",
-        quality: "Nessuna Qualità",
-        range: "Mischia",
-        hands: "Due Mani"
-    },
-    {
-        name: "Stocco",
-        cost: 200,
-        attr1: "DES",
-        attr2: "INT",
-        damage: 6,
-        type: "Fisico",
-        category: "Spada",
-        quality: "Nessuna Qualità",
-        range: "Mischia",
-        hands: "Una Mano"
-    },
-    
-    // Arcana
-    {name:"Arcana"},
-    {
-        name: "Bastone",
-        cost: 100,
-        attr1: "VOL",
-        attr2: "VOL",
-        damage: 6,
-        type: "Fisico",
-        category: "Arcana",
-        quality: "Nessuna Qualità",
-        range: "Mischia",
-        hands: "Due Mani"
-    },
-    {
-        name: "Tomo",
-        cost: 100,
-        attr1: "INT",
-        attr2: "INT",
-        damage: 6,
-        type: "Fisico",
-        category: "Arcana",
-        quality: "Nessuna Qualità",
-        range: "Mischia",
-        hands: "Due Mani"
-    },
-    
-    // Arco
-    {name:"Arco"},
-    {
-        name: "Balestra",
-        cost: 150,
-        attr1: "DES",
-        attr2: "INT",
-        damage: 8,
-        type: "Fisico",
-        category: "Arco",
-        quality: "Nessuna Qualità",
-        range: "Distanza",
-        hands: "Due Mani"
-    },
-    {
-        name: "Arco Corto",
-        cost: 200,
-        attr1: "DES",
-        attr2: "DES",
-        damage: 8,
-        type: "Fisico",
-        category: "Arco",
-        quality: "Nessuna Qualità",
-        range: "Distanza",
-        hands: "Due Mani"
-    },
-    
-    // Flagello
-    {name:"Flagello"},
-    {
-        name: "Frusta-Catena",
-        cost: 150,
-        attr1: "DES",
-        attr2: "DES",
-        damage: 8,
-        type: "Fisico",
-        category: "Flagello",
-        quality: "Nessuna Qualità",
-        range: "Mischia",
-        hands: "Due Mani"
-    },
-    
-    // Da Fuoco
-    {name:"Da Fuoco"},
-    {
-        name: "Pistola",
-        cost: 250,
-        attr1: "DES",
-        attr2: "INT",
-        damage: 8,
-        type: "Fisico",
-        category: "Da Fuoco",
-        quality: "Nessuna Qualità",
-        range: "Distanza",
-        hands: "Una Mano"
-    },
-    
-    {name:"Lancia"},
-    {
-        name: "Lancia Leggera",
-        cost: 200,
-        attr1: "DES",
-        attr2: "VIG",
-        damage: 8,
-        type: "Fisico",
-        category: "Lancia",
-        quality: "Nessuna Qualità",
-        range: "Mischia",
-        hands: "Una Mano"
-    },
-    {
-        name: "Lancia Pesante",
-        cost: 200,
-        attr1: "DES",
-        attr2: "VIG",
-        damage: 12,
-        type: "Fisico",
-        category: "Lancia",
-        quality: "Nessuna Qualità",
-        range: "Mischia",
-        hands: "Due Mani"
-    },
-    
-    // Da Lancio
-    {name:"Da Lancio"},
-    {
-        name: "Improvvisata (Dist.)",
-        cost: 0,
-        attr1: "DES",
-        attr2: "VIG",
-        damage: 2,
-        type: "Fisico",
-        category: "Da Lancio",
-        quality: "Nessuna Qualità",
-        range: "Distanza",
-        hands: "Una Mano"
-    },
-    {
-        name: "Shuriken",
-        cost: 150,
-        attr1: "DES",
-        attr2: "INT",
-        damage: 4,
-        type: "Fisico",
-        category: "Da Lancio",
-        quality: "Nessuna Qualità",
-        range: "Distanza",
-        hands: "Una Mano"
-    }
-    ];
-
+    let damageTypes:SelectionItem[] = $state([]);
+    let baseWeapons:Weapon[] = $state([]);
     //numero di mani da fetchare
-    const handNumber = [{value:"Una Mano",label:"Una Mano"},{value:"Due Mani",label:"Due Mani"}];
-    
+    let handNumber:SelectionItem[] = $state([]);
     //attributi da fetchare
-    const attributes = [{value:"DES",label:"DES"},{value:"VIG",label:"VIG"},{value:"INT",label:"INT"},{value:"VOL",label:"VOL"}];
+    let attributes:SelectionItem[] = $state([]);
+
+
+    // Variabili del form
+    let weapon = $state("");
+    let baseQuality = $state("");
+    let customQuality = $state("");
+    let customCost = $state(0);
+    let additionalDamage = $state(false);
+    let additionalAccuracy = $state(false);
+    let attr1 = $state("VIG");
+    let attr2 = $state("VIG");
+    let damageType = $state("fisico");
+    let selectedHands = $state("");
+    let weaponName = $state("");
+    let weaponImageUrl = $state();
+
+     // Risultati dei calcoli dal server
+    let calculatedResults = $state({
+        quality: "",
+        cost: 0,
+        damage: 0,
+        accuracy: "",
+        formulaRow: [],
+        thirdRowElement: [],
+        category: "",
+        weaponData: null
+    });
+
 
     //logica della select per le qualità
-    let baseQuality = $state("");
     const triggerQuality = $derived(
         qualities.find((q)=> q.value === baseQuality)?.label ?? "Scegli una qualità"
     );
 
-    let weapon = $state("");
     const triggerWeapon = $derived(
         baseWeapons.find(w =>w.name === weapon)?.name ?? "Scegli un'arma"
     )
 
-    let selectedHands = $state("");
-    const triggerHands = $derived(
-        handNumber.find((h)=>h.value === selectedHands)?.label ?? "# di mani"
-    )
-
-    let attr1 = $state("VIG");
-    
     const triggerAttr1 = $derived(
         attributes.find(attr=>attr.value === attr1)?.label ?? "Attr1"
     );
 
-    let attr2 = $state("VIG");
 
     const triggerAttr2 = $derived(
         attributes.find(attr=>attr.value === attr2)?.label ?? "Attr2"
     );
 
-    let damageType = $state("fisico");
     const triggerDamageType = $derived(
         damageTypes.find(dt => dt.value === damageType)?.label ?? "Tipo di Danno"
     )
     
     //imageProcessor
-    let customQuality = $state("");
     let quality = $derived.by(()=>{
         if(customQuality!=="")return customQuality
         else return qualities.find((q)=> q.value === baseQuality)?.effect ?? "Nessuna Qualità";
     });
 
-    let customCost = $state(0);
-    let weaponCost = $derived(
-        baseWeapons.find(w => w.name === weapon)?.cost ?? 0
-    );
 
-    let additionalDamage = $state(false);
-    let additionalAccuracy = $state(false);
-    let weaponDamage =$derived(
-        baseWeapons.find(w=> w.name === weapon)?.damage ?? 0
-    );
+    // let weaponCost = $derived(
+    //     baseWeapons.find(w => w.name === weapon)?.cost ?? 0
+    // );
 
-    let category = $derived(
-        baseWeapons.find(w => w.name === weapon)?.category ?? "Nessuna Categoria"
-    );
+    // let weaponDamage =$derived(
+    //     baseWeapons.find(w=> w.name === weapon)?.damage ?? 0
+    // );
+
+    // let category = $derived(
+    //     baseWeapons.find(w => w.name === weapon)?.category ?? "Nessuna Categoria"
+    // );
 
     $effect(()=>{
         let changedWeapon = baseWeapons.find(w => w.name === weapon);
         console.log(changedWeapon,"effect");
-        if(changedWeapon === undefined || changedWeapon.attr1 === undefined || changedWeapon.attr2 === undefined)return;
-        attr1 = changedWeapon.attr1;
-        attr2 = changedWeapon.attr2;
-        selectedHands = changedWeapon.hands;
-
+        //invocare funzione
+        // if(changedWeapon === undefined || changedWeapon.attr1 === undefined || changedWeapon.attr2 === undefined)return;
+        // attr1 = changedWeapon.attr1;
+        // attr2 = changedWeapon.attr2;
+        // selectedHands = changedWeapon.hands;
+        if(changedWeapon !== undefined)calculateResults();
     })
 
-    let weaponName = $state("");
-    let accuracy = $derived.by(()=>{
-        if(additionalAccuracy)return "+"+1;
-        else return "";
-    }
+    // let accuracy = $derived.by(()=>{
+    //     if(additionalAccuracy)return "+"+1;
+    //     else return "";
+    // }
 
-    )
+    // )
 
-    let damage = $derived.by(()=>{
-        let additions = 0;
-        if(additionalDamage)additions += 4;
-        return weaponDamage+additions;
-    })
+    // let damage = $derived.by(()=>{
+    //     let additions = 0;
+    //     if(additionalDamage)additions += 4;
+    //     return weaponDamage+additions;
+    // })
 
-    let cost = $derived.by(()=>{
-        let additions = customCost;
-        if(customQuality === "") additions += (qualities.find((q)=>q.value=== baseQuality)?.price ?? 0);
-        if(additionalAccuracy)additions += 100;
-        if(additionalDamage)additions += 200;
-        return additions+weaponCost;
-    }); 
-
-    let weaponImageUrl = $state();
+    // let cost = $derived.by(()=>{
+    //     let additions = customCost;
+    //     if(customQuality === "") additions += (qualities.find((q)=>q.value=== baseQuality)?.price ?? 0);
+    //     if(additionalAccuracy)additions += 100;
+    //     if(additionalDamage)additions += 200;
+    //     return additions+weaponCost;
+    // }); 
     
     //variabili da fetchare
-    let formulaRow = $derived(["["+attr1+" + "+attr2+"]"+accuracy,"[ TM+"+damage+"]"+damageType,cost+"z"]);
-    let thirdRowElement = $derived([category,"*",selectedHands,"*","Range"]);
+    let formulaRow = $derived(["["+attr1+" + "+attr2+"]"+calculatedResults.accuracy,"[ TM+"+calculatedResults.damage+"]"+damageType,calculatedResults.cost+"z"]);
+    let thirdRowElement = $derived([calculatedResults.category,"*",selectedHands,"*","Range"]);
 
     async function handleDownload() {
         console.log("scarico");
@@ -425,21 +159,53 @@
         console.log("esporto");
     }
 
-    //GET per rederizzare il contenuto nell'imageProcessor
-    async function renderCalcuations(){
-        const response = await fetch('/api/weaponGenerator',{
-           method:'GET',
-           body:JSON.stringify({}),
-           headers:{
-            'content-type':'application/json'
-           }
-        });
+
+    async function calculateResults() {
+        if (!weapon) return;
+        try {
+            const response = await fetch('/api/weaponGenerator', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    weapon,
+                    baseQuality,
+                    customQuality,
+                    customCost,
+                    additionalDamage,
+                    additionalAccuracy,
+                    attr1,
+                    attr2,
+                    damageType,
+                    selectedHands,
+                    weaponName
+                })
+            });
+
+            const result = await response.json();
+            
+            if (result.success) {
+                calculatedResults = result.calculations;
+                
+                // Aggiorna gli attributi in base all'arma selezionata
+                if (result.calculations.weaponData) {
+                    attr1 = result.calculations.weaponData.attr1;
+                    attr2 = result.calculations.weaponData.attr2;
+                    selectedHands = result.calculations.weaponData.hands;
+                }
+            }
+        } catch (error) {
+            console.error('Errore nella richiesta:', error)
+        } finally {
+
+        }
     }
 
     $inspect(weapon,"arma selezionata");
 </script>
 
-<div class="flex flex-row gap-5">
+<div class="flex flex-row gap-5 justify-evenly">
 
     <!-- Generatore -->
     <Card.Root class="w-150 bg-cafe_noir-700 border-0">
@@ -459,7 +225,6 @@
                         </Select.Trigger>
                         <Select.Content>
                             <Select.Group >
-                                <Select.Label>Fruits</Select.Label>
                                 {#each baseWeapons as weapon (weapon.name)}
                                     <Select.Item
                                     value={weapon.name}
@@ -485,8 +250,8 @@
                 </span>
             </div>
 
-            <!-- Seconda Riga: Tipo di danno, Numero di Mani ed Attributi di precisione  -->
-            <div class="flex flex-row gap-5">
+            <!-- Seconda Riga: Tipo di danno, ed Attributi di precisione  -->
+            <div class="flex flex-row gap-5 justify-between">
                 <!-- Tipo di danno -->
                 <span class="flex flex-col gap-2">
                     <Label for="nome_arma">Tipo di danno</Label>
@@ -503,29 +268,6 @@
                                     label={dt.label}
                                     >
                                         {dt.label}
-                                    </Select.Item>
-                                {/each}
-                            </Select.Group>
-                        </Select.Content>
-                    </Select.Root>
-                </span>
-
-                <!-- Numero di Mani -->
-                <span class="flex flex-col gap-2">
-                    <Label for="nome_arma">Numero mani</Label>
-                    <Select.Root type="single" name="favoriteFruit" bind:value={selectedHands}>
-                        <Select.Trigger class="w-auto min-w-30">
-                            {triggerHands}
-                        </Select.Trigger>
-                        <Select.Content>
-                            <Select.Group>
-                                <Select.Label>#Mani</Select.Label>
-                                {#each handNumber as hand (hand.value)}
-                                    <Select.Item
-                                    value={hand.value}
-                                    label={hand.label}
-                                    >
-                                        {hand.label}
                                     </Select.Item>
                                 {/each}
                             </Select.Group>
