@@ -28,7 +28,6 @@
             attributes = data.attributes;
             handNumber = data.handNumber;
             
-            console.log('Dati caricati:', data);
             weapon = "Martello di Ferro";
             calculateResults()
         } catch (error) {
@@ -63,7 +62,6 @@
 
      // Risultati dei calcoli dal server
     let calculatedResults = $state({
-        quality: "",
         cost: 0,
         damage: 0,
         accuracy: "",
@@ -102,54 +100,11 @@
         else return qualities.find((q)=> q.value === baseQuality)?.effect ?? "Nessuna Qualità";
     });
 
-
-    // let weaponCost = $derived(
-    //     baseWeapons.find(w => w.name === weapon)?.cost ?? 0
-    // );
-
-    // let weaponDamage =$derived(
-    //     baseWeapons.find(w=> w.name === weapon)?.damage ?? 0
-    // );
-
-    // let category = $derived(
-    //     baseWeapons.find(w => w.name === weapon)?.category ?? "Nessuna Categoria"
-    // );
-
     $effect(()=>{
         let changedWeapon = baseWeapons.find(w => w.name === weapon);
-        console.log(changedWeapon,"effect");
         //invocare funzione
-        // if(changedWeapon === undefined || changedWeapon.attr1 === undefined || changedWeapon.attr2 === undefined)return;
-        // attr1 = changedWeapon.attr1;
-        // attr2 = changedWeapon.attr2;
-        // selectedHands = changedWeapon.hands;
         if(changedWeapon !== undefined)calculateResults();
     })
-
-    // let accuracy = $derived.by(()=>{
-    //     if(additionalAccuracy)return "+"+1;
-    //     else return "";
-    // }
-
-    // )
-
-    // let damage = $derived.by(()=>{
-    //     let additions = 0;
-    //     if(additionalDamage)additions += 4;
-    //     return weaponDamage+additions;
-    // })
-
-    // let cost = $derived.by(()=>{
-    //     let additions = customCost;
-    //     if(customQuality === "") additions += (qualities.find((q)=>q.value=== baseQuality)?.price ?? 0);
-    //     if(additionalAccuracy)additions += 100;
-    //     if(additionalDamage)additions += 200;
-    //     return additions+weaponCost;
-    // }); 
-    
-    //variabili da fetchare
-    let formulaRow = $derived(["["+attr1+" + "+attr2+"]"+calculatedResults.accuracy,"[ TM+"+calculatedResults.damage+"]"+damageType,calculatedResults.cost+"z"]);
-    let thirdRowElement = $derived([calculatedResults.category,"*",selectedHands,"*","Range"]);
 
     async function handleDownload() {
         console.log("scarico");
@@ -405,13 +360,13 @@
                 </div>
                 <div class="flex-1">
                     <div class="justify-around bg-cafe_noir-800 flex ">
-                        {#each formulaRow as formula}
+                        {#each calculatedResults.formulaRow as formula}
                             <p> {formula} </p>
                         {/each}
                     </div>
                     <hr>
                     <div class="flex flex-row items-center justify-between px-2 ">
-                        {#each thirdRowElement as element }
+                        {#each calculatedResults.thirdRowElement as element }
                             <p class="text-center"> {element} </p>
                         {/each}
                     </div>
