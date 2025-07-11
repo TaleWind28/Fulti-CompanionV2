@@ -9,9 +9,11 @@
     import Fa from "svelte-fa";
     import { faDownload, faFileExport } from "@fortawesome/free-solid-svg-icons";
   import { onMount } from "svelte";
+  import { json } from "@sveltejs/kit";
 
     //fetchare db
     let data = [];
+
     onMount( async ()=>{
         const response = await fetch('$lib/api/weaponGenerator/');
         data = await response.json();
@@ -422,7 +424,19 @@
     async function handleExport() {
         console.log("esporto");
     }
-        $inspect(weapon,"arma selezionata");
+
+    //GET per rederizzare il contenuto nell'imageProcessor
+    async function renderCalcuations(){
+        const response = await fetch('/api/weaponGenerator',{
+           method:'GET',
+           body:JSON.stringify({}),
+           headers:{
+            'content-type':'application/json'
+           }
+        });
+    }
+
+    $inspect(weapon,"arma selezionata");
 </script>
 
 <div class="flex flex-row gap-5">
