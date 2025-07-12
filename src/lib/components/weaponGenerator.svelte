@@ -11,7 +11,7 @@
   import { onMount } from "svelte";
   import { json } from "@sveltejs/kit";
     import type { Quality, SelectionItem, Weapon } from "$lib";
-  import { blobUrlToBase64, downloadFile, exportHtmlToImage } from "$lib/utils";
+  import { blobUrlToBase64, downloadFile, exportHtmlToImage, uploadFile } from "$lib/utils";
   import Button from "./ui/button/button.svelte";
 
     //fetchare db
@@ -175,7 +175,9 @@
         }
     }
 
-    function handleImport(){
+    async function handleImport(){
+        const {name, content} = await uploadFile('.json');
+        console.log(name,content);
         
     }   
 

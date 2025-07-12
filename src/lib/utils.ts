@@ -92,39 +92,30 @@ export function blobUrlToBase64(blobUrl:any) {
   });
 }
 
-export async function processSelectedJsonFile(file: File | null): Promise<any> {
-  return new Promise((resolve, reject) => {
-    if(file == null)return new Error("il file non è valido!");
-    // Controlla il tipo di file (opzionale ma buona pratica)
-    if (file.type !== 'application/json' && !file.name.endsWith('.json')) {
-      reject(new Error("Il file selezionato non sembra essere un file JSON. Assicurati che l'estensione sia .json o il tipo MIME sia application/json."));
-      return;
-    }
+export function uploadFile(accept='*'): Promise<{name:string, content:string}>{
+	return new Promise((resolve,reject)=>{
+		const input = document.createElement('input');
+		input.type='file';
+		input.accept = accept;
+		input.style.display = 'none';
+		input.onchange = ()=>{
+			const file  = input.files?.[0];
+			if(!file){
+				reject(new Error('Nessun File Selezionato'));
+				return;
+			}
+			const reader = new FileReader();
+			reader.onload = ()=>{
+				resolve({name:file.name,content:reader.result as string});
+			}
+			reader.onerror = ()=>{
+				reject(new Error('Errore durante la lettura del file'));
+			}
 
-    const reader = new FileReader();
-
-    reader.onload = (event) => {
-      try {
-        const fileContent = event.target?.result as string;
-        if (!fileContent) {
-          reject(new Error("Il contenuto del file è vuoto o illeggibile."));
-          return;
-        }
-        // console.log(fileContent);
-        const jsonData = JSON.parse(fileContent);
-        
-        // console.log(jsonData,"jsonData processSelectedFile")
-        resolve(jsonData);
-      } catch (e) {
-        reject(new Error(`Errore durante il parsing del JSON:`+ e ));
-      }
-    };
-
-    reader.onerror = (error) => {
-
-      reject(new Error(`Errore durante la lettura del file: ${error}`));
-    };
-    console.log(file)
-    reader.readAsText(file); // Legge il file come testo
-  });
+			reader.readAsText(file);
+		};
+		document.body.appendChild(input);
+		input.click();
+		document.body.removeChild(input);
+	});
 }
