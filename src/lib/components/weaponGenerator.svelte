@@ -13,6 +13,7 @@
     import type { Quality, SelectionItem, Weapon } from "$lib";
   import { blobUrlToBase64, downloadFile, exportHtmlToImage, uploadFile } from "$lib/utils";
   import Button from "./ui/button/button.svelte";
+  import { WeaponScheme } from "$lib/zod";
 
     //fetchare db
     let data = [];
@@ -63,8 +64,9 @@
     let weaponName = $state("");
     let weaponImageUrl = $state();
     let isMartial = $state(false);
+    let isImporting = $state(false);
 
-     // Risultati dei calcoli dal server
+    // Risultati dei calcoli dal server
     let calculatedResults = $state({
         cost: 0,
         damage: 0,
@@ -105,6 +107,7 @@
     });
 
     $effect(()=>{
+        if(isImporting)return;
         let changedWeapon = baseWeapons.find(w => w.name === weapon);
         //invocare funzione
         if(changedWeapon !== undefined)calculateResults();
@@ -125,7 +128,8 @@
             quality:quality,
             range:calculatedResults.thirdRowElement[4],
             hands:calculatedResults.thirdRowElement[2],
-            pic:weaponImageUrl
+            pic:weaponImageUrl,
+            isMartial:isMartial
         }
         const downloadableWeapon = JSON.stringify(propWeapon, null, 2);
 
@@ -176,9 +180,27 @@
     }
 
     async function handleImport(){
-        const {name, content} = await uploadFile('.json');
-        console.log(name,content);
-        
+        try{
+            const {name, content} = await uploadFile('.json');
+            const parsed = await JSON.parse(content);
+            const parsedWeapon = WeaponScheme.parse(parsed);
+            console.log(parsedWeapon);
+            weapon = parsedWeapon.name;
+            weaponName = parsedWeapon.nickname !== undefined ? parsedWeapon.nickname : "" ;
+            calculatedResults.cost = parsedWeapon.cost;
+            attr1 = parsedWeapon.attr1;
+            attr2 = parsedWeapon.attr2;
+            damageType = parsedWeapon.type;
+            calculatedResults.damage = parsedWeapon.damage;
+            customQuality = quality = parsedWeapon.quality; 
+            isMartial = parsedWeapon.isMartial !==undefined ? parsedWeapon.isMartial : false;
+            weaponImageUrl = parsedWeapon.pic !== undefined ? parsedWeapon.pic : "";
+            
+        }
+        catch(error){
+            console.log(error);
+        }
+
     }   
 
     function clearFields(){
@@ -189,6 +211,8 @@
         baseQuality = "";
         additionalAccuracy = false;
         additionalDamage = false;
+        weaponImageUrl = "";
+        isMartial = false;
     }
     $inspect(weapon,"arma selezionata");
 </script>
