@@ -11,11 +11,13 @@
   import { onMount } from "svelte";
   import { json } from "@sveltejs/kit";
     import type { Quality, SelectionItem, Weapon } from "$lib";
+  import { blobUrlToBase64, downloadFile, exportHtmlToImage } from "$lib/utils";
+  import Button from "./ui/button/button.svelte";
 
     //fetchare db
     let data = [];
 
-     // Fetch dei dati iniziali
+    // Fetch dei dati iniziali
     onMount(async () => {
         try {
             console.log("initialFetch");
@@ -39,6 +41,7 @@
     let qualities:Quality[] = $state([]);
     //tipi di danno da fetchare
     let damageTypes:SelectionItem[] = $state([]);
+    //armi base
     let baseWeapons:Weapon[] = $state([]);
     //numero di mani da fetchare
     let handNumber:SelectionItem[] = $state([]);
@@ -59,6 +62,7 @@
     let selectedHands = $state("");
     let weaponName = $state("");
     let weaponImageUrl = $state();
+    let isMartial = $state(false);
 
      // Risultati dei calcoli dal server
     let calculatedResults = $state({
@@ -106,12 +110,26 @@
         if(changedWeapon !== undefined)calculateResults();
     })
 
-    async function handleDownload() {
-        console.log("scarico");
-    }
-
     async function handleExport() {
-        console.log("esporto");
+        if( weaponImageUrl !== undefined)weaponImageUrl = await blobUrlToBase64(weaponImageUrl) as string
+        else weaponImageUrl = undefined;
+        const propWeapon = {
+            name:weapon,
+            nickname:weaponName,
+            cost:calculatedResults.cost,
+            attr1:attr1,
+            attr2:attr2,
+            damage:calculatedResults.damage,
+            type:damageType,
+            category:calculatedResults.category,
+            quality:quality,
+            range:calculatedResults.thirdRowElement[4],
+            hands:calculatedResults.thirdRowElement[2],
+            pic:weaponImageUrl
+        }
+        const downloadableWeapon = JSON.stringify(propWeapon, null, 2);
+
+        downloadFile(downloadableWeapon,`${weaponName.replace(/\s+/g, '') || 'arma'}.json`,'application/json')
     }
 
 
@@ -157,6 +175,19 @@
         }
     }
 
+    function handleImport(){
+        
+    }   
+
+    function clearFields(){
+        weapon = "Martello di Ferro";
+        weaponName = "";
+        customQuality = "";
+        customCost = 0;
+        baseQuality = "";
+        additionalAccuracy = false;
+        additionalDamage = false;
+    }
     $inspect(weapon,"arma selezionata");
 </script>
 
@@ -168,7 +199,7 @@
             <Card.Title>Generatore di Armi  </Card.Title>
         </Card.Header>
         <Card.Content class=" py-5 flex flex-col gap-5 bg-white">
-            
+           
             <!-- Prima riga: Arma base, Nome e Marziale -->
             <div class="flex flex-row gap-5 items-center justify-between">
                 <!-- Arma Base -->
@@ -196,7 +227,7 @@
                 <!-- checkbox marziale -->
                 <div class="flex items-center flex-col gap-2">
                     <Label for="martial">Marziale</Label>
-                    <Checkbox id="martial"/>
+                    <Checkbox id="martial" bind:checked={isMartial}/>
                 </div>
                 <!-- nome arma -->
                 <span class="flex flex-col gap-2 ">
@@ -310,10 +341,9 @@
                     <Input id="price" type="number" min="0" class="w-20" bind:value={customCost}/>  
                 </span>
 
-
                 <!-- Modificatori -->
                 <div class="flex flex-col gap-2">
-                    <Label class="border-0"> Qualità Personalizzata</Label>
+                    <Label class="border-0"> Modificatori </Label>
                     <!-- Accuracy -->
                     <span class="flex flex-row gap-2">
                         <Checkbox id="damageMod" bind:checked={additionalDamage}></Checkbox>
@@ -339,11 +369,19 @@
             </div>
 
         </Card.Content>
+        <Card.Footer class="flex justify-center gap-10">
+            <Button class="bg-cafe_noir-400 w-30" onclick={handleImport}>
+                Carica Json
+            </Button>
+            <Button class="bg-cafe_noir-400 w-30" onclick={clearFields}>
+                Pulisci i Campi
+            </Button>
+        </Card.Footer>
     </Card.Root>
 
     <!-- ImageProcesor -->
     <div>
-        <div  id={"pippo"} class="bg-white border h-auto ">
+        <div  id={"arma"} class="bg-white border h-auto ">
             <div class="bg-cafe_noir-700 grid grid-cols-6">
                 <p class="col-span-1 px-2">
                     {weaponName}
@@ -381,7 +419,7 @@
         </div>
         <span class="flex flex-row">
             <span>
-                <button onclick={handleDownload}>
+                <button onclick={()=>exportHtmlToImage('arma')}>
                     <Fa icon={faDownload} class="cursor-pointer px-2 w-auto"/>
                 </button>
             </span>
