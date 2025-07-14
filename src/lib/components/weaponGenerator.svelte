@@ -8,36 +8,35 @@
     import ImageUploader2 from "./imageUploader2.svelte";
     import Fa from "svelte-fa";
     import { faDownload, faFileExport } from "@fortawesome/free-solid-svg-icons";
-  import { onMount } from "svelte";
-  import { json } from "@sveltejs/kit";
+    import { onMount } from "svelte";
     import type { Quality, SelectionItem, Weapon } from "$lib";
-  import { blobUrlToBase64, downloadFile, exportHtmlToImage, uploadFile } from "$lib/utils";
-  import Button from "./ui/button/button.svelte";
-  import { WeaponScheme } from "$lib/zod";
-
-    //fetchare db
-    let data = [];
-
+    import { blobUrlToBase64, downloadFile, exportHtmlToImage, uploadFile } from "$lib/utils";
+    import Button from "./ui/button/button.svelte";
+    import { WeaponScheme } from "$lib/zod";
+    
     // Fetch dei dati iniziali
     onMount(async () => {
         try {
             console.log("initialFetch");
             const response = await fetch('/api/weaponGenerator');
             const data = await response.json();
-            
+            //array di dati per personalizzare l'arma
             baseWeapons = data.baseWeapons;
             qualities = data.qualities;
             damageTypes = data.damageTypes;
             attributes = data.attributes;
             handNumber = data.handNumber;
-            
+            //arma di default
             weapon = "Martello di Ferro";
+            //invocazione di base per dare un default
             calculateResults()
         } catch (error) {
             console.error('Errore nel caricamento dati:', error);
         }
     });
 
+    //variabile per evitare che effect impedisca di modificare manualmente i valori dopo aver selezionato l'arma;
+    let oldWeapon = "";
     //qualità da fetchare
     let qualities:Quality[] = $state([]);
     //tipi di danno da fetchare
@@ -48,7 +47,6 @@
     let handNumber:SelectionItem[] = $state([]);
     //attributi da fetchare
     let attributes:SelectionItem[] = $state([]);
-
 
     // Variabili del form
     let weapon = $state("");
@@ -66,7 +64,7 @@
     let isMartial = $state(false);
     let isImporting = $state(false);
 
-    // Risultati dei calcoli dal server
+    // Risultati dei calcoli del server
     let calculatedResults = $state({
         cost: 0,
         damage: 0,
@@ -77,8 +75,8 @@
         weaponData: null
     });
 
+    //trigger per select
 
-    //logica della select per le qualità
     const triggerQuality = $derived(
         qualities.find((q)=> q.value === baseQuality)?.label ?? "Scegli una qualità"
     );
@@ -90,7 +88,6 @@
     const triggerAttr1 = $derived(
         attributes.find(attr=>attr.value === attr1)?.label ?? "Attr1"
     );
-
 
     const triggerAttr2 = $derived(
         attributes.find(attr=>attr.value === attr2)?.label ?? "Attr2"
@@ -106,11 +103,12 @@
         else return qualities.find((q)=> q.value === baseQuality)?.effect ?? "Nessuna Qualità";
     });
 
+    //effect per aggiornamento dinamico dei dati nell'imageProcessor
     $effect(()=>{
-        if(isImporting)return;
-        let changedWeapon = baseWeapons.find(w => w.name === weapon);
-        //invocare funzione
-        if(changedWeapon !== undefined)calculateResults();
+        //evito incoerenzza nell'importare l'arma
+        if(isImporting )return;
+        if (oldWeapon !== weapon)oldWeapon = weapon;
+        calculateResults();
     })
 
     async function handleExport() {
@@ -166,7 +164,7 @@
                 calculatedResults = result.calculations;
                 
                 // Aggiorna gli attributi in base all'arma selezionata
-                if (result.calculations.weaponData) {
+                if (result.calculations.weaponData && oldWeapon != weapon) {
                     attr1 = result.calculations.weaponData.attr1;
                     attr2 = result.calculations.weaponData.attr2;
                     selectedHands = result.calculations.weaponData.hands;
@@ -215,6 +213,7 @@
         isMartial = false;
     }
     $inspect(weapon,"arma selezionata");
+    $inspect(attr1,"attr1");
 </script>
 
 <div class="flex flex-row gap-5 justify-evenly">

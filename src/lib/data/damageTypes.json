@@ -1,0 +1,11 @@
+[
+    {"value":"fisico","label":"Fisico"},
+    {"value":"aria","label":"Aria"},
+    {"value":"fulmine","label":"Fulmine"},
+    {"value":"ombra","label":"Ombra"},
+    {"value":"terra","label":"Terra"},
+    {"value":"fuoco","label":"Fuoco"},
+    {"value":"ghiaccio","label":"Ghiaccio"},
+    {"value":"luce","label":"Luce"},
+    {"value":"veleno","label":"Veleno"}
+]
