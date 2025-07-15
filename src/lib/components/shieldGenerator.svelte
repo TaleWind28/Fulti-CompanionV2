@@ -1,10 +1,15 @@
-<script>
+<script lang="ts">
     import * as Select from "$lib/components/ui/select/index.js";
     import * as Card from "$lib/components/ui/card/index.js"     
     import ImageUploader2 from "./imageUploader2.svelte";
     import { exportHtmlToImage } from "$lib/utils";
     import Fa from "svelte-fa";
     import { faDownload, faFileExport } from "@fortawesome/free-solid-svg-icons";
+    import { Button } from "./ui/button";
+    import { Label } from "./ui/label";
+    import type { Quality } from "$lib";
+    import Input from "./ui/input/input.svelte";
+    import Textarea from "./ui/textarea/textarea.svelte";
 
     let equipName = $state("");
     //imageProcessor
@@ -14,9 +19,34 @@
     let equipImageUrl = $state("");
     let quality = $state("");
     let isMartial = $state(false);
-    
+    let customCost =$state(0);
+    let customQuality = $state("");
+
+
+    const baseQualities:Quality[] = $state([]);
+    let baseQuality = $state("");
+
+    let equip = $state("");
+    let baseEquipment:any = $state([]);
+
+
+    const triggerEquipment = $derived(
+        baseEquipment.find((eq)=> eq.value === equip)?.label ?? "Scegli un'equipaggiamento"
+    )
+
+    const triggerQuality = $derived(
+        baseQualities.find((q)=> q.value === baseQuality)?.label ?? "Scegli una qualità"
+    );
     function handleExport(){
         return;
+    }
+    
+    function handleImport(){
+
+    }
+
+    function clearFields(){
+        
     }
 </script>
 
@@ -25,13 +55,88 @@
     <div>
         <Card.Root  class="w-150 bg-cafe_noir-700 border-0">
             <Card.Header>
-                pipo
+                Generatore di Armature e Scudi
             </Card.Header>
-            <Card.Content>
+            <Card.Content class=" py-5 flex flex-col gap-5 bg-white">
+
+                <!-- Equipaggiamento, Qualità Standard e Nome equipaggiamento -->
+                <div class="flex flex-row gap-5 items-center">
+                    <!-- Equipaggiamenti-->
+                    <span class="flex flex-col gap-2 ">
+                        <Label for="arma_base">Armatura/Scudo</Label>
+                        <Select.Root type="single" name="arma_base" bind:value={equip}>
+                            <Select.Trigger class="w-auto min-w-30">
+                                {triggerEquipment}
+                            </Select.Trigger>
+                            <Select.Content>
+                                <Select.Group >
+                                    {#each baseEquipment as equip (equip.name)}
+                                        <Select.Item
+                                        value={equip.name}
+                                        label={equip.name}
+                                        disabled={equip.name==="Armatura" || equip.name ==="Scudo"}
+                                        >
+                                            {equip.name}
+                                        </Select.Item>
+                                    {/each}
+                                </Select.Group>
+                            </Select.Content>
+                        </Select.Root>
+                    </span>
+
+                    <!-- Qualità Standard -->
+                    <span class="flex flex-col gap-2 ">    
+                        <Label for="arma_base">Qualità</Label>
+                        <Select.Root type="single" name="arma_base" bind:value={baseQuality}>
+                            <Select.Trigger class="w-auto min-w-30">
+                                {triggerQuality}
+                            </Select.Trigger>
+                            <Select.Content>
+                                <Select.Group >
+                                    {#each baseQualities as quality (quality.value)}
+                                        <Select.Item
+                                        value={quality.value}
+                                        label={quality.value}
+                                        disabled={quality.value==="Armatura" || quality.value ==="Scudo"}
+                                        >
+                                            {quality.value}
+                                        </Select.Item>
+                                    {/each}
+                                </Select.Group>
+                            </Select.Content>
+                        </Select.Root>
+                    </span>
+
+                    <!-- Nome Equipaggiamento -->
+                    <span class="flex flex-col gap-2 ">
+                        <Label for="nome_arma">Nome</Label>
+                        <Input type="text" id="nome_arma" placeholder="Nome Arma" bind:value={equipName}/>
+                    </span>
+                </div>
+
+                <!-- Qualità custom e Costo -->
+                <div class="flex flex-row gap-30 justify-start w-full">
+                    <!-- Qualità Custom -->
+                    <span class="flex flex-col gap-4 w-full">
+                        <Label> Qualità Personalizzata</Label>
+                        <Textarea bind:value={customQuality}></Textarea>
+                    </span>
+                    <!-- Prezzo -->
+                    <span class="flex flex-col gap-5 w-30 items-center">
+                        <Label for="price">Costi Aggiuntivi</Label>
+                        <Input id="price" type="number" min="0" class="w-20" bind:value={customCost}/>  
+                    </span>
+                </div>
+                
 
             </Card.Content>
-            <Card.Footer>
-                
+            <Card.Footer class="flex justify-center gap-10">
+                <Button class="bg-cafe_noir-400 w-30" onclick={handleImport}>
+                Carica Json
+            </Button>
+            <Button class="bg-cafe_noir-400 w-30" onclick={clearFields}>
+                Pulisci i Campi
+            </Button>
             </Card.Footer>
         </Card.Root>
     </div>
