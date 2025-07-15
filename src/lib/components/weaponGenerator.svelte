@@ -105,9 +105,6 @@
 
     //effect per aggiornamento dinamico dei dati nell'imageProcessor
     $effect(()=>{
-        //evito incoerenzza nell'importare l'arma
-        if(isImporting)return;
-        
         calculateResults();
     })
 
@@ -138,6 +135,7 @@
     async function calculateResults() {
         if (!weapon) return;
         try {
+            //richiesta HTTP
             const response = await fetch('/api/weaponGenerator', {
                 method: 'POST',
                 headers: {
@@ -158,12 +156,13 @@
                 })
             });
 
+            //Risposta HTTP
             const result = await response.json();
             
             if (result.success) {
                 calculatedResults = result.calculations;
                 console.log("vecchia:",oldWeapon,"nuova:", weapon);
-                // Aggiorna gli attributi in base all'arma selezionata
+                // Aggiorna gli attributi solo se è stata selezionata un'altra arma
                 if (result.calculations.weaponData && oldWeapon != weapon) {
                     attr1 = result.calculations.weaponData.attr1;
                     attr2 = result.calculations.weaponData.attr2;
@@ -173,8 +172,6 @@
             }
         } catch (error) {
             console.error('Errore nella richiesta:', error)
-        } finally {
-
         }
     }
 
@@ -412,6 +409,7 @@
     <!-- ImageProcesor -->
     <div>
         <div  id={"arma"} class="bg-white border h-auto ">
+            <!-- Intestazione tabella -->
             <div class="bg-cafe_noir-700 grid grid-cols-6">
                 <p class="col-span-1 px-2">
                     {weaponName}
