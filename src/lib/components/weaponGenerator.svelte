@@ -106,8 +106,8 @@
     //effect per aggiornamento dinamico dei dati nell'imageProcessor
     $effect(()=>{
         //evito incoerenzza nell'importare l'arma
-        if(isImporting )return;
-        if (oldWeapon !== weapon)oldWeapon = weapon;
+        if(isImporting)return;
+        
         calculateResults();
     })
 
@@ -162,12 +162,13 @@
             
             if (result.success) {
                 calculatedResults = result.calculations;
-                
+                console.log("vecchia:",oldWeapon,"nuova:", weapon);
                 // Aggiorna gli attributi in base all'arma selezionata
                 if (result.calculations.weaponData && oldWeapon != weapon) {
                     attr1 = result.calculations.weaponData.attr1;
                     attr2 = result.calculations.weaponData.attr2;
                     selectedHands = result.calculations.weaponData.hands;
+                    oldWeapon = weapon;
                 }
             }
         } catch (error) {
@@ -202,6 +203,7 @@
     }   
 
     function clearFields(){
+        oldWeapon = "";
         weapon = "Martello di Ferro";
         weaponName = "";
         customQuality = "";
@@ -210,10 +212,13 @@
         additionalAccuracy = false;
         additionalDamage = false;
         weaponImageUrl = "";
+        damageType = "fisico";
         isMartial = false;
+        calculateResults();
     }
     $inspect(weapon,"arma selezionata");
     $inspect(attr1,"attr1");
+    $inspect(weaponImageUrl,"immagine");
 </script>
 
 <div class="flex flex-row gap-5 justify-evenly">
@@ -410,6 +415,9 @@
             <div class="bg-cafe_noir-700 grid grid-cols-6">
                 <p class="col-span-1 px-2">
                     {weaponName}
+                    {#if isMartial}
+                        <span class="text-red-600 " style="text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;">♦</span>
+                    {/if}
                 </p>
                 <span class="grid grid-cols-3  col-span-5 gap-30 px-10">
                     {#each ["PRECISIONE","DANNO","COSTO"] as header}

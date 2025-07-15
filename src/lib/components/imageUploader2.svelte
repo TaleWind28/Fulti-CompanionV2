@@ -4,12 +4,11 @@
   let {dimensions = "w-auto h-auto", fill=false, imageUrl = $bindable(), padre = $bindable()} = $props();
   
   let uploadError = $state();
-  let ObjUrl = $state(defaultImage);
 
 
   let imageSrc = $derived.by(() => {
     if (!imageUrl || typeof imageUrl !== 'string' || imageUrl.trim() === "") {
-      return ObjUrl;
+      return defaultImage;
     }
     return imageUrl;
   });
@@ -27,8 +26,7 @@
     if (selectedFile) {
       if (selectedFile.type.startsWith('image/')) {
         //creo il nuovo url
-        ObjUrl = URL.createObjectURL(selectedFile);
-        imageUrl = ObjUrl;
+        imageUrl = URL.createObjectURL(selectedFile);
       } else {
         uploadError = 'Per favore, seleziona un file immagine valido.';
       }
@@ -40,7 +38,7 @@
 <label for={padre+"file-selector"}>
   <img
       src={imageSrc}
-      alt="Immagine corrente, clicca per cambiarla"
+      alt="Impossibile caricare l'immagine"
       class="{dimensions} {modality}"
     />
 </label>
