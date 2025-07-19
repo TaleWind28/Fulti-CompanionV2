@@ -13,7 +13,6 @@
 
     let equipName = $state("");
     //imageProcessor
-    let tableHeader = ["DIFESA", "DIF.MAGICA","COSTO"];
     let cost = $state(0);
     let dataRow = $derived(["7","5",cost+"z"]);
     let equipImageUrl = $state("");
@@ -31,7 +30,7 @@
 
 
     const triggerEquipment = $derived(
-        baseEquipment.find((eq)=> eq.value === equip)?.label ?? "Scegli un'equipaggiamento"
+        baseEquipment.find((eq:any)=> eq.value === equip)?.label ?? "Scegli un'equipaggiamento"
     )
 
     const triggerQuality = $derived(
