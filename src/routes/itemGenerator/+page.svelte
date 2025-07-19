@@ -12,7 +12,7 @@
     <!-- Generatore di Scudi -->
     <ShieldGenerator></ShieldGenerator>        
     <!-- Generatore di Accessori -->
-    <span class=" flex -ml-120">
+    <span class=" flex -ml-72  ">
         <AccessoryGenerator></AccessoryGenerator>
     </span>
         

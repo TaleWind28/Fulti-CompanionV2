@@ -12,10 +12,12 @@
     import Textarea from "./ui/textarea/textarea.svelte";
 
     let accessoryName = $state("");
-    let isMartial = $state(false);
+    let cost = $state(0);
     let accessoryImageUrl = $state("");
     let customQuality = $state("");
     let customCost = $state(0);
+    //sarà da fetchare
+    let calculations = $derived([cost+"z"])
 
     const baseQualities:Quality[] = $state([]);
     let baseQuality = $state("");
@@ -109,11 +111,11 @@
     <div>
         <div id="accessorio" class="bg-white border h-auto">
             <!-- Intestazione Tabella -->
-            <div class="bg-cafe_noir-700 grid grid-cols-6">
-                <p class="col-span-5 px-2">
+            <div class="bg-cafe_noir-700 grid grid-cols-5">
+                <p class="col-span-4 px-2">
                     {accessoryName}
                 </p>
-                <span class="col-span-1 px-10 ">
+                <span class="flex justify-end px-4 gap-30 ">
                     {#each ["COSTO"] as header}
                         <p> {header} </p>
                     {/each}
@@ -127,7 +129,7 @@
                 </div>
                 <div class="flex-1">
                     <div class="items-center justify-end  px-5  bg-cafe_noir-800 flex">
-                        {#each ["COSTO"] as data}
+                        {#each calculations as data}
                             <p> {data} </p>
                         {/each}
                     </div>
@@ -141,7 +143,7 @@
 
         <span class="flex flex-row">
             <span>
-                <button onclick={()=>exportHtmlToImage('equipaggiamento')}>
+                <button onclick={()=>exportHtmlToImage('accessorio')}>
                     <Fa icon={faDownload} class="cursor-pointer px-2 w-auto"/>
                 </button>
             </span>
@@ -155,35 +157,3 @@
     </div>
     
 </div>
-
-
-<!--  
-    <div  id={displayAccessoryName} class="bg-white border">
-            <div class="bg-cafe_noir-700 grid grid-cols-5">
-                <p class="col-span-4 px-2">
-                    {displayAccessoryName}
-                </p>
-                <span class="flex justify-end px-4 gap-30">
-                    {#each tableHeader as header}
-                        <p> {header} </p>
-                    {/each}
-                </span>
-            </div>
-            <div class="flex">
-                <div class="flex-shrink-0">
-                    <ImageUploader2 padre="accessoryGenerator" dimensions={"w-20 h-20 border-r"} fill={true} bind:imageUrl = {accessoryImageUrl}/>
-                </div>
-                <div class="flex-1">
-                    <div class="items-center justify-end px-5  bg-cafe_noir-800 flex">
-                        {#each dataRow as data}
-                            <p> {data} </p>
-                        {/each}
-                    </div>
-                    <hr>
-                    <div class="px-2">
-                        {craftedAccessory.quality.effect}
-                    </div>
-                </div>
-            </div>
-        </div>
--->
