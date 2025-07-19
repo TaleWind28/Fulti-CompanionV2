@@ -49,7 +49,7 @@
     }
 </script>
 
-<div class="flex gap-5">
+<div class="flex gap-5 justify-evenly">
     <!-- Generatore -->
     <div>
         <Card.Root  class="w-150 bg-cafe_noir-700 border-0">
@@ -195,7 +195,6 @@
                     <Fa icon={faFileExport} class="cursor-pointer px-2 w-auto"></Fa>
                 </button>
             </span>
-            
         </span>
     </div>    
 </div>

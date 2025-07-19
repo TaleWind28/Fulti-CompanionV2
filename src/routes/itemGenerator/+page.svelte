@@ -7,8 +7,15 @@
 </script>
 
 <div class="p-5 flex flex-col gap-10 bg-cafe_noir-900 items-center justify-center">
+    <!-- Generatore di armi -->
     <WeaponGenerator></WeaponGenerator>
-    <ShieldGenerator></ShieldGenerator>
-    <AccessoryGenerator></AccessoryGenerator>
+    <!-- Generatore di Scudi -->
+    <ShieldGenerator></ShieldGenerator>        
+    <!-- Generatore di Accessori -->
+    <span class=" flex -ml-120">
+        <AccessoryGenerator></AccessoryGenerator>
+    </span>
+        
+    <!-- Generatore di Arcana -->
     <ArcanaGenerator></ArcanaGenerator>
 </div>
