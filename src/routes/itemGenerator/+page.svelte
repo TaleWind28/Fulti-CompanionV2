@@ -20,7 +20,7 @@
     </span>
 
     <!-- Generatore di Arcana -->
-    <span class="flex ml-16">
+    <span class="flex -ml-5 ">
         <ArcanaGenerator></ArcanaGenerator>
     </span>
     

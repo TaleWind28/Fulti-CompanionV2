@@ -52,7 +52,16 @@
     }
 
     function clearFields(){
-        
+        arcanaName = "";
+        domain = "";
+        description ="";
+        fusionName = "";
+        fusionEffect = "";
+        impulseName = "";
+        impulseEffect = "";
+        dismissalName = "";
+        dismissalEffect = "";
+        arcanaImageUrl = "";
     }
 
     //effect per aggiornamento dinamico dei dati
@@ -98,7 +107,7 @@
 </script>
 
 <!-- Container -->
-<div class="flex flex-row gap-10">
+<div class="flex flex-row gap-5">
     <!-- Generatore -->
     <Card.Root class="w-150 bg-cafe_noir-700 border-0">
         <Card.Header> 
