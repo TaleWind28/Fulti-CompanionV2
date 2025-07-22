@@ -15,7 +15,10 @@
     <span class=" flex -ml-72  ">
         <AccessoryGenerator></AccessoryGenerator>
     </span>
-        
+
     <!-- Generatore di Arcana -->
-    <ArcanaGenerator></ArcanaGenerator>
+    <span class="flex -ml-20 ">
+        <ArcanaGenerator></ArcanaGenerator>
+    </span>
+    
 </div>

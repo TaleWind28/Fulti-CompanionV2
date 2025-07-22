@@ -143,7 +143,7 @@
     <div>
         <div id="equipaggiamento" class="bg-white border h-auto">
             <!-- intestazione tabella -->
-        <div class="bg-cafe_noir-700 grid grid-cols-6">
+            <div class="bg-cafe_noir-700 grid grid-cols-6">
             <p class="col-span-1 px-2">
                 {equipName}
                 {#if isMartial}
@@ -160,7 +160,7 @@
         <!-- Corpo Tabella -->
         <div class="flex">
             <div class="flex-shrink-0">
-                <ImageUploader2 padre="weaponGenerator" dimensions={"w-25 h-25 border-r"} fill={true} bind:imageUrl = {equipImageUrl}/>
+                <ImageUploader2 padre="shieldGenerator" dimensions={"w-25 h-25 border-r"} fill={true} bind:imageUrl = {equipImageUrl}/>
             </div>
             <div class="flex-1">
                 <div class="justify-around bg-cafe_noir-800 flex ">

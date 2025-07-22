@@ -1,6 +1,6 @@
 <script lang="ts">
     import * as Select from "$lib/components/ui/select/index.js";
-    import * as Card from "$lib/components/ui/card/index.js"     
+    import * as Card from "$lib/components/ui/card/index.js";     
     import ImageUploader2 from "./imageUploader2.svelte";
     import { exportHtmlToImage } from "$lib/utils";
     import Fa from "svelte-fa";
