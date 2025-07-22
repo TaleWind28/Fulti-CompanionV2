@@ -127,8 +127,7 @@
                 <!-- Descrizione -->
                 <span class="gap-2 flex flex-col">
                     <Label>Descrizione</Label>
-                    <Textarea bind:value={description}>
-                    </Textarea>
+                    <Input bind:value={description}/>
                 </span>
 
                 <!-- Fusione -->
@@ -207,26 +206,25 @@
 
         <!-- Immagine Scaricabile-->
         <div id="arcanum" class="bg-white border h-auto">
-            <span class="flex flex-row">
 
-                <ImageUploader2 padre="arcanaGenerator" dimensions={"w-50 h-40 border-r border-b"} fill={true} bind:imageUrl = {arcanaImageUrl}/>
-                
-                <span class="flex flex-col w-full">
-                    <!-- Nome Arcanum -->
-                    <p class="bg-cafe_noir-700 px-2 w-full">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <ImageUploader2 padre="arcanumGenerator" dimensions={"w-20 h-20 border-r border-b"} fill={true} bind:imageUrl = {arcanaImageUrl}/>
+                </div>
+                <div class="flex-1">
+                    <div class="bg-cafe_noir-700">
                         {requestedData.arcanaName}
-                    </p>
-                    <!-- Domini -->
-                    <p class="bg-cafe_noir-800 px-2 w-full">
-                        {requestedData.domain}
-                    </p>
-                    <!-- Descrizione -->
-                    <div class="bg-white break-words px-2 w-150">
+                    </div>
+                    <div class="items-center justify-start px-2 bg-cafe_noir-800 flex w-150 break-words">
                         {requestedData.description}
                     </div>
-                    
-                </span>
-            </span>
+                    <hr>
+                    <div class="px-2">
+                        {requestedData.domain}
+                    </div>
+                </div>
+            </div>
+
 
             <!-- Fusione -->
             <div>
