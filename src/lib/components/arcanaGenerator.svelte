@@ -5,14 +5,11 @@
     import { Button } from "./ui/button";
     import Label from "./ui/label/label.svelte";
     import Checkbox from "./ui/checkbox/checkbox.svelte";
-  import { validatePassword } from "firebase/auth";
-  import Fa from "svelte-fa";
-  import { faDownload, faFileExport } from "@fortawesome/free-solid-svg-icons";
-  import { exportHtmlToImage } from "$lib/utils";
-  import ImageUploader2 from "./imageUploader2.svelte";
-
-    let rework = $state(false);
-
+    import Fa from "svelte-fa";
+    import { faDownload, faFileExport } from "@fortawesome/free-solid-svg-icons";
+    import { exportHtmlToImage } from "$lib/utils";
+    import ImageUploader2 from "./imageUploader2.svelte";
+  import { onMount } from "svelte";
 
     //Arcana markdown Variables
     let arcanaName = $state("");
@@ -25,19 +22,23 @@
     let dismissalName = $state("");
     let dismissalEffect = $state("");
     let arcanaImageUrl = $state("");
-
+    let rework = $state(false);
 
     //rtt al server per i dati da mettere nel processore
     let requestedData = $state({
-        displayArcanaName:"Arcanum Senza Nome",
-        displayDescription:"Nessuna Descrizione",
-        displayDomains:"Nessun Dominio",
-        displayFusionName:"",
-        displayFusionEffect:"Nessun Beneficio di Fusione",
-        displayImpulseName:"",
-        displayImpulseEffect:"Nessun Effetto di Impulso",
-        displayDismissalName:"",
-        displayDismissalEffect:"Nessun Beneficio di Congedo"
+        arcanaName:"",
+        description:"",
+        domain:"",
+        fusionName:"",
+        fusionEffect:"",
+        impulseName:"",
+        impulseEffect:"",
+        dismissalName:"",
+        dismissalEffect:""
+    })
+
+    onMount(async ()=>{
+        calculateParams();
     })
 
 
@@ -54,10 +55,50 @@
         
     }
 
+    //effect per aggiornamento dinamico dei dati
+    $effect( ()=>{
+        calculateParams();
+    });
+
+    async function calculateParams(){
+        try{
+            //Richiesta HTTP
+            const response = await fetch('/api/arcanaGenerator', {
+                method:'POST',
+                headers:{
+                    'Content-Type': 'application/json',
+                },
+                body:JSON.stringify({
+                    arcanaName,
+                    description,
+                    domain,
+                    fusionName,
+                    fusionEffect,
+                    impulseName,
+                    impulseEffect,
+                    dismissalName,
+                    dismissalEffect
+                })
+            });
+
+            //Risposta HTTP
+            const result = await response.json();
+            
+            if(result.success){
+                requestedData = result.data;
+                console.log(result.data);
+
+            }
+        }
+        catch(error){
+
+        }
+    }
+
 </script>
 
 <!-- Container -->
-<div class="flex flex-row gap-10">
+<div class="flex flex-row gap-5">
     <!-- Generatore -->
     <Card.Root class="w-150 bg-cafe_noir-700 border-0">
         <Card.Header> 
@@ -86,7 +127,8 @@
                 <!-- Descrizione -->
                 <span class="gap-2 flex flex-col">
                     <Label>Descrizione</Label>
-                    <Input bind:value={description}/>
+                    <Textarea bind:value={description}>
+                    </Textarea>
                 </span>
 
                 <!-- Fusione -->
@@ -168,30 +210,34 @@
             <span class="flex flex-row">
                 <ImageUploader2 padre="arcanaGenerator" dimensions={"w-50 h-40 border-r border-b"} fill={true} bind:imageUrl = {arcanaImageUrl}/>
                 <span class="flex flex-col w-full">
-                    <p class="bg-cafe_noir-700">
-                        {requestedData.displayArcanaName}
+                    <!-- Nome Arcanum -->
+                    <p class="bg-cafe_noir-700 px-2">
+                        {requestedData.arcanaName}
                     </p>
-                    <p class="bg-cafe_noir-800">
-                        {requestedData.displayDescription}
+                    <!-- Domini -->
+                    <p class="bg-cafe_noir-800 px-2">
+                        {requestedData.domain}
                     </p>
-                    <p>
-                        {requestedData.displayDomains}
-                    </p>
+                    <!-- Descrizione -->
+                    <div class="bg-white break-words w-full h-full px-2">
+                        {requestedData.description}
+                    </div>
+                    
                 </span>
             </span>
 
             <!-- Fusione -->
             <div>
                 <span class="flex flex-row">
-                    <p class="bg-cafe_noir-700 text-white w-auto">
+                    <p class="bg-cafe_noir-700 text-white w-auto px-2">
                         Fusione
                     </p>
-                    <p class="bg-cafe_noir-900 w-full">
-                        {requestedData.displayFusionName}
+                    <p class="bg-cafe_noir-800 w-full px-2">
+                        {requestedData.fusionName}
                     </p>
                 </span>
                     <div class="px-2 break-words w-150">
-                        {requestedData.displayFusionEffect}
+                        {requestedData.fusionEffect}
                     </div>
             </div>
 
@@ -199,15 +245,15 @@
             {#if rework}
                 <div>
                     <span class="flex flex-row">
-                        <p class="bg-cafe_noir-700 text-white w-auto">
+                        <p class="bg-cafe_noir-700 text-white w-auto px-2">
                             Impulso
                         </p>
-                        <p class="bg-cafe_noir-900 w-full">
-                            {requestedData.displayImpulseName}
+                        <p class="bg-cafe_noir-800 w-full px-2">
+                            {requestedData.impulseName}
                         </p>
                     </span>
                     <div class="px-2 break-words w-150">
-                        {requestedData.displayImpulseEffect}
+                        {requestedData.impulseEffect}
                     </div>
                 </div>
             {/if}
@@ -215,15 +261,15 @@
             <!-- Congedo -->
             <div>
                 <span class="flex flex-row">
-                    <p class="bg-cafe_noir-700 text-white w-auto">
+                    <p class="bg-cafe_noir-700 text-white w-auto px-2">
                         Congedo
                     </p>
-                    <p class="bg-cafe_noir-900 w-full">
-                        {requestedData.displayDismissalName}
+                    <p class="bg-cafe_noir-800 w-full">
+                        {requestedData.dismissalName}
                     </p>
                 </span>
                 <div class="px-2 break-words w-150">
-                    {requestedData.displayDismissalEffect}
+                    {requestedData.dismissalEffect}
                 </div>            
             </div>
             
