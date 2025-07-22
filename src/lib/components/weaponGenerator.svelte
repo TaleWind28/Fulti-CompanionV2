@@ -18,6 +18,7 @@
     onMount(async () => {
         try {
             console.log("initialFetch");
+            //recupero i dati dal db
             const response = await fetch('/api/weaponGenerator');
             const data = await response.json();
             //array di dati per personalizzare l'arma
@@ -29,7 +30,7 @@
             //arma di default
             weapon = "Martello di Ferro";
             //invocazione di base per dare un default
-            calculateResults()
+            calculateParams()
         } catch (error) {
             console.error('Errore nel caricamento dati:', error);
         }
@@ -105,7 +106,7 @@
 
     //effect per aggiornamento dinamico dei dati nell'imageProcessor
     $effect(()=>{
-        calculateResults();
+        calculateParams();
     })
 
     async function handleExport() {
@@ -132,7 +133,7 @@
     }
 
 
-    async function calculateResults() {
+    async function calculateParams() {
         if (!weapon) return;
         try {
             //richiesta HTTP
@@ -211,7 +212,7 @@
         weaponImageUrl = "";
         damageType = "fisico";
         isMartial = false;
-        calculateResults();
+        calculateParams();
     }
     $inspect(weapon,"arma selezionata");
     $inspect(attr1,"attr1");

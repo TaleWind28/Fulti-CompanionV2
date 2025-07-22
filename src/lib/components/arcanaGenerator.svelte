@@ -98,7 +98,7 @@
 </script>
 
 <!-- Container -->
-<div class="flex flex-row gap-5">
+<div class="flex flex-row gap-10">
     <!-- Generatore -->
     <Card.Root class="w-150 bg-cafe_noir-700 border-0">
         <Card.Header> 
@@ -208,18 +208,20 @@
         <!-- Immagine Scaricabile-->
         <div id="arcanum" class="bg-white border h-auto">
             <span class="flex flex-row">
+
                 <ImageUploader2 padre="arcanaGenerator" dimensions={"w-50 h-40 border-r border-b"} fill={true} bind:imageUrl = {arcanaImageUrl}/>
+                
                 <span class="flex flex-col w-full">
                     <!-- Nome Arcanum -->
-                    <p class="bg-cafe_noir-700 px-2">
+                    <p class="bg-cafe_noir-700 px-2 w-full">
                         {requestedData.arcanaName}
                     </p>
                     <!-- Domini -->
-                    <p class="bg-cafe_noir-800 px-2">
+                    <p class="bg-cafe_noir-800 px-2 w-full">
                         {requestedData.domain}
                     </p>
                     <!-- Descrizione -->
-                    <div class="bg-white break-words w-full h-full px-2">
+                    <div class="bg-white break-words px-2 w-150">
                         {requestedData.description}
                     </div>
                     
