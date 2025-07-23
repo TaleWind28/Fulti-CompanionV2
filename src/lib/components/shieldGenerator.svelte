@@ -7,9 +7,10 @@
     import { faDownload, faFileExport } from "@fortawesome/free-solid-svg-icons";
     import { Button } from "./ui/button";
     import { Label } from "./ui/label";
-    import type { Quality } from "$lib";
+    import type { Armor, Quality, Shield } from "$lib";
     import Input from "./ui/input/input.svelte";
     import Textarea from "./ui/textarea/textarea.svelte";
+    import { onMount } from "svelte";
 
     let equipName = $state("");
     //imageProcessor
@@ -22,19 +23,34 @@
     let customQuality = $state("");
 
 
-    const baseQualities:Quality[] = $state([]);
+    let baseQualities:Quality[] = $state([]);
     let baseQuality = $state("");
 
-    let equip = $state("");
-    let baseEquipment:any = $state([]);
+    let equip = $state(""); //equipaggiamento attualmente selezionato
+    let baseEquipment:(Shield | Armor)[] = $state([]);
 
+  
 
+     onMount(async () => {
+        try {
+            console.log("initialFetch");
+            //recupero i dati dal db
+            const response = await fetch('/api/shieldGenerator');
+            const data = await response.json();
+            console.log(data);
+            //array di dati per personalizzare l'arma
+            baseQualities = data.qualities;
+            baseEquipment = data.equipment;
+        } catch (error) {
+            console.error('Errore nel caricamento dati:', error);
+        }
+    });
     const triggerEquipment = $derived(
-        baseEquipment.find((eq:any)=> eq.value === equip)?.label ?? "Scegli un'equipaggiamento"
+        baseEquipment.find((eq)=> eq.name === equip)?.name ?? "Scegli un'equipaggiamento"
     )
 
     const triggerQuality = $derived(
-        baseQualities.find((q)=> q.value === baseQuality)?.label ?? "Scegli una qualità"
+        baseQualities.find((q)=> q.name === baseQuality)?.name ?? "Scegli una qualità"
     );
     function handleExport(){
         return;
@@ -60,6 +76,13 @@
 
                 <!-- Equipaggiamento, Qualità Standard e Nome equipaggiamento -->
                 <div class="flex flex-row gap-5 items-center">
+
+                     <!-- Nome Equipaggiamento -->
+                    <span class="flex flex-col gap-2 ">
+                        <Label for="nome_arma">Nome</Label>
+                        <Input type="text" id="nome_arma" placeholder="Nome Arma" bind:value={equipName}/>
+                    </span>
+
                     <!-- Equipaggiamenti-->
                     <span class="flex flex-col gap-2 ">
                         <Label for="arma_base">Armatura/Scudo</Label>
@@ -92,13 +115,13 @@
                             </Select.Trigger>
                             <Select.Content>
                                 <Select.Group >
-                                    {#each baseQualities as quality (quality.value)}
+                                    {#each baseQualities as quality (quality.name)}
                                         <Select.Item
-                                        value={quality.value}
-                                        label={quality.value}
-                                        disabled={quality.value==="Armatura" || quality.value ==="Scudo"}
+                                        value={quality.name}
+                                        label={quality.name}
+                                        disabled={quality.name==="Offensive" || quality.name ==="Difensive" || quality.name === "Potenziamento"}
                                         >
-                                            {quality.value}
+                                            {quality.name}
                                         </Select.Item>
                                     {/each}
                                 </Select.Group>
@@ -106,11 +129,7 @@
                         </Select.Root>
                     </span>
 
-                    <!-- Nome Equipaggiamento -->
-                    <span class="flex flex-col gap-2 ">
-                        <Label for="nome_arma">Nome</Label>
-                        <Input type="text" id="nome_arma" placeholder="Nome Arma" bind:value={equipName}/>
-                    </span>
+                   
                 </div>
 
                 <!-- Qualità custom e Costo -->

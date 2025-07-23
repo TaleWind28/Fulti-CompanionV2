@@ -1,0 +1,19 @@
+[
+    {
+        "name":"Scudo di Bronzo",
+        "def": 2,
+        "mdef":0,
+        "quality":"Nessuna Qualità",
+        "martial":false,
+        "price":100
+        
+    },
+    {
+        "name":"Scudo Runico",
+        "def": 2,
+        "mdef":2,
+        "quality":"Nessuna Qualità",
+        "martial":false,
+        "price":150
+    }
+]

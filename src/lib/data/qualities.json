@@ -1,6 +1,33 @@
-[
-    {"value":"Antistatus", "label":"PippoBaudo", "effect":"pino", "price":100},
-    {"value":"q2", "label":"PippoBudo", "effect":"ino", "price":10},
-    {"value":"q3", "label":"PippoBdo", "effect":"pin", "price":1},
-    {"value":"q4", "label":"PippoBau", "effect":"pno", "price":20}
-]
+{
+    "offensive":
+    [
+        {"name":"Magica", "effect":"L'arma bersaglia la difesa magica invece della difesa", "price":100},
+        {"name":"Cacciatrice", "effect":"L'arma infligge 5 danni extra alle creature di una determinata Specie", "price":300},
+        {"name":"Perforante", "effect":"I danni inflitti dall'arma ignorano le resistenze", "price":400},
+        {"name":"Doppia Cacciatrice", "effect":"L'arma infligge 5 danni extra alle creature di due determinate Specie", "price":500},
+        {"name":"Multi", "effect":"Gli attacchi con l'arma hanno la proprietà multi(2)", "price":1000},
+        {"name":"Status", "effect":"Ciascun bersaglio colpito dall'arma subisce lo status(Scegliere tra confuso, scosso, debole, lento)", "price":1500},
+        {"name":"Status Plus", "effect":"Ciascun bersaglio colpito dall'arma subisce lo status(Scegliere tra avvelenato o furente)", "price":2000}
+    ],
+    "difensive":[
+        {"name":"Antistatus", "effect":"Sei immune ad un singolo Status", "price":500},
+        {"name":"Resistenza", "effect":"Sei Resistente ad un singolo tipo di danno(Eccetto Fisico)", "price":700},
+        {"name":"Amuleto", "effect":"Ottieni un bonus di +1 alla Difesa Magica", "price":800},
+        {"name":"Baluardo", "effect":"Ottiene un bonus di +1 alla Difesa", "price":800},
+        {"name":"Doppia Resistenza", "effect":"Sei Resistente ad un singolo tipo di danno(Eccetto Fisico)", "price":1000},
+        {"name":"Spezzasapde", "effect":"Sei resistente al danno Fisico", "price":1000},
+        {"name":"Immunità", "effect":"Sei immune ad un tipo di danno (eccetto Fisico)", "price":1500},
+        {"name":"Omniscudo", "effect":"Ottieni un bonus di +1 alla Difesa ed alla Difesa Magica", "price":2000},
+        {"name":"Salute Perfetta", "effect":"Sei immune ad OGNI status", "price":2000}
+
+    ],
+    "potenziamento":[
+        {"name":"Magia Plus", "effect":"Ottieni un bonus di +1 ai Test di Magia", "price":500},
+        {"name":"Precisione Plus", "effect":"Ottieni un bonus di +1 ai Test di Precisione", "price":1000},
+        {"name":"Vitalità Plus", "effect":"Quando recuperi vita, ne recuperi 5 addizionali", "price":1000},
+        {"name":"Guarigione Plus", "effect":"Gli incantesimi da te lanciati fanno recuperare 5 PV", "price":1500},
+        {"name":"Armi Plus", "effect":"I tuoi attacchi con arma (scegliere se mischia o Distanza) infliggono 5 danni extra", "price":2000},
+        {"name":"Incantesimi Plus", "effect":"Gli incantesimi da te lanciati che permettono di recuperare vita ne fanno recuperare 5 addizionali", "price":2000},
+        {"name":"Cambio Danno", "effect":"Tutto il danno che infliggi diventa di un tipo specifico", "price":500}
+    ]   
+}

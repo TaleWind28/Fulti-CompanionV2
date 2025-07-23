@@ -23,7 +23,7 @@
     let baseQuality = $state("");
 
     const triggerQuality = $derived(
-        baseQualities.find((q)=> q.value === baseQuality)?.label ?? "Scegli una qualità"
+        baseQualities.find((q)=> q.name === baseQuality)?.name ?? "Scegli una qualità"
     );
 
     function handleExport(){
@@ -64,13 +64,13 @@
                             </Select.Trigger>
                             <Select.Content>
                                 <Select.Group >
-                                    {#each baseQualities as quality (quality.value)}
+                                    {#each baseQualities as quality (quality.name)}
                                         <Select.Item
-                                        value={quality.value}
-                                        label={quality.value}
-                                        disabled={quality.value==="Armatura" || quality.value ==="Scudo"}
+                                        value={quality.name}
+                                        label={quality.name}
+                                        disabled={quality.name==="Offensive" || quality.name ==="Difensive" || quality.name === "Potenziamento"}
                                         >
-                                            {quality.value}
+                                            {quality.name}
                                         </Select.Item>
                                     {/each}
                                 </Select.Group>

@@ -1,0 +1,67 @@
+[
+    {
+        "name":"Camicia di Seta",
+        "def": "Taglia DES",
+        "mdef":"Taglia INT",
+        "quality":"Nessuna Qualità",
+        "martial":false,
+        "price":100
+        
+    },
+    {
+        "name":"Abito da Viaggio",
+        "def": "Taglia DES + 1",
+        "mdef":"Taglia INT + 1",
+        "quality":"Nessuna Qualità",
+        "martial":false,
+        "price":100
+    },
+        {
+        "name":"Tunica da Lotta",
+        "def": "Taglia DES + 2",
+        "mdef":"Taglia INT",
+        "quality":"Nessuna Qualità",
+        "martial":false,
+        "price":150
+    },
+        {
+        "name":"Veste del Saggio",
+        "def": "Taglia DES + 1",
+        "mdef":"Taglia INT + 2",
+        "quality":"Nessuna Qualità",
+        "martial":false,
+        "price":200
+    },
+        {
+        "name":"Brigantina",
+        "def": "10",
+        "mdef":"Taglia INT",
+        "quality":"Nessuna Qualità",
+        "martial":true,
+        "price":150
+    },
+        {
+        "name":"Corazza di Bronzo",
+        "def": "11",
+        "mdef":"Taglia INT",
+        "quality":"Nessuna Qualità",
+        "martial":true,
+        "price":200
+    },
+    {
+        "name":"Corazza Runica",
+        "def": "11",
+        "mdef":"Taglia INT + 1",
+        "quality":"Nessuna Qualità",
+        "martial":true,
+        "price":250
+    },
+    {
+        "name":"Corazza d'Acciaio",
+        "def": "12",
+        "mdef":"Taglia INT",
+        "quality":"Nessuna Qualità",
+        "martial":true,
+        "price":300
+    }
+]

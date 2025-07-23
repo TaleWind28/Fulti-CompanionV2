@@ -112,3 +112,5 @@ function addCategoryToWeapons(){
     }
     return weaponWithCategory;
 }
+
+

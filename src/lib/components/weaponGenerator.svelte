@@ -50,7 +50,7 @@
     let attributes:SelectionItem[] = $state([]);
 
     // Variabili del form
-    let weapon = $state("");
+    let weapon = $state("");  //arma attualmente selezionata
     let baseQuality = $state("");
     let customQuality = $state("");
     let customCost = $state(0);
@@ -79,7 +79,7 @@
     //trigger per select
 
     const triggerQuality = $derived(
-        qualities.find((q)=> q.value === baseQuality)?.label ?? "Scegli una qualità"
+        qualities.find((q)=> q.name === baseQuality)?.name ?? "Scegli una qualità"
     );
 
     const triggerWeapon = $derived(
@@ -101,7 +101,7 @@
     //imageProcessor
     let quality = $derived.by(()=>{
         if(customQuality!=="")return customQuality
-        else return qualities.find((q)=> q.value === baseQuality)?.effect ?? "Nessuna Qualità";
+        else return qualities.find((q)=> q.name === baseQuality)?.effect ?? "Nessuna Qualità";
     });
 
     //effect per aggiornamento dinamico dei dati nell'imageProcessor
@@ -349,13 +349,13 @@
                     <Select.Content>
                         <Select.Group>
                             <Select.Label>Qualità Standard</Select.Label>
-                            {#each qualities as quality (quality.value)}
+                            {#each qualities as quality (quality.name)}
                                 <Select.Item
-                                value={quality.value}
-                                label={quality.label}
-                                disabled={quality.value === "grapes"}
-                                >
-                                    {quality.label}
+                                value={quality.name}
+                                label={quality.name}
+                                disabled={quality.name==="Offensive" || quality.name ==="Difensive" || quality.name === "Potenziamento"}
+                                        >
+                                    {quality.name}
                                 </Select.Item>
                             {/each}
                         </Select.Group>
