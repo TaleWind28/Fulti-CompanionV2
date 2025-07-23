@@ -17,13 +17,14 @@
     let cost = $state(0);
     let equipImageUrl = $state("");
     let quality = $state("");
-    let isMartial = $state(false);
+
     let customCost =$state(0);
     let customQuality = $state("");
 
     //dati da richiedere al Server
     let requestedData = $state({
-        tableRow:["DEF","MDEF","COST"],
+        equipName: "",
+        tableRow:["","",""],
         quality:"Nessuna Qualità",
         totalPrice:0
     })
@@ -33,10 +34,9 @@
 
     let equip = $state(""); //equipaggiamento attualmente selezionato
     let baseEquipment:(Shield | Armor)[] = $state([]);
+    
 
-  
-
-     onMount(async () => {
+    onMount(async () => {
         try {
             console.log("initialFetch");
             //recupero i dati dal db
@@ -46,6 +46,7 @@
             //array di dati per personalizzare l'arma
             baseQualities = data.qualities;
             baseEquipment = data.equipment;
+            calculateParams();
         } catch (error) {
             console.error('Errore nel caricamento dati:', error);
         }
@@ -54,9 +55,14 @@
         baseEquipment.find((eq)=> eq.name === equip)?.name ?? "Scegli un'equipaggiamento"
     )
 
+    let isMartial = $derived(
+        baseEquipment.find((eq)=>eq.name === equip)?.martial ?? false
+    )
+
     const triggerQuality = $derived(
         baseQualities.find((q)=> q.name === baseQuality)?.name ?? "Scegli una qualità"
     );
+
     function handleExport(){
         return;
     }
@@ -68,6 +74,40 @@
     function clearFields(){
         
     }
+
+    async function calculateParams(){
+        const respose = await fetch('/api/shieldGenerator',{
+            method:'POST',
+            headers:{
+                'Content-Type': 'application/json',
+            },
+            body:JSON.stringify({
+                equipName,
+                equip,
+                customCost,
+                quality,
+
+
+
+            })
+        })
+
+        //risposta HTTP 
+        const result = await respose.json();
+
+        if(result.success){
+            requestedData = result.data;
+            console.log(result.data);
+            equip = requestedData.equipName;
+        }
+    }
+
+
+    $effect(()=>{
+        calculateParams();
+    })
+
+    $inspect(isMartial);
 </script>
 
 <div class="flex gap-5 justify-evenly">
@@ -169,7 +209,7 @@
             <!-- intestazione tabella -->
             <div class="bg-cafe_noir-700 grid grid-cols-6">
             <p class="col-span-1 px-2">
-                {equipName}
+                {requestedData.equipName}
                 {#if isMartial}
                     <span class="text-red-600 " style="text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;">♦</span>
                 {/if}
