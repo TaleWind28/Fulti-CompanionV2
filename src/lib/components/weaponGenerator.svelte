@@ -66,7 +66,7 @@
     let weaponName = $state("");
     let weaponImageUrl = $state();
     let isMartial = $state(false);
-    let isImporting = $state(false);
+
 
     // Risultati dei calcoli del server
     let calculatedResults = $state({

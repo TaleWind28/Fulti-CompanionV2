@@ -15,13 +15,18 @@
     let equipName = $state("");
     //imageProcessor
     let cost = $state(0);
-    let dataRow = $derived(["7","5",cost+"z"]);
     let equipImageUrl = $state("");
     let quality = $state("");
     let isMartial = $state(false);
     let customCost =$state(0);
     let customQuality = $state("");
 
+    //dati da richiedere al Server
+    let requestedData = $state({
+        tableRow:["DEF","MDEF","COST"],
+        quality:"Nessuna Qualità",
+        totalPrice:0
+    })
 
     let baseQualities:Quality[] = $state([]);
     let baseQuality = $state("");
@@ -119,7 +124,7 @@
                                         <Select.Item
                                         value={quality.name}
                                         label={quality.name}
-                                        disabled={quality.name==="Offensive" || quality.name ==="Difensive" || quality.name === "Potenziamento"}
+                                        disabled={quality.name ==="Qualità Difensive" || quality.name === "Qualità di Potenziamento"}
                                         >
                                             {quality.name}
                                         </Select.Item>
@@ -183,19 +188,13 @@
             </div>
             <div class="flex-1">
                 <div class="justify-around bg-cafe_noir-800 flex ">
-                    {#each ["Def","*","MDef","*","costo"] as formula}
+                    {#each requestedData.tableRow as formula}
                         <p> {formula} </p>
                     {/each}
                 </div>
                 <hr>
-                <!-- <div class="flex flex-row items-center justify-between px-2 ">
-                    {#each calculatedResults.thirdRowElement as element }
-                        <p class="text-center"> {element} </p>
-                    {/each}
-                </div>
-                <hr> -->
                 <div class="px-2 break-words w-150">
-                    {quality}
+                    {requestedData.quality}
                 </div>
             </div>
         </div>

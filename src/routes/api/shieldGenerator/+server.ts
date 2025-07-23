@@ -6,7 +6,14 @@ import armor from '$lib/data/armor.json';
 // GET per ottenere i dati base (armi, qualità, ecc.)
 export async function GET() {
     //prende solo l'ultimo oggetto
-    console.log({...qualities.difensive,...qualities.potenziamento});
+    
+    const {offensive, ...rest} = qualities;
+    
+    const requested = [
+        {name:"Qualità Difensive",effect:"",price:0},...rest.difensive,
+        {name:"Qualità di Potenziamento",effect:"",price:0},...rest.potenziamento
+    ]
+    console.log(requested,"Request");
     return json({
         equipment:
         [
@@ -15,6 +22,6 @@ export async function GET() {
             {name:"Armatura",def:"",mdef:"",quality:"",martial:"",price:0},
             ...armor
         ],
-        qualities:{...qualities.difensive,...qualities.potenziamento}
+        qualities:requested
     })
 }
