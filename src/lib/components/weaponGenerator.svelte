@@ -21,9 +21,11 @@
             //recupero i dati dal db
             const response = await fetch('/api/weaponGenerator');
             const data = await response.json();
+            console.log(data,"risposta")
             //array di dati per personalizzare l'arma
             baseWeapons = data.baseWeapons;
             qualities = data.qualities;
+            // console.log(qualities,"assegnato");
             damageTypes = data.damageTypes;
             attributes = data.attributes;
             handNumber = data.handNumber;
@@ -35,6 +37,7 @@
             console.error('Errore nel caricamento dati:', error);
         }
     });
+    
 
     //variabile per evitare che effect impedisca di modificare manualmente i valori dopo aver selezionato l'arma;
     let oldWeapon = "";
@@ -217,6 +220,7 @@
     $inspect(weapon,"arma selezionata");
     $inspect(attr1,"attr1");
     $inspect(weaponImageUrl,"immagine");
+    $inspect(qualities,"qualità");
 </script>
 
 <div class="flex flex-row gap-5 justify-evenly">

@@ -26,7 +26,7 @@ export async function POST({ request }) {
 
         // Calcoli server-side
         const selectedWeapon = weapons.find(w => w.name === weapon);
-        const selectedQualityData = qualities.find(q => q.value === baseQuality);
+        const selectedQualityData = qualities.offensive.find(q => q.name === baseQuality);
         
         if (!selectedWeapon) {
             return json({ error: 'Arma non trovata' }, { status: 400 });
@@ -88,9 +88,11 @@ export async function POST({ request }) {
 // GET per ottenere i dati base (armi, qualità, ecc.)
 export async function GET() {
     let baseWeapons = addCategoryToWeapons();
+    let reqQualities = qualities.offensive;
+    // console.log(reqQualities,"richiesta");
     return json({
         baseWeapons,
-        qualities,
+        qualities:reqQualities,
         damageTypes,
         attributes,
         handNumber: [
