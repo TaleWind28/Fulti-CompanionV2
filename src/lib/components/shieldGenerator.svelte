@@ -77,7 +77,8 @@
         equip = "Camicia di Seta";
         baseQuality = "";
         customQuality ="";
-        customCost =0;
+        customCost = 0;
+        isRealCustomQuality = false;
         
     }
 
@@ -104,7 +105,10 @@
 
         if(result.success){
             requestedData = result.data;
-            if(requestedData.quality!== "Nessuna Qualità") customQuality = requestedData.quality;
+            if(requestedData.quality!== "Nessuna Qualità"){
+                isRealCustomQuality === false ? customCost = requestedData.totalPrice : "";
+                customQuality = requestedData.quality;
+            }
         }
     }
 
@@ -116,6 +120,7 @@
     $inspect(isMartial);
     $inspect(customQuality,"qualità Custom");
     $inspect(baseQualities,"qualità base");
+    $inspect(isRealCustomQuality);
 </script>
 
 <div class="flex gap-5 justify-evenly">
@@ -188,7 +193,7 @@
                     <!-- Qualità Custom -->
                     <span class="flex flex-col gap-4 w-full">
                         <Label> Qualità Personalizzata</Label>
-                        <Textarea bind:value={customQuality}></Textarea>
+                        <Textarea bind:value={customQuality} oninput = { ()=> isRealCustomQuality = customQuality.trim()!== ""}></Textarea>
                     </span>
                     <!-- Prezzo -->
                     <span class="flex flex-col gap-5 w-30 items-center">

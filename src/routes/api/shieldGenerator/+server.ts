@@ -39,23 +39,21 @@ export async function POST({request}) {
 
     let equipment = [...shields,...armor];
     let validQualities = [...qualities.difensive, ...qualities.potenziamento];
-    let selectedQuality:Quality | undefined ;
-
+    
     let selectedEquip = equipment.find((eq)=> eq.name === equip)
     //controllo che l'equipaggiamento esista, altrimenti ne forinsco uno di default
     if(selectedEquip === undefined) selectedEquip = armor[0];
     
     
 
+    let selectedQuality:Quality  = customQuality || {name:"",effect:"Nessuna Qualità", price:0};
     //se non ho qualità custom cerco in quelle standard a patto che ci siano
-    if(customQuality === undefined && quality!= undefined){
-        selectedQuality = validQualities.find((q)=>q.name === quality.name)
-    }else{
-        //altrimenti copio quella custom
-        selectedQuality = customQuality;
+    if(customQuality === undefined && quality!== undefined){
+        let found  = validQualities.find((q)=>q.name === quality.name)
+        found && (selectedQuality = found);
     }
-
-    if(selectedQuality === undefined) selectedQuality = {name:"",effect:"Nessuna Qualità", price:0};
+    
+    
     //calcolo il prezzo totale in base a qualità ed equipaggiamento
     let price = selectedEquip?.price+selectedQuality.price;
     //definisco la riga della tabella
