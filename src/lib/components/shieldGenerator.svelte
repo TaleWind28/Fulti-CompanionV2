@@ -13,14 +13,11 @@
     import { onMount } from "svelte";
 
     let equipName = $state("");
-    //imageProcessor
-    let cost = $state(0);
     let equipImageUrl = $state("");
-    let quality = $state("");
-
     let customCost =$state(0);
     let customQuality = $state("");
-
+    let isRealCustomQuality = $state(false);
+    
     //dati da richiedere al Server
     let requestedData = $state({
         equipName: "",
@@ -35,6 +32,20 @@
     let equip = $state(""); //equipaggiamento attualmente selezionato
     let baseEquipment:(Shield | Armor)[] = $state([]);
     
+
+    
+
+    const triggerEquipment = $derived(
+        baseEquipment.find((eq)=> eq.name === equip)?.name ?? "Scegli un'equipaggiamento"
+    )
+
+    let isMartial = $derived(
+        baseEquipment.find((eq)=>eq.name === equip)?.martial ?? false
+    )
+
+    const triggerQuality = $derived(
+        baseQualities.find((q)=> q.name === baseQuality)?.name ?? "Scegli una qualità"
+    );
 
     onMount(async () => {
         try {
@@ -52,17 +63,6 @@
             console.error('Errore nel caricamento dati:', error);
         }
     });
-    const triggerEquipment = $derived(
-        baseEquipment.find((eq)=> eq.name === equip)?.name ?? "Scegli un'equipaggiamento"
-    )
-
-    let isMartial = $derived(
-        baseEquipment.find((eq)=>eq.name === equip)?.martial ?? false
-    )
-
-    const triggerQuality = $derived(
-        baseQualities.find((q)=> q.name === baseQuality)?.name ?? "Scegli una qualità"
-    );
 
     function handleExport(){
         return;
@@ -73,13 +73,18 @@
     }
 
     function clearFields(){
+        equipName = "";
+        equip = "Camicia di Seta";
+        baseQuality = "";
+        customQuality ="";
+        customCost =0;
         
     }
 
     async function calculateParams(){
         let quality = baseQualities.find((q)=>q.name === baseQuality);
         let userQuality;
-        if(customQuality !== "") userQuality = {name:"customQuality",effect:customQuality,price:customCost}
+        if(customQuality !== "" && isRealCustomQuality) userQuality = {name:"customQuality",effect:customQuality,price:customCost}
         else userQuality = undefined;
         const response = await fetch('/api/shieldGenerator',{
             method:'POST',
@@ -99,7 +104,6 @@
 
         if(result.success){
             requestedData = result.data;
-            equip = requestedData.equipName;
             if(requestedData.quality!== "Nessuna Qualità") customQuality = requestedData.quality;
         }
     }
@@ -176,9 +180,7 @@
                                 </Select.Group>
                             </Select.Content>
                         </Select.Root>
-                    </span>
-
-                   
+                    </span>                   
                 </div>
 
                 <!-- Qualità custom e Costo -->
@@ -194,7 +196,6 @@
                         <Input id="price" type="number" min="0" class="w-20" bind:value={customCost}/>  
                     </span>
                 </div>
-                
 
             </Card.Content>
             <Card.Footer class="flex justify-center gap-10">

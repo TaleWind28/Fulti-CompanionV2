@@ -66,10 +66,12 @@ export async function POST({request}) {
     return json({
         success:true,
         data:{
+            equip,
             equipName,
             tableRow:formulaRow,
             quality:selectedQuality.effect,
             totalPrice: price,
+
 
         }
     })
