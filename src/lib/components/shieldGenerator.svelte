@@ -46,6 +46,7 @@
             //array di dati per personalizzare l'arma
             baseQualities = data.qualities;
             baseEquipment = data.equipment;
+            equip = "Camicia di Seta";
             calculateParams();
         } catch (error) {
             console.error('Errore nel caricamento dati:', error);
@@ -76,7 +77,11 @@
     }
 
     async function calculateParams(){
-        const respose = await fetch('/api/shieldGenerator',{
+        let quality = baseQualities.find((q)=>q.name === baseQuality);
+        let userQuality;
+        if(customQuality !== "") userQuality = {name:"customQuality",effect:customQuality,price:customCost}
+        else userQuality = undefined;
+        const response = await fetch('/api/shieldGenerator',{
             method:'POST',
             headers:{
                 'Content-Type': 'application/json',
@@ -84,21 +89,18 @@
             body:JSON.stringify({
                 equipName,
                 equip,
-                customCost,
                 quality,
-
-
-
+                customQuality:userQuality,
             })
         })
 
         //risposta HTTP 
-        const result = await respose.json();
+        const result = await response.json();
 
         if(result.success){
             requestedData = result.data;
-            console.log(result.data);
             equip = requestedData.equipName;
+            if(requestedData.quality!== "Nessuna Qualità") customQuality = requestedData.quality;
         }
     }
 
@@ -108,6 +110,8 @@
     })
 
     $inspect(isMartial);
+    $inspect(customQuality,"qualità Custom");
+    $inspect(baseQualities,"qualità base");
 </script>
 
 <div class="flex gap-5 justify-evenly">
@@ -125,7 +129,7 @@
                      <!-- Nome Equipaggiamento -->
                     <span class="flex flex-col gap-2 ">
                         <Label for="nome_arma">Nome</Label>
-                        <Input type="text" id="nome_arma" placeholder="Nome Arma" bind:value={equipName}/>
+                        <Input type="text" id="nome_arma" placeholder="Nome Equipaggiamento" bind:value={equipName}/>
                     </span>
 
                     <!-- Equipaggiamenti-->
@@ -155,7 +159,7 @@
                     <span class="flex flex-col gap-2 ">    
                         <Label for="arma_base">Qualità</Label>
                         <Select.Root type="single" name="arma_base" bind:value={baseQuality}>
-                            <Select.Trigger class="w-auto min-w-30">
+                            <Select.Trigger class="w-50 min-w-50">
                                 {triggerQuality}
                             </Select.Trigger>
                             <Select.Content>
@@ -205,10 +209,10 @@
     </div>
     <!--ImageProcessor -->
     <div>
-        <div id="equipaggiamento" class="bg-white border h-auto">
+        <div id="equipaggiamento" class="bg-white border-black h-auto">
             <!-- intestazione tabella -->
             <div class="bg-cafe_noir-700 grid grid-cols-6">
-            <p class="col-span-1 px-2">
+            <p class="col-span-1 px-2 w-25">
                 {requestedData.equipName}
                 {#if isMartial}
                     <span class="text-red-600 " style="text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;">♦</span>

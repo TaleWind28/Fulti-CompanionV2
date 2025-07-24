@@ -347,7 +347,7 @@
                 <span class="flex flex-col gap-2">
                     <Label>Qualità</Label>
                     <Select.Root type="single" name="qualità" bind:value = {baseQuality}>
-                    <Select.Trigger class="w-50 min-w-50">
+                    <Select.Trigger class="w-auto min-w-50">
                         {triggerQuality}
                     </Select.Trigger>
                     <Select.Content>
@@ -413,7 +413,7 @@
 
     <!-- ImageProcesor -->
     <div>
-        <div  id={"arma"} class="bg-white border h-auto ">
+        <div  id={"arma"} class="bg-white border-black h-auto ">
             <!-- Intestazione tabella -->
             <div class="bg-cafe_noir-700 grid grid-cols-6">
                 <p class="col-span-1 px-2">

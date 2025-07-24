@@ -14,8 +14,8 @@
         {"name":"Resistenza", "effect":"Sei Resistente ad un singolo tipo di danno(Eccetto Fisico)", "price":700},
         {"name":"Amuleto", "effect":"Ottieni un bonus di +1 alla Difesa Magica", "price":800},
         {"name":"Baluardo", "effect":"Ottiene un bonus di +1 alla Difesa", "price":800},
-        {"name":"Doppia Resistenza", "effect":"Sei Resistente ad un singolo tipo di danno(Eccetto Fisico)", "price":1000},
-        {"name":"Spezzasapde", "effect":"Sei resistente al danno Fisico", "price":1000},
+        {"name":"Doppia Resistenza", "effect":"Sei Resistente a due tipi di danno(Eccetto Fisico)", "price":1000},
+        {"name":"Spezzaspade", "effect":"Sei resistente al danno Fisico", "price":1000},
         {"name":"Immunità", "effect":"Sei immune ad un tipo di danno (eccetto Fisico)", "price":1500},
         {"name":"Omniscudo", "effect":"Ottieni un bonus di +1 alla Difesa ed alla Difesa Magica", "price":2000},
         {"name":"Salute Perfetta", "effect":"Sei immune ad OGNI status", "price":2000}

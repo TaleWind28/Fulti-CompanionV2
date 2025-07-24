@@ -212,9 +212,8 @@
     
     <!-- ImageProcessor -->
     <div>
-
         <!-- Immagine Scaricabile-->
-        <div id="arcanum" class="bg-white border h-auto">
+        <div id="arcanum" class="bg-white border-black h-auto">
 
             <div class="flex">
                 <div class="flex-shrink-0">

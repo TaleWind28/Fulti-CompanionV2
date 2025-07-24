@@ -3,6 +3,7 @@ import qualities from '$lib/data/qualities.json';
 import shields from '$lib/data/shield.json';
 import armor from '$lib/data/armor.json';
 import { success } from "zod";
+import type { Quality } from "$lib";
 
 // GET per ottenere i dati base (armi, qualità, ecc.)
 export async function GET() {
@@ -14,7 +15,7 @@ export async function GET() {
         {name:"Qualità Difensive",effect:"",price:0},...rest.difensive,
         {name:"Qualità di Potenziamento",effect:"",price:0},...rest.potenziamento
     ]
-    console.log(requested,"Request");
+
     return json({
         equipment:
         [
@@ -32,29 +33,40 @@ export async function POST({request}) {
     let {
         equipName,
         equip,
-        customCost,
-        quality
+        quality,
+        customQuality
     } = data
 
-    let equipment = [...shields,...armor]
+    let equipment = [...shields,...armor];
+    let validQualities = [...qualities.difensive, ...qualities.potenziamento];
+    let selectedQuality:Quality | undefined ;
+
     let selectedEquip = equipment.find((eq)=> eq.name === equip)
-    
+    //controllo che l'equipaggiamento esista, altrimenti ne forinsco uno di default
     if(selectedEquip === undefined) selectedEquip = armor[0];
-    let selectedQuality = [...qualities.difensive, ...qualities.potenziamento].find((q)=>q.name === quality)
     
+    
+
+    //se non ho qualità custom cerco in quelle standard a patto che ci siano
+    if(customQuality === undefined && quality!= undefined){
+        selectedQuality = validQualities.find((q)=>q.name === quality.name)
+    }else{
+        //altrimenti copio quella custom
+        selectedQuality = customQuality;
+    }
+
     if(selectedQuality === undefined) selectedQuality = {name:"",effect:"Nessuna Qualità", price:0};
-
-    let price = selectedEquip?.price+customCost+selectedQuality.price;
-
+    //calcolo il prezzo totale in base a qualità ed equipaggiamento
+    let price = selectedEquip?.price+selectedQuality.price;
+    //definisco la riga della tabella
     let formulaRow = [selectedEquip?.def+"",selectedEquip?.mdef+"",price+"z"];
-    console.log(selectedEquip);
+    
     if(equipName === undefined || equipName === null || equipName === "") equipName = selectedEquip.name;
-    console.log(equipName);
+    
     return json({
         success:true,
         data:{
             equipName,
-            
             tableRow:formulaRow,
             quality:selectedQuality.effect,
             totalPrice: price,

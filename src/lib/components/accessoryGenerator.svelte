@@ -17,7 +17,10 @@
     let customQuality = $state("");
     let customCost = $state(0);
     //sarà da fetchare
-    let calculations = $derived([cost+"z"])
+    let calculations = $state([{
+        price:cost+"z"
+    }]
+    );
 
     const baseQualities:Quality[] = $state([]);
     let baseQuality = $state("");
@@ -109,7 +112,7 @@
 
     <!-- ImageProcessor -->
     <div>
-        <div id="accessorio" class="bg-white border h-auto">
+        <div id="accessorio" class="bg-white border-black h-auto">
             <!-- Intestazione Tabella -->
             <div class="bg-cafe_noir-700 grid grid-cols-5">
                 <p class="col-span-4 px-2">
