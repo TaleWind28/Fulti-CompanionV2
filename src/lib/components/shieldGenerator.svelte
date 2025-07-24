@@ -2,7 +2,7 @@
     import * as Select from "$lib/components/ui/select/index.js";
     import * as Card from "$lib/components/ui/card/index.js"     
     import ImageUploader2 from "./imageUploader2.svelte";
-    import { exportHtmlToImage } from "$lib/utils";
+    import { blobUrlToBase64, downloadFile, exportHtmlToImage } from "$lib/utils";
     import Fa from "svelte-fa";
     import { faDownload, faFileExport } from "@fortawesome/free-solid-svg-icons";
     import { Button } from "./ui/button";
@@ -13,7 +13,7 @@
     import { onMount } from "svelte";
 
     let equipName = $state("");
-    let equipImageUrl = $state("");
+    let equipImageUrl = $state();
     let customCost =$state(0);
     let customQuality = $state("");
     let isRealCustomQuality = $state(false);
@@ -64,7 +64,27 @@
         }
     });
 
-    function handleExport(){
+    async function handleExport(){
+        console.log("ci sono");
+        if( equipImageUrl !== undefined)equipImageUrl = await blobUrlToBase64(equipImageUrl) as string
+        else equipImageUrl = undefined;
+        console.log("ci sono");
+        
+        const propEquipment = {
+            name:equip,
+            nickname:equipName,
+            def: requestedData.tableRow[0],
+            mdef:requestedData.tableRow[1],
+            quality: requestedData.quality,
+            martial:isMartial,
+            price:requestedData.totalPrice,
+            pic:equipImageUrl,
+            isMartial:isMartial
+        }
+        
+        const downloadableEquipment = JSON.stringify(propEquipment, null, 2);
+
+        downloadFile(downloadableEquipment,`${equipName.replace(/\s+/g, '') || 'equipaggiamento'}.json`,'application/json')
         return;
     }
     
