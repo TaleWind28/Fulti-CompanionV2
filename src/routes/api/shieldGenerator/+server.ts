@@ -41,8 +41,11 @@ export async function POST({request}) {
     let validQualities = [...qualities.difensive, ...qualities.potenziamento];
     
     let selectedEquip = equipment.find((eq)=> eq.name === equip)
-    //controllo che l'equipaggiamento esista, altrimenti ne forinsco uno di default
-    if(selectedEquip === undefined) selectedEquip = armor[0];
+    //se non ho trovato l'equipaggiamento ritorno un'errore
+    if (!selectedEquip) {
+        return json({ error: 'Arma non trovata' }, { status: 400 });
+    }
+
     
     
 

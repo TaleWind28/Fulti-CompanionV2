@@ -17,7 +17,7 @@
     let customQuality = $state("");
     let customCost = $state(0);
     //sarà da fetchare
-    let calculations = $state([{
+    let calculations = $derived([{
         price:cost+"z"
     }]
     );

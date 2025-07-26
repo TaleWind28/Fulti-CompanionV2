@@ -2,7 +2,7 @@
     import * as Select from "$lib/components/ui/select/index.js";
     import * as Card from "$lib/components/ui/card/index.js"     
     import ImageUploader2 from "./imageUploader2.svelte";
-    import { blobUrlToBase64, downloadFile, exportHtmlToImage } from "$lib/utils";
+    import { blobUrlToBase64, downloadFile, exportHtmlToImage, uploadFile } from "$lib/utils";
     import Fa from "svelte-fa";
     import { faDownload, faFileExport } from "@fortawesome/free-solid-svg-icons";
     import { Button } from "./ui/button";
@@ -11,6 +11,8 @@
     import Input from "./ui/input/input.svelte";
     import Textarea from "./ui/textarea/textarea.svelte";
     import { onMount } from "svelte";
+    import Menubar from "./ui/menubar/menubar.svelte";
+    import { EquipScheme } from "$lib/zod";
 
     let equipName = $state("");
     let equipImageUrl = $state();
@@ -32,9 +34,6 @@
     let equip = $state(""); //equipaggiamento attualmente selezionato
     let baseEquipment:(Shield | Armor)[] = $state([]);
     
-
-    
-
     const triggerEquipment = $derived(
         baseEquipment.find((eq)=> eq.name === equip)?.name ?? "Scegli un'equipaggiamento"
     )
@@ -65,10 +64,9 @@
     });
 
     async function handleExport(){
-        console.log("ci sono");
+
         if( equipImageUrl !== undefined)equipImageUrl = await blobUrlToBase64(equipImageUrl) as string
         else equipImageUrl = undefined;
-        console.log("ci sono");
         
         const propEquipment = {
             name:equip,
@@ -88,8 +86,28 @@
         return;
     }
     
-    function handleImport(){
+    async function handleImport(){
+        try{
+            const {name, content} = await uploadFile('.json');
+            const parsed = await JSON.parse(content);
+            const parsedEquip = EquipScheme.parse(parsed);
+            console.log(parsedEquip);
 
+
+            //parametri dell'equipaggiamento.
+            equip = parsedEquip.name;
+            equipName = parsedEquip.nickname || "";
+            customCost = parsedEquip.price;
+            customQuality = parsedEquip.quality;
+            isMartial = parsedEquip.martial;
+            isRealCustomQuality = true;
+            equipImageUrl = parsedEquip.pic;
+            calculateParams();
+        }
+        catch(error){
+            console.log(error);
+
+        }
     }
 
     function clearFields(){

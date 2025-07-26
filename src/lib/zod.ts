@@ -16,3 +16,36 @@ export const WeaponScheme = z.object({
     hands:z.string(),
     pic:z.string().optional()
 });
+
+
+export const ArmorScheme = z.object({
+    name:z.string(),
+    nickname:z.string().optional(),
+    def:z.string(),
+    mdef:z.string(),
+    quality:z.string(),
+    martial:z.boolean(),
+    price:z.number(),
+    pic:z.string().optional()
+})
+
+export const ShieldScheme = z.object({
+    name:z.string(),
+    nickname:z.string().optional(),
+    def:z.number(),
+    mdef:z.number(),
+    quality:z.string(),
+    martial:z.boolean(),
+    price:z.number(),
+    pic:z.string().optional()
+})
+
+export const EquipScheme = z.union([ArmorScheme, ShieldScheme]);
+
+
+export const AccessoryScheme = z.object({
+    name:z.string(),
+    nickname:z.string().optional(),
+    quality:z.string(), 
+    pic:z.string().optional()
+})
