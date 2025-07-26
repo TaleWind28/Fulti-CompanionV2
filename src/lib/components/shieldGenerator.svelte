@@ -143,8 +143,8 @@
 
         if(result.success){
             requestedData = result.data;
-            if(requestedData.quality!== "Nessuna Qualità"){
-                isRealCustomQuality === false ? customCost = requestedData.totalPrice : "";
+             if(requestedData.quality !== "Nessuna Qualità" && isRealCustomQuality === false){
+                customCost = requestedData.totalPrice;
                 customQuality = requestedData.quality;
             }
         }
@@ -154,11 +154,6 @@
     $effect(()=>{
         calculateParams();
     })
-
-    $inspect(isMartial);
-    $inspect(customQuality,"qualità Custom");
-    $inspect(baseQualities,"qualità base");
-    $inspect(isRealCustomQuality);
 </script>
 
 <div class="flex gap-5 justify-evenly">

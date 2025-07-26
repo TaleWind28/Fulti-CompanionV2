@@ -42,17 +42,3 @@ export async function POST({ request }){
 
     }
 }
-
-/*
-
- displayArcanaName:"Arcanum Senza Nome",
-        displayDescription:"Nessuna Descrizione",
-        displayDomains:"Nessun Dominio",
-        displayFusionName:"",
-        displayFusionEffect:"Nessun Beneficio di Fusione",
-        displayImpulseName:"",
-        displayImpulseEffect:"Nessun Effetto di Impulso",
-        displayDismissalName:"",
-        displayDismissalEffect:"Nessun Beneficio di Congedo"
-
-*/

@@ -21,11 +21,10 @@
             //recupero i dati dal db
             const response = await fetch('/api/weaponGenerator');
             const data = await response.json();
-            console.log(data,"risposta")
+            
             //array di dati per personalizzare l'arma
             baseWeapons = data.baseWeapons;
             qualities = data.qualities;
-            // console.log(qualities,"assegnato");
             damageTypes = data.damageTypes;
             attributes = data.attributes;
             handNumber = data.handNumber;
@@ -165,7 +164,6 @@
             
             if (result.success) {
                 calculatedResults = result.calculations;
-                console.log("vecchia:",oldWeapon,"nuova:", weapon);
                 // Aggiorna gli attributi solo se è stata selezionata un'altra arma
                 if (result.calculations.weaponData && oldWeapon != weapon) {
                     attr1 = result.calculations.weaponData.attr1;
@@ -184,7 +182,7 @@
             const {name, content} = await uploadFile('.json');
             const parsed = await JSON.parse(content);
             const parsedWeapon = WeaponScheme.parse(parsed);
-            console.log(parsedWeapon);
+
             weapon = parsedWeapon.name;
             weaponName = parsedWeapon.nickname !== undefined ? parsedWeapon.nickname : "" ;
             calculatedResults.cost = parsedWeapon.cost;
@@ -217,10 +215,6 @@
         isMartial = false;
         calculateParams();
     }
-    $inspect(weapon,"arma selezionata");
-    $inspect(attr1,"attr1");
-    $inspect(weaponImageUrl,"immagine");
-    $inspect(qualities,"qualità");
 </script>
 
 <div class="flex flex-row gap-5 justify-evenly">

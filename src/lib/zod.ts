@@ -45,7 +45,7 @@ export const EquipScheme = z.union([ArmorScheme, ShieldScheme]);
 
 export const AccessoryScheme = z.object({
     name:z.string(),
-    nickname:z.string().optional(),
     quality:z.string(), 
-    pic:z.string().optional()
+    pic:z.string().optional(),
+    price:z.number()
 })

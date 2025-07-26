@@ -2,7 +2,6 @@ import { json } from "@sveltejs/kit";
 import qualities from '$lib/data/qualities.json';
 import shields from '$lib/data/shield.json';
 import armor from '$lib/data/armor.json';
-import { success } from "zod";
 import type { Quality } from "$lib";
 
 // GET per ottenere i dati base (armi, qualità, ecc.)
@@ -46,22 +45,20 @@ export async function POST({request}) {
         return json({ error: 'Arma non trovata' }, { status: 400 });
     }
 
-    
-    
-
     let selectedQuality:Quality  = customQuality || {name:"",effect:"Nessuna Qualità", price:0};
+    
     //se non ho qualità custom cerco in quelle standard a patto che ci siano
     if(customQuality === undefined && quality!== undefined){
         let found  = validQualities.find((q)=>q.name === quality.name)
         found && (selectedQuality = found);
     }
     
-    
     //calcolo il prezzo totale in base a qualità ed equipaggiamento
     let price = selectedEquip?.price+selectedQuality.price;
     //definisco la riga della tabella
     let formulaRow = [selectedEquip?.def+"",selectedEquip?.mdef+"",price+"z"];
     
+    //passo il nome di degault se non ne viene fornito uno custom
     if(equipName === undefined || equipName === null || equipName === "") equipName = selectedEquip.name;
     
     return json({
