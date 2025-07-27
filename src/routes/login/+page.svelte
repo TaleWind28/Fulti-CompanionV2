@@ -12,13 +12,13 @@
 	import { CardTitle, CardDescription, CardContent, CardFooter } from "$lib/components/ui/card/index";
 	import { page } from "$app/state";
   	import { goto } from "$app/navigation";
-  	import { user } from "$lib/stores/user";
-  import { login, registerUser } from "$lib/firebase";
-    import { enhance } from "$app/forms";
-
+  	import { login, registerUser } from "$lib/firebase";
+	
 	let email = $state("");
 	let password = $state("");
 	let username = $state("");
+	
+	import * as Dialog from "$lib/components/ui/dialog/index.js";
 
 	
 	
