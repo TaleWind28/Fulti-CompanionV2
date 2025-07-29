@@ -21,10 +21,11 @@
             //recupero i dati dal db
             const response = await fetch('/api/weaponGenerator');
             const data = await response.json();
-            
+            console.log(data,"risposta")
             //array di dati per personalizzare l'arma
             baseWeapons = data.baseWeapons;
             qualities = data.qualities;
+            // console.log(qualities,"assegnato");
             damageTypes = data.damageTypes;
             attributes = data.attributes;
             handNumber = data.handNumber;
@@ -65,6 +66,7 @@
     let weaponName = $state("");
     let weaponImageUrl = $state();
     let isMartial = $state(false);
+    let isRealCustomQuality = $state(false);
 
 
     // Risultati dei calcoli del server
@@ -164,12 +166,17 @@
             
             if (result.success) {
                 calculatedResults = result.calculations;
+                console.log("vecchia:",oldWeapon,"nuova:", weapon);
                 // Aggiorna gli attributi solo se è stata selezionata un'altra arma
                 if (result.calculations.weaponData && oldWeapon != weapon) {
                     attr1 = result.calculations.weaponData.attr1;
                     attr2 = result.calculations.weaponData.attr2;
                     selectedHands = result.calculations.weaponData.hands;
                     oldWeapon = weapon;
+                }
+
+                if(!isRealCustomQuality && result.calculations.quality !== "Nessuna Qualità"){
+                    customQuality = result.calculations.quality;
                 }
             }
         } catch (error) {
@@ -182,7 +189,7 @@
             const {name, content} = await uploadFile('.json');
             const parsed = await JSON.parse(content);
             const parsedWeapon = WeaponScheme.parse(parsed);
-
+            console.log(parsedWeapon);
             weapon = parsedWeapon.name;
             weaponName = parsedWeapon.nickname !== undefined ? parsedWeapon.nickname : "" ;
             calculatedResults.cost = parsedWeapon.cost;
@@ -213,8 +220,13 @@
         weaponImageUrl = "";
         damageType = "fisico";
         isMartial = false;
+        isRealCustomQuality = false;
         calculateParams();
     }
+    $inspect(weapon,"arma selezionata");
+    $inspect(attr1,"attr1");
+    $inspect(weaponImageUrl,"immagine");
+    $inspect(qualities,"qualità");
 </script>
 
 <div class="flex flex-row gap-5 justify-evenly">
@@ -266,8 +278,8 @@
             <div class="flex flex-row gap-5 justify-between">
                 <!-- Tipo di danno -->
                 <span class="flex flex-col gap-2">
-                    <Label for="nome_arma">Tipo di danno</Label>
-                    <Select.Root type="single" name="favoriteFruit" bind:value={damageType}>
+                    <Label for="damage_type">Tipo di danno</Label>
+                    <Select.Root type="single" name="damage_type" bind:value={damageType}>
                         <Select.Trigger class="w-auto min-w-30">
                             {triggerDamageType}
                         </Select.Trigger>
@@ -289,8 +301,8 @@
 
                 <!-- Prima Caratteristica -->
                 <span class="flex flex-col gap-2">
-                    <Label for="nome_arma">Attr1</Label>
-                    <Select.Root type="single" name="favoriteFruit" bind:value={attr1}>
+                    <Label for="attr1">Attr1</Label>
+                    <Select.Root type="single" name="attr1" bind:value={attr1}>
                         <Select.Trigger class="w-auto min-w-30">
                             {triggerAttr1}
                         </Select.Trigger>
@@ -312,8 +324,8 @@
 
                 <!-- Seconda Caratteristica -->
                 <span class="flex flex-col gap-2">
-                    <Label for="nome_arma">Attr2</Label>
-                    <Select.Root type="single" name="favoriteFruit" bind:value={attr2}>
+                    <Label for="attr2">Attr2</Label>
+                    <Select.Root type="single" name="attr2" bind:value={attr2}>
                         <Select.Trigger class="w-auto min-w-30">
                             {triggerAttr2}
                         </Select.Trigger>
@@ -346,12 +358,12 @@
                     </Select.Trigger>
                     <Select.Content>
                         <Select.Group>
-                            <Select.Label>Qualità Standard</Select.Label>
+                            <Select.Label>Qualità Offensive</Select.Label>
                             {#each qualities as quality (quality.name)}
                                 <Select.Item
                                 value={quality.name}
                                 label={quality.name}
-                                disabled={quality.name==="Offensive" || quality.name ==="Difensive" || quality.name === "Potenziamento"}
+                                disabled={quality.name==="Qualità Offensive"}
                                         >
                                     {quality.name}
                                 </Select.Item>
@@ -388,7 +400,7 @@
             <div class="flex flex-row gap-30 justify-start w-full">
                 <span class="flex flex-col gap-4 w-full">
                     <Label> Qualità Personalizzata</Label>
-                    <Textarea bind:value={customQuality}>
+                    <Textarea bind:value={customQuality} oninput={()=>isRealCustomQuality = customQuality.trim()!==""}>
 
                     </Textarea>
                 </span>
