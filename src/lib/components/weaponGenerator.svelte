@@ -223,6 +223,7 @@
         isRealCustomQuality = false;
         calculateParams();
     }
+    
     $inspect(weapon,"arma selezionata");
     $inspect(attr1,"attr1");
     $inspect(weaponImageUrl,"immagine");

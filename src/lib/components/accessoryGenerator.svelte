@@ -12,9 +12,14 @@
     import Textarea from "./ui/textarea/textarea.svelte";
     import { onMount } from "svelte";
     import { AccessoryScheme } from "$lib/zod";
+    import { toast } from "svelte-sonner";
+    // import * as Dialog from "$lib/components/ui/dialog/index.js";
+    import * as Popover from "$lib/components/ui/popover/index.js";
+
+
+    let errorOccurred = $state(false);
 
     let accessoryName = $state("");
-    let cost = $state(0);
     let accessoryImageUrl = $state();
     let customQuality = $state("");
     let customCost = $state(0);
@@ -115,9 +120,15 @@
         console.log(data);
     });
 
-    $effect(()=>{
+    $effect(()=>{    
         calculateParams();
     })
+
+    //la funzione fa talmente riedre che potrei non farla
+    function displayError(error:string){
+        toast(error);
+    }
+
 </script>
 
 <div class=" flex gap-5 justify-evenly">
@@ -236,3 +247,9 @@
     </div>
     
 </div>
+
+<Button onclick = {()=>displayError("pulsante premuto")}></Button>
+
+<!-- <Popover.Root bind:open={errorOccurred}>
+  <Popover.Content>Place content for the popover here.</Popover.Content>
+</Popover.Root> -->

@@ -18,3 +18,7 @@
 >
 	{@render children?.()}
 </div>
+
+<Popover.Root>
+  <Popover.Content>Place content for the popover here.</Popover.Content>
+</Popover.Root>

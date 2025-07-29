@@ -10,7 +10,9 @@
   	import { user } from '$lib/stores/user';
 	import {  onAuthStateChanged } from 'firebase/auth';
 	import { auth, logout } from '$lib/firebase';
+	import { Toaster } from "$lib/components/ui/sonner/index.js";
 	import * as MenuBar from '$lib/components/ui/menubar/index';
+
   	
 		
 	let { children } = $props();
@@ -32,8 +34,11 @@
 
 
 <div class="flex flex-col h-screen">
+	<!-- top-left, top-center, top-right, bottom-left, bottom-center, bottom-right -->
+	<Toaster position="top-center"/>
 	<!-- Header del sito -->
 	{#if page.url.pathname !== '/login'}
+
 		<header class="flex items-center justify-between px-8 py-4 bg-caribbean_current-500">
 
 			<!-- Logo a sinistra -->
@@ -101,4 +106,5 @@
 			<img src={poweredSrc} alt="Powered by Fabula Ultima" class="h-40">
 		</footer>
 	{/if}
+
 </div>
