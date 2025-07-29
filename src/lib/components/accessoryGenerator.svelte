@@ -13,11 +13,7 @@
     import { onMount } from "svelte";
     import { AccessoryScheme } from "$lib/zod";
     import { toast } from "svelte-sonner";
-    // import * as Dialog from "$lib/components/ui/dialog/index.js";
-    import * as Popover from "$lib/components/ui/popover/index.js";
 
-
-    let errorOccurred = $state(false);
 
     let accessoryName = $state("");
     let accessoryImageUrl = $state();
@@ -59,15 +55,21 @@
     }
     
     async function handleImport(){
-        const {name, content} = await uploadFile('.json');
-        const parsed = await JSON.parse(content);
-        const parsedAccessory = AccessoryScheme.parse(parsed);
+        try{
+            const {name, content} = await uploadFile('.json');
+            const parsed = await JSON.parse(content);
+            const parsedAccessory = AccessoryScheme.parse(parsed);
 
-        //parametri dell'accessorio
-        accessoryName = parsedAccessory.name;
-        accessoryImageUrl = parsedAccessory.pic;
-        customQuality = parsedAccessory.quality;
-        customCost = parsedAccessory.price;
+            //parametri dell'accessorio
+            accessoryName = parsedAccessory.name;
+            accessoryImageUrl = parsedAccessory.pic;
+            customQuality = parsedAccessory.quality;
+            customCost = parsedAccessory.price;
+        }
+        catch(error){
+            toast(error as string);
+        }
+        
 
     }   
 
@@ -247,8 +249,6 @@
     </div>
     
 </div>
-
-<Button onclick = {()=>displayError("pulsante premuto")}></Button>
 
 <!-- <Popover.Root bind:open={errorOccurred}>
   <Popover.Content>Place content for the popover here.</Popover.Content>
