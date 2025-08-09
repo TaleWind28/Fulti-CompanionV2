@@ -26,65 +26,63 @@ export const auth = getAuth(app);
 
 export const db = getFirestore(app);
 
-// Funzione per salvare il token nei cookie
-async function setAuthCookie(user: User) {
-  if (browser) {
+// Funzione helper per sincronizzare la sessione con il server
+async function syncSessionWithServer(user: User | null) {
+  if (user) {
+    // L'utente ha fatto il login, invia il token al server per creare il cookie
     const idToken = await user.getIdToken();
-    document.cookie = `__session=${idToken}; path=/; max-age=${5 * 24 * 60 * 60}; samesite=strict`;
+    await fetch('/api/session/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idToken })
+    });
+  } else {
+    // L'utente ha fatto il logout, dì al server di cancellare il cookie
+    await fetch('/api/session/logout', { method: 'POST' });
   }
 }
 
+// Funzione di Login AGGIORNATA
 export async function login(email:string, password:string){
-  if(email===null || password === null) return null;
+  if(email === null || password === null) return null;
 
-  const result  = await signInWithEmailAndPassword(auth, email,password);
-  // Salva il token per il server e aggiorna lo store
-  await setAuthCookie(result.user);
-  user.set(result.user);
+  const result = await signInWithEmailAndPassword(auth, email, password);
+  user.set(result.user); // Aggiorna lo store Svelte
+  await syncSessionWithServer(result.user); // Sincronizza con il server
 
   return result;
 }
 
+// Funzione di Registrazione AGGIORNATA
 export async function registerUser(email: string, password: string, username: string) {
-  try {
-    // Crea l'utente con email e password
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     
-    // Aggiorna il profilo con l'username
     if (username === null) throw new Error("invalid username");
     await updateProfile(userCredential.user, {
       displayName: username
     });
     
-    // Salva il token per il server e aggiorna lo store
-    await setAuthCookie(userCredential.user);
-    user.set(userCredential.user);
-    
+    user.set(userCredential.user); // Aggiorna lo store Svelte
+    await syncSessionWithServer(userCredential.user); // Sincronizza con il server
 
     return userCredential;
-  } catch (error) {
-    console.log(error,"errore");
-    throw error;    
-  }
 }
 
+// Funzione di Logout AGGIORNATA
 export async function logout() {
-  try {
-      await signOut(auth);
-
-    if (browser) {
-      // Rimuovi il cookie
-      document.cookie = '__session=; path=/; max-age=0';
-      user.set(null);
-    }
-      return true;
-  } catch (error) {
-      console.error("Errore durante il logout:", error);
-      throw error;
-  }
+    await signOut(auth); // Esegui il logout dal client Firebase
+    user.set(null); // Pulisci lo store Svelte
+    await syncSessionWithServer(null); // Sincronizza con il server (per cancellare il cookie)
+    return true;
 }
 
 
+// Questa parte è CRUCIALE per mantenere l'utente loggato al ricaricamento della pagina
+if (browser) {
+    onAuthStateChanged(auth, (currentUser) => {
+        user.set(currentUser);
+    });
+}
 export const loading :Writable<boolean>= writable(true);
 
 export const isAuthenticated = writable(false);
