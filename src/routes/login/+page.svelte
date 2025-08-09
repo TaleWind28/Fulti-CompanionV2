@@ -18,10 +18,6 @@
 	let password = $state("");
 	let username = $state("");
 	
-	import * as Dialog from "$lib/components/ui/dialog/index.js";
-
-	
-	
 	async function firebaseLogin(){
 		login(email,password)
 		.then(()=>goto('/'))
