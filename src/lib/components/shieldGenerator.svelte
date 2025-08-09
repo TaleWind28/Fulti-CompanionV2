@@ -13,6 +13,7 @@
     import { onMount } from "svelte";
     import Menubar from "./ui/menubar/menubar.svelte";
     import { EquipScheme } from "$lib/zod";
+    import { toast } from "svelte-sonner";
 
     let equipName = $state("");
     let equipImageUrl = $state();
@@ -77,7 +78,8 @@
             martial:isMartial,
             price:requestedData.totalPrice,
             pic:equipImageUrl,
-            isMartial:isMartial
+            isMartial:isMartial,
+            code:triggerEquipment.toLowerCase().includes("scudo") ?  1 : 2 
         }
         
         const downloadableEquipment = JSON.stringify(propEquipment, null, 2);
@@ -103,9 +105,19 @@
             isRealCustomQuality = true;
             equipImageUrl = parsedEquip.pic;
             calculateParams();
+
+            if (parsedEquip.code === 1 )toast.success("Scudo importato Correttamente!");
+            else toast.success("Armatura importata Correttamente!");
         }
         catch(error){
             console.log(error);
+            toast.error("Errore nell'importazione del file",{
+                description: "Il file selezionato non rappresenta nè uno scudo nè un'armatura Json",
+                action: {
+                    label: "OK",
+                    onClick: () => console.info("Undo")
+                }
+            });
 
         }
     }

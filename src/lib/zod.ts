@@ -14,7 +14,8 @@ export const WeaponScheme = z.object({
     quality:z.string(),
     range:z.string(),
     hands:z.string(),
-    pic:z.string().optional()
+    pic:z.string().optional(),
+    code:z.number()
 });
 
 
@@ -26,7 +27,8 @@ export const ArmorScheme = z.object({
     quality:z.string(),
     martial:z.boolean(),
     price:z.number(),
-    pic:z.string().optional()
+    pic:z.string().optional(),
+    code:z.number()
 })
 
 export const ShieldScheme = z.object({
@@ -37,7 +39,8 @@ export const ShieldScheme = z.object({
     quality:z.string(),
     martial:z.boolean(),
     price:z.number(),
-    pic:z.string().optional()
+    pic:z.string().optional(),
+    code:z.number()
 })
 
 export const EquipScheme = z.union([ArmorScheme, ShieldScheme]);
@@ -47,5 +50,14 @@ export const AccessoryScheme = z.object({
     name:z.string(),
     quality:z.string(), 
     pic:z.string().optional(),
-    price:z.number()
+    price:z.number(),
+    code:z.number()
 })
+
+
+/* codici per schemi zod
+    0 - Arma,
+    1 - Scudo,
+    2 - Armatura,
+    3 - Accessorio
+*/

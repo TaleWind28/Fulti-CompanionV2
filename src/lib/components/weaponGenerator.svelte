@@ -13,6 +13,7 @@
     import { blobUrlToBase64, downloadFile, exportHtmlToImage, uploadFile } from "$lib/utils";
     import Button from "./ui/button/button.svelte";
     import { WeaponScheme } from "$lib/zod";
+    import { toast } from "svelte-sonner";
     
     // Fetch dei dati iniziali
     onMount(async () => {
@@ -129,7 +130,8 @@
             range:calculatedResults.thirdRowElement[4],
             hands:calculatedResults.thirdRowElement[2],
             pic:weaponImageUrl,
-            isMartial:isMartial
+            isMartial:isMartial,
+            code:0
         }
         const downloadableWeapon = JSON.stringify(propWeapon, null, 2);
 
@@ -190,6 +192,7 @@
             const parsed = await JSON.parse(content);
             const parsedWeapon = WeaponScheme.parse(parsed);
             console.log(parsedWeapon);
+
             weapon = parsedWeapon.name;
             weaponName = parsedWeapon.nickname !== undefined ? parsedWeapon.nickname : "" ;
             calculatedResults.cost = parsedWeapon.cost;
@@ -201,9 +204,18 @@
             isMartial = parsedWeapon.isMartial !==undefined ? parsedWeapon.isMartial : false;
             weaponImageUrl = parsedWeapon.pic !== undefined ? parsedWeapon.pic : "";
             
+            toast.success("Arma importata Correttamente!");
         }
         catch(error){
-            console.log(error);
+            console.log(error,"\n numero toast: ",toast.getActiveToasts(), toast.dismiss());
+            ;
+            toast.error("Errore nell'importazione del file",{
+                description: "Il file selezionato non rappresenta un'arma Json",
+                action: {
+                    label: "OK",
+                    onClick: () => console.info("Undo")
+                }
+            });
         }
 
     }   

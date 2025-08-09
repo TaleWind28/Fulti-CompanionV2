@@ -35,7 +35,7 @@
 
 <div class="flex flex-col h-screen">
 	<!-- top-left, top-center, top-right, bottom-left, bottom-center, bottom-right -->
-	<Toaster position="top-center"/>
+	<Toaster position="top-center" expand = {true}  richColors />
 	<!-- Header del sito -->
 	{#if page.url.pathname !== '/login'}
 

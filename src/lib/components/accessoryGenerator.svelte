@@ -46,6 +46,7 @@
             price:requestedData.price,
             quality:requestedData.quality,
             pic:accessoryImageUrl,
+            code:3
         }
         
         const downloadableEquipment = JSON.stringify(propEquipment, null, 2);
@@ -58,16 +59,26 @@
         try{
             const {name, content} = await uploadFile('.json');
             const parsed = await JSON.parse(content);
+            console.log(parsed);
             const parsedAccessory = AccessoryScheme.parse(parsed);
+            if(parsed.code !== 3) throw new Error()
 
             //parametri dell'accessorio
             accessoryName = parsedAccessory.name;
             accessoryImageUrl = parsedAccessory.pic;
             customQuality = parsedAccessory.quality;
             customCost = parsedAccessory.price;
+
+            toast.success("Accessorio importato Correttamente!");
         }
         catch(error){
-            toast(error as string);
+            toast.error("Errore nell'importazione del file",{
+                description: "Il file selezionato non rappresenta un'accessorio Json",
+                action: {
+                    label: "OK",
+                    onClick: () => console.info("Undo")
+                }
+            });
         }
         
 
