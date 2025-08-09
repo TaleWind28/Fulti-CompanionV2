@@ -20,23 +20,25 @@ export async function load({ locals }) {
     // 4. Esegui la query a Firestore usando l'Admin SDK.
     // Esempio: recuperiamo una collezione chiamata 'tue-note' per questo utente.
     // La struttura del DB potrebbe essere: /utenti/{uid}/tue-note/{id-nota}
-    try {
-        const collectionRef = adminDB.collection('utenti').doc(uid).collection('tue-note');
-        const snapshot = await collectionRef.orderBy('createdAt', 'desc').get();
+    try {///users/l6aEYMp5iQbxX7ap7LhpjxMP5TP2/characters
+        const collectionRef = adminDB.collection('users').doc(uid).collection('characters');
+        const snapshot = await collectionRef.get();
+       
 
         // 5. Formatta i dati per passarli al componente Svelte.
         // `snapshot.docs` è un array, lo mappiamo per estrarre i dati.
-        const notes = snapshot.docs.map(doc => {
+        const characters = snapshot.docs.map(doc => {
             return {
                 id: doc.id,
                 ...doc.data()
             };
         });
-
+        console.log(characters);
         // 6. Restituisci i dati. Saranno disponibili nel componente Svelte tramite la prop `data`.
         return {
-            notes: notes,
-            userEmail: currentUser.email // Possiamo passare anche altri dati dell'utente
+            characters: characters,
+            userEmail: currentUser.email, // Possiamo passare anche altri dati dell'utente
+            uid:currentUser.uid
         };
 
     } catch (error) {
