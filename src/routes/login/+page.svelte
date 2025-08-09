@@ -30,7 +30,7 @@
 		.catch((error)=>{alert(error)});
 	}
 
-	let logo = "src/images/Logo5.1.png";
+	let logo = "images/Logo5.1.png";
 
 	let tabSelector = $derived(
 			{

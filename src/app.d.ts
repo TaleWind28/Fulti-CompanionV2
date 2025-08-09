@@ -5,7 +5,7 @@ declare global {
 		interface Locals {
 			user: {
 				uid: string;
-				email: string | null;
+				email: string | undefined;
 				displayName: string | null;
 			} | null;
 		}

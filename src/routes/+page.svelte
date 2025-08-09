@@ -49,7 +49,7 @@ const features = [
   
   <section class="text-center max-w-2xl">
       <h1 class="flex justify-center">
-          <img src="src/images/Logo5.1.png" alt="Logo" class="w-auto h-auto">
+          <img src="/images/Logo5.1.png" alt="Logo" class="w-auto h-auto">
       </h1>
       <p class=" font-semibold">Un compagno digitale per le tue avventure in Fabula Ultima</p>
       
