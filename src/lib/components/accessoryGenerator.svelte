@@ -137,11 +137,6 @@
         calculateParams();
     })
 
-    //la funzione fa talmente riedre che potrei non farla
-    function displayError(error:string){
-        toast(error);
-    }
-
 </script>
 
 <div class=" flex gap-5 justify-evenly">

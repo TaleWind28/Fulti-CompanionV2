@@ -1,29 +1,21 @@
-<!-- src/routes/dashboard/+page.svelte -->
-<script>
-    /** @type {import('./$types').PageData} */
-    export let data; // SvelteKit inietta automaticamente qui i dati restituiti dalla funzione `load`
+<script lang="ts">
+    import CharacterCard from '$lib/components/characterCard.svelte';
+    import type { PageData } from './$types';
+
+    let { data }: { data: PageData } = $props();
+	$inspect(data.characters,"dati", data,"dati2 ");
+
 </script>
 
-<h1>Dashboard</h1>
-<p>Benvenuto, {data.userEmail}!</p>
-
-<h1> {data.uid}</h1>
-
-<h2>Le tue note:</h2>
-
-{#if data.error}
-    <p style="color: red;">{data.error}</p>
-{/if}	
+<h1> pippo</h1>
 
 {#if data.characters && data.characters.length > 0}
-    <ul>
+    
         {#each data.characters as char}
-            <li>{char.name}</li>
-			<li>
-				{char.id}
-			</li>
+			<CharacterCard character={char}>
+
+			</CharacterCard>
         {/each}
-    </ul>
 {:else}
-    <p>Non hai ancora creato nessuna nota.</p>
+    <p>Non hai ancora creato nessuna Personaggio.</p>
 {/if}
