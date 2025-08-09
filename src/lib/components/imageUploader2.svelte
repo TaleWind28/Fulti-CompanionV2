@@ -1,5 +1,5 @@
 <script lang="ts">
-  import defaultImage from "/src/images/UploadImage.png";
+  import defaultImage from "/images/UploadImage.png";
 
   let {dimensions = "w-auto h-auto", fill=false, imageUrl = $bindable(), padre = $bindable()} = $props();
   
