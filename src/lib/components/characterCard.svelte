@@ -6,18 +6,18 @@
     $inspect(character);
 </script>
 
+<div>
+    <Card.Root> 
+        <Card.Header> 
+            {character.name}
+        </Card.Header>
+        <Card.Content> 
+            {character.id}
+            <a href="/characters/{character.id}"> {character.name}</a>
+        </Card.Content>
+        <Card.Footer>
 
-<Card.Root> 
-    <Card.Header> 
-        {character.name}
-    </Card.Header>
-    <Card.Content> 
-
-    </Card.Content>
-    <Card.Footer>
-
-    </Card.Footer>
-</Card.Root>
-
-
-
+        </Card.Footer>
+    </Card.Root>
+    <a href="/characters/{character.id}" class="card-link"> premimi</a>
+</div>

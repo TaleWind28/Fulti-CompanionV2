@@ -1,0 +1,54 @@
+// src/routes/characters/[characterId]/+page.server.ts
+import { adminDB } from '$lib/firebase_admin';
+import { error, redirect } from '@sveltejs/kit';
+import type { PageServerLoad } from './$types';
+import { FabulaUltimaCharacterScheme, type FabulaUltimaCharacter } from '$lib/zod.js';
+
+export const load: PageServerLoad = async ({ locals, params }) => {
+    // Guardia di sicurezza: l'utente deve essere loggato
+    if (!locals.user) {
+        throw redirect(303, '/login');
+    }
+
+    // 1. Ottieni l'ID del personaggio direttamente dall'URL
+    const characterId = params.characterId;
+    const uid = locals.user.uid;
+
+    try {
+        // 2. Interroga Firestore per ottenere UN SOLO documento
+        const docRef = adminDB.collection('users').doc(uid).collection('characters').doc(characterId);
+        const docSnap = await docRef.get();
+
+        // 3. Gestisci il caso in cui il personaggio non esista
+        if (!docSnap.exists) {
+            throw error(404, 'Personaggio non trovato'); // Lancia un errore 404
+        }
+
+        // 4. Valida i dati con Zod, come prima
+        const result = FabulaUltimaCharacterScheme.safeParse(docSnap.data());
+
+        if (!result.success) {
+            console.error(`Dati corrotti per il personaggio ${characterId}:`, result.error.flatten());
+            throw error(500, 'I dati di questo personaggio sono corrotti o illeggibili.');
+        }
+
+        // 5. Restituisci il singolo personaggio, includendo il suo ID
+        const characterData = {
+            id: docSnap.id,
+            ...result.data
+        };
+
+        return {
+            character: characterData
+        };
+
+    } catch (err:any) {
+        // Se l'errore non è quello che abbiamo lanciato noi, è un errore del server
+        if (err.status !== 404 && err.status !== 500) {
+           console.error("Errore del server nel caricare il personaggio:", err);
+           throw error(500, "Impossibile caricare il personaggio in questo momento.");
+        }
+        // Altrimenti, ri-lancia l'errore che abbiamo già creato (404 o 500)
+        throw err;
+    }
+};
