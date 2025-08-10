@@ -18,7 +18,6 @@
 	const form = superForm(data.form, {
 		validators: zod4Client(characterSchema),
 		taintedMessage:null,
-		SPA:true,
 		dataType: 'json',
 		onUpdated: ({ form: f }) => {
 			console.log("inviato");
@@ -57,7 +56,17 @@
 	{/if}
     
 
-	<form id="characterCreation" method="POST" use:enhance>
+	
+	<Dialog.Root open={openCreationDialog} onOpenChange={(v)=> {openCreationDialog=v}}>
+		
+		<Dialog.Content>
+			<Dialog.Header>
+      			<Dialog.Title>Nuovo Personaggio</Dialog.Title>
+				<Dialog.Description>
+					Dai un nome al tuo Eroe e scegli le sue prime classi.
+				</Dialog.Description>
+    		</Dialog.Header>
+			<form id="characterCreation" method="POST" use:enhance>
 				<Form.Field {form} name="name">
 					<Form.Control>
 						<Form.Label>Name</Form.Label>
@@ -89,29 +98,15 @@
 					</Form.Control>
 					<Form.FieldErrors />
 				</Form.Field>
-				<!-- Button DENTRO il form -->
-				<Form.Button form="characterCreation" type='submit'>Crea Personaggio</Form.Button>
 		</form>
-		
-	<!-- <Dialog.Root open={openCreationDialog} onOpenChange={(v)=> {openCreationDialog=v}}>
-		
-		<Dialog.Content>
-			<Dialog.Header>
-      			<Dialog.Title>Nuovo Personaggio</Dialog.Title>
-				<Dialog.Description>
-					Dai un nome al tuo Eroe e scegli le sue prime classi.
-				</Dialog.Description>
-    		</Dialog.Header>
-			
 			
 			
 			<Dialog.Footer>
-				<Form.Button form="characterCreation">
-					crea
+				<Form.Button form="characterCreation" type='submit'>
+					Crea Personaggio
 				</Form.Button>
 			</Dialog.Footer>
-			</form>
 		</Dialog.Content>
-	</Dialog.Root> -->
+	</Dialog.Root>
 
 </div>

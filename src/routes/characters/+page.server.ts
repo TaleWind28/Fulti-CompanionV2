@@ -59,32 +59,39 @@ export const actions: Actions = {
     default: async ({ request, locals }) => {
         console.log("ricevuto");
         const form = await superValidate(request, zod4(characterSchema));
+        console.log("superformato")
+
+        console.log(form.data,"formData",form.valid);
         
 		if (!form.valid) {
-			return fail(400, { form });
+			return fail(400, { form, message:'Form non valido' });
 		}
+        console.log("valido");
 
         const currentUser = locals.user;
-        
+        console.log("valido");
         if (!currentUser) {
             return fail(401, { form, message: 'Devi essere loggato per creare un personaggio.' });
         }
-
+        console.log("valido");
         const uid = currentUser.uid;
-		
+		console.log("pino");
         // Logica per salvare su DB...
-        const defaultCharacter = FabulaUltimaCharacterScheme.parse({});
-         const finalCharacterData = {
-            ...defaultCharacter,
-            ...form.data
-        };
+        const createdCharacter = FabulaUltimaCharacterScheme.parse({
+            name:form.data.name,
+            traits:{},
+            stats:{},
+            attributes:{},
+        });
+        console.log(createdCharacter,"default");
+        
          try {
             // 4. Salva l'oggetto COMPLETO nel database
             await adminDB
                 .collection('users')
                 .doc(uid)
                 .collection('characters')
-                .add(finalCharacterData); // Usa `finalCharacterData` invece di `form.data`
+                .add(createdCharacter); // Usa `finalCharacterData` invece di `form.data`
 
             console.log(`Personaggio completo salvato per l'utente ${uid}`);
 
@@ -92,9 +99,8 @@ export const actions: Actions = {
             console.error("Errore nel salvataggio del personaggio completo su Firestore:", err);
             return fail(500, { form, message: 'Impossibile salvare il personaggio nel database.' });
         }
-        
-       // console.log(defaultCharacter);
 
+console.log("valido");
 		return {form};
     }
 }
