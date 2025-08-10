@@ -3,7 +3,7 @@
 import { adminDB } from '$lib/firebase_admin'; // Importa l'istanza del DB admin
 import { characterSchema, FabulaUltimaCharacterScheme, type FabulaUltimaCharacter } from '$lib/zod.js';
 import { error, fail, redirect, type Actions } from '@sveltejs/kit';
-import { superValidate } from 'sveltekit-superforms';
+import { message, superValidate } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 
 
@@ -63,6 +63,7 @@ export const actions: Actions = {
 		if (!form.valid) {
 			return fail(400, { form });
 		}
+
         const currentUser = locals.user;
         
         if (!currentUser) {
@@ -94,6 +95,6 @@ export const actions: Actions = {
         
        // console.log(defaultCharacter);
 
-		return { form };
+		return {form};
     }
 }

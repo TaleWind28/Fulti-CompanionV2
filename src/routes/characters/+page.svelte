@@ -6,8 +6,8 @@
     import type { PageData } from './$types';
     import Input from '$lib/components/ui/input/input.svelte';
 	import * as Form from "$lib/components/ui/form/index.js";
-    import { superForm } from 'sveltekit-superforms';
-    import { zod4Client } from 'sveltekit-superforms/adapters';
+    import { message, superForm } from 'sveltekit-superforms';
+    import { zod4, zod4Client } from 'sveltekit-superforms/adapters';
     import { characterSchema } from '$lib/zod';
 
 
@@ -18,11 +18,15 @@
 	const form = superForm(data.form, {
 		validators: zod4Client(characterSchema),
 		taintedMessage:null,
+		SPA:true,
+		dataType: 'json',
 		onUpdated: ({ form: f }) => {
 			console.log("inviato");
 			if (f.valid) {
 				console.log("inviato");
 				openCreationDialog = false;
+				
+                toast.success("Personaggio creato con successo!");
 			}
 		}
 	});
@@ -31,7 +35,6 @@
 	let openCreationDialog = $state(false);
 	$inspect($formData)
 </script>
-
 
 <div class="p-5 flex flex-col gap-10 bg-cafe_noir-900 items-center justify-center">
     
@@ -55,7 +58,7 @@
     
 
 	<form id="characterCreation" method="POST" use:enhance>
-					<Form.Field {form} name="name">
+				<Form.Field {form} name="name">
 					<Form.Control>
 						<Form.Label>Name</Form.Label>
 						<Input bind:value={$formData.name} />
@@ -87,7 +90,7 @@
 					<Form.FieldErrors />
 				</Form.Field>
 				<!-- Button DENTRO il form -->
-				<Form.Button>Crea Personaggio</Form.Button>
+				<Form.Button form="characterCreation" type='submit'>Crea Personaggio</Form.Button>
 		</form>
 		
 	<!-- <Dialog.Root open={openCreationDialog} onOpenChange={(v)=> {openCreationDialog=v}}>
