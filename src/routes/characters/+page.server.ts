@@ -2,17 +2,10 @@
 
 import { adminDB } from '$lib/firebase_admin'; // Importa l'istanza del DB admin
 import { characterSchema, FabulaUltimaCharacterScheme, type FabulaUltimaCharacter } from '$lib/zod.js';
-import { error, fail, redirect } from '@sveltejs/kit';
+import { error, fail, redirect, type Actions } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms';
-import { zod4, type ZodValidationSchema } from 'sveltekit-superforms/adapters';
-import { z } from 'zod/v4';
+import { zod4 } from 'sveltekit-superforms/adapters';
 
-// const characterSchema = z.object({
-// 	name: z.string().min(3, { message: "Il nome deve contenere almeno 3 caratteri." }),
-// 	prima_classe: z.string().min(1, { message: "La prima classe è obbligatoria." }),
-// 	seconda_classe: z.string().min(1, { message: "La seconda classe è obbligatoria." }),
-// 	terza_classe: z.string().optional()
-// });
 
 
 export async function load({ locals }) {
@@ -31,7 +24,6 @@ export async function load({ locals }) {
         const characters = snapshot.docs
             .map(doc => {
                 // `safeParse` tenta di validare i dati del documento
-                console.log(doc.data());
                 const result = FabulaUltimaCharacterScheme.safeParse(doc.data());
                 
 
@@ -63,17 +55,45 @@ export async function load({ locals }) {
     }
 }
 
-// export const actions = {
-//     default: async ({ request }) => {
-//         const form = await superValidate(request, zod(formCharacterSchema));
+export const actions: Actions = {
+    default: async ({ request, locals }) => {
+        //console.log("entro");
+        const form = await superValidate(request, zod4(characterSchema));
+        
+		if (!form.valid) {
+			return fail(400, { form });
+		}
+        const currentUser = locals.user;
+        
+        if (!currentUser) {
+            return fail(401, { form, message: 'Devi essere loggato per creare un personaggio.' });
+        }
 
-// 		if (!form.valid) {
-// 			return fail(400, { form });
-// 		}
+        const uid = currentUser.uid;
+		
+        // Logica per salvare su DB...
+        const defaultCharacter = FabulaUltimaCharacterScheme.parse({});
+         const finalCharacterData = {
+            ...defaultCharacter,
+            ...form.data
+        };
+         try {
+            // 4. Salva l'oggetto COMPLETO nel database
+            await adminDB
+                .collection('users')
+                .doc(uid)
+                .collection('characters')
+                .add(finalCharacterData); // Usa `finalCharacterData` invece di `form.data`
 
-// 		console.log('Dati del personaggio (con Superforms):', form.data);
-// 		// Logica per salvare su DB...
+            console.log(`Personaggio completo salvato per l'utente ${uid}`);
 
-// 		return { form };
-//     }
-// }
+        } catch (err) {
+            console.error("Errore nel salvataggio del personaggio completo su Firestore:", err);
+            return fail(500, { form, message: 'Impossibile salvare il personaggio nel database.' });
+        }
+        
+       // console.log(defaultCharacter);
+
+		return { form };
+    }
+}

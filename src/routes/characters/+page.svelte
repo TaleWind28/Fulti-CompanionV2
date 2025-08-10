@@ -5,32 +5,33 @@
 	import * as Dialog from "$lib/components/ui/dialog/index.js";
     import type { PageData } from './$types';
     import Input from '$lib/components/ui/input/input.svelte';
-    import Label from '$lib/components/ui/label/label.svelte';
 	import * as Form from "$lib/components/ui/form/index.js";
     import { superForm } from 'sveltekit-superforms';
-    import { zod, zod4, zod4Client, zodClient } from 'sveltekit-superforms/adapters';
+    import { zod4Client } from 'sveltekit-superforms/adapters';
     import { characterSchema } from '$lib/zod';
+    import FormButton from '$lib/components/ui/form/form-button.svelte';
+    import { enhance } from '$app/forms';
 
 
     let { data }: { data: PageData } = $props();
-	$inspect(data.characters,"dati", data,"dati2 "); 
+	
 
-	 
-
-
-	 const form = superForm(data.form, {
+	const form = superForm(data.form, {
 		validators: zod4Client(characterSchema),
+		taintedMessage:null,
 		SPA: true,
 		onUpdated: ({ form: f }) => {
-				if (f.valid) {
-					openCreationDialog = false;
-				}
+			console.log("inviato");
+			if (f.valid) {
+				console.log("inviato");
+				openCreationDialog = false;
 			}
+		}
 	});
 
-	const { form: formData, enhance } = form;
+	const { form: formData } = form;
 	let openCreationDialog = $state(false);
-
+	$inspect($formData)
 </script>
 
 
@@ -55,7 +56,42 @@
 	{/if}
     
 
-	<Dialog.Root bind:open={openCreationDialog}>
+	<form id="characterCreation" method="POST" use:enhance>
+					<Form.Field {form} name="name">
+					<Form.Control>
+						<Form.Label>Name</Form.Label>
+						<Input bind:value={$formData.name} />
+					</Form.Control>
+					<Form.FieldErrors />
+				</Form.Field>
+
+				<Form.Field {form} name="prima_classe">
+					<Form.Control >
+						<Form.Label>Prima Classe</Form.Label>
+						<Input  bind:value={$formData.prima_classe} />
+					</Form.Control>
+					<Form.FieldErrors />
+				</Form.Field>
+
+				<Form.Field {form} name="seconda_classe">
+					<Form.Control >
+						<Form.Label>Seconda Classe</Form.Label>
+						<Input bind:value={$formData.seconda_classe} />
+					</Form.Control>
+					<Form.FieldErrors />
+				</Form.Field>
+
+				<Form.Field {form} name="terza_classe">
+					<Form.Control>
+						<Form.Label>Terza Classe</Form.Label>
+						<Input bind:value={$formData.terza_classe} />
+					</Form.Control>
+					<Form.FieldErrors />
+				</Form.Field>
+		</form>
+		<button type='submit' form="characterCreation"> vai</button>
+		
+	<!-- <Dialog.Root open={openCreationDialog} onOpenChange={(v)=> {openCreationDialog=v}}>
 		
 		<Dialog.Content>
 			<Dialog.Header>
@@ -64,68 +100,16 @@
 					Dai un nome al tuo Eroe e scegli le sue prime classi.
 				</Dialog.Description>
     		</Dialog.Header>
-			<!-- <div class="grid gap-4 py-4">
-				
-				<div class="grid grid-cols-4 items-center gap-4">
-					<Label for="name" class="text-right">Name</Label>
-					<Input id="name" value="3 Stelle" class="col-span-3" />
-				</div>
-
-				<div class="grid grid-cols-4 items-center gap-4">
-					<Label for="prima_classe" class="text-right">Prima Classe</Label>
-					<Input id="prima_classe" value="Maestro D'armi" class="col-span-3" />
-				</div>
-
-				<div class="grid grid-cols-4 items-center gap-4">
-					<Label for="seconda_classe" class="text-right">Seconda Classe</Label>
-					<Input id="seconda_classe" value="Elementalista" class="col-span-3" />
-				</div>
-
-				<div class="grid grid-cols-4 items-center gap-4">
-					<Label for="terza_classe" class="text-right">Terza Classe</Label>
-					<Input id="terza_classe" value="Entropista" class="col-span-3" />
-				</div>
-
-    		</div> -->
-
-			<form method="POST" use:enhance>
-				<Form.Field {form} name="name">
-				<Form.Control>
-					<Form.Label>Name</Form.Label>
-					<Input bind:value={$formData.name} />
-				</Form.Control>
-				<Form.FieldErrors />
-			</Form.Field>
-
-			<Form.Field {form} name="prima_classe">
-				<Form.Control >
-					<Form.Label>Prima Classe</Form.Label>
-					<Input  bind:value={$formData.prima_classe} />
-				</Form.Control>
-				<Form.FieldErrors />
-			</Form.Field>
-
-			<Form.Field {form} name="seconda_classe">
-				<Form.Control >
-					<Form.Label>Seconda Classe</Form.Label>
-					<Input bind:value={$formData.seconda_classe} />
-				</Form.Control>
-				<Form.FieldErrors />
-			</Form.Field>
-
-			<Form.Field {form} name="terza_classe">
-				<Form.Control>
-					<Form.Label>Terza Classe</Form.Label>
-					<Input bind:value={$formData.terza_classe} />
-				</Form.Control>
-				<Form.FieldErrors />
-			</Form.Field>
-
-			</form>	
+			
+			
+			
 			<Dialog.Footer>
-				<Button type="submit">Save changes</Button>
+				<Form.Button form="characterCreation">
+					crea
+				</Form.Button>
 			</Dialog.Footer>
+			</form>
 		</Dialog.Content>
-	</Dialog.Root>
+	</Dialog.Root> -->
 
 </div>

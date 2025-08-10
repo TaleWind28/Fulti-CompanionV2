@@ -65,36 +65,36 @@ export const AccessoryScheme = z.object({
 
 
 export const traitsScheme = z.object({
-    identity:z.string(),
-    origin:z.string(),
-    theme:z.string()
+    identity:z.string().default(""),
+    origin:z.string().default(""),
+    theme:z.string().default("")
 })
 
 export const statsScheme = z.object({
-    HP:z.number(),
-    MP:z.number(),
-    IP:z.number(),
-    DEF:z.number(),
-    MDEF:z.number(),
-    LV:z.number(),
+    HP:z.number().default(45),
+    MP:z.number().default(45),
+    IP:z.number().default(6),
+    DEF:z.number().default(8),
+    MDEF:z.number().default(8),
+    LV:z.number().default(5),
 })
 
 export const bondScheme = z.object({
     with:z.string(),
-    affection:z.boolean(),
-    admiration:z.boolean(),
-    loyalty:z.boolean(),
-    hatred:z.boolean(),
-    mistrust:z.boolean(),
-    inferiority:z.boolean()
+    affection:z.boolean().default(false),
+    admiration:z.boolean().default(false),
+    loyalty:z.boolean().default(false),
+    hatred:z.boolean().default(false),
+    mistrust:z.boolean().default(false),
+    inferiority:z.boolean().default(false)
 
 })
 
 export const attributesScheme = z.object({
-    DEX:z.number(),
-    INS:z.number(),
-    MIG:z.number(),
-    WLP:z.number(),
+    DEX:z.number().default(8),
+    INS:z.number().default(8),
+    MIG:z.number().default(8),
+    WLP:z.number().default(8),
 })
 
 export const skillScheme = z.object({
@@ -123,11 +123,11 @@ export const FabulaUltimaCharacterScheme = z.object({
     name:z.string(),
     traits:traitsScheme,
     stats:statsScheme,
-    bonds:z.array(bondScheme),
+    bonds:z.array(bondScheme).default([]),
     attributes: attributesScheme,
-    classes: z.array(characterClassScheme),
+    classes: z.array(characterClassScheme).default([]),
     pic:z.string().optional(),
-    code:z.number()
+    code:z.number().default(4)
 })
 
 

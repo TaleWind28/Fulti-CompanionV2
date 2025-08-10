@@ -3,7 +3,6 @@
     import type { FabulaUltimaCharacter } from "$lib/zod";
     const { character }: { character: FabulaUltimaCharacter & { id: string } } = $props();
     
-    $inspect(character);
 </script>
 
 <div>
