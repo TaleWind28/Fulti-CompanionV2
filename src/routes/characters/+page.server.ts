@@ -57,7 +57,7 @@ export async function load({ locals }) {
 
 export const actions: Actions = {
     default: async ({ request, locals }) => {
-        //console.log("entro");
+        console.log("ricevuto");
         const form = await superValidate(request, zod4(characterSchema));
         
 		if (!form.valid) {

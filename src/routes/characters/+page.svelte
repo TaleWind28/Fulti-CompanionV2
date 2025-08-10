@@ -9,8 +9,7 @@
     import { superForm } from 'sveltekit-superforms';
     import { zod4Client } from 'sveltekit-superforms/adapters';
     import { characterSchema } from '$lib/zod';
-    import FormButton from '$lib/components/ui/form/form-button.svelte';
-    import { enhance } from '$app/forms';
+
 
 
     let { data }: { data: PageData } = $props();
@@ -19,7 +18,6 @@
 	const form = superForm(data.form, {
 		validators: zod4Client(characterSchema),
 		taintedMessage:null,
-		SPA: true,
 		onUpdated: ({ form: f }) => {
 			console.log("inviato");
 			if (f.valid) {
@@ -29,7 +27,7 @@
 		}
 	});
 
-	const { form: formData } = form;
+	const { form: formData , enhance} = form;
 	let openCreationDialog = $state(false);
 	$inspect($formData)
 </script>
@@ -88,8 +86,9 @@
 					</Form.Control>
 					<Form.FieldErrors />
 				</Form.Field>
+				<!-- Button DENTRO il form -->
+				<Form.Button>Crea Personaggio</Form.Button>
 		</form>
-		<button type='submit' form="characterCreation"> vai</button>
 		
 	<!-- <Dialog.Root open={openCreationDialog} onOpenChange={(v)=> {openCreationDialog=v}}>
 		
