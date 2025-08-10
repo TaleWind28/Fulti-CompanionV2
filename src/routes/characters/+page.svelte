@@ -45,18 +45,19 @@
 	</div>	
 
 	{#if data.characters && data.characters.length > 0}
-    
-        {#each data.characters as char}
-			<CharacterCard character={char}>
+		{@const rows = (Math.floor(data.characters.length))}
+		<div class="grid grid-cols-3 {`grid-rows-${rows}`} gap-4">
+			{#each data.characters as char}
+				<CharacterCard character={char}>
 
-			</CharacterCard>
+				</CharacterCard>
         {/each}
+		</div>
+        
 	{:else}
 		<p>Non hai ancora creato nessuna Personaggio.</p>
 	{/if}
     
-
-	
 	<Dialog.Root open={openCreationDialog} onOpenChange={(v)=> {openCreationDialog=v}}>
 		
 		<Dialog.Content>
@@ -66,7 +67,10 @@
 					Dai un nome al tuo Eroe e scegli le sue prime classi.
 				</Dialog.Description>
     		</Dialog.Header>
+
 			<form id="characterCreation" method="POST" use:enhance>
+
+				<!-- Nome Personaggio -->
 				<Form.Field {form} name="name">
 					<Form.Control>
 						<Form.Label>Name</Form.Label>
@@ -75,6 +79,7 @@
 					<Form.FieldErrors />
 				</Form.Field>
 
+				<!-- Prima Classe -->
 				<Form.Field {form} name="prima_classe">
 					<Form.Control >
 						<Form.Label>Prima Classe</Form.Label>
@@ -83,6 +88,7 @@
 					<Form.FieldErrors />
 				</Form.Field>
 
+				<!-- Seconda Classe -->
 				<Form.Field {form} name="seconda_classe">
 					<Form.Control >
 						<Form.Label>Seconda Classe</Form.Label>
@@ -91,6 +97,7 @@
 					<Form.FieldErrors />
 				</Form.Field>
 
+				<!-- Terza Classe (Opzionale) -->
 				<Form.Field {form} name="terza_classe">
 					<Form.Control>
 						<Form.Label>Terza Classe</Form.Label>
@@ -98,15 +105,15 @@
 					</Form.Control>
 					<Form.FieldErrors />
 				</Form.Field>
-		</form>
-			
-			
+
+			</form>
+
 			<Dialog.Footer>
 				<Form.Button form="characterCreation" type='submit'>
 					Crea Personaggio
 				</Form.Button>
 			</Dialog.Footer>
+
 		</Dialog.Content>
 	</Dialog.Root>
-
 </div>
