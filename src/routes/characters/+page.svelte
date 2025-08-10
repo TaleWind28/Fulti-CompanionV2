@@ -8,16 +8,27 @@
     import Label from '$lib/components/ui/label/label.svelte';
 	import * as Form from "$lib/components/ui/form/index.js";
     import { superForm } from 'sveltekit-superforms';
-    import { enhance } from '$app/forms';
     import { zod, zod4, zod4Client, zodClient } from 'sveltekit-superforms/adapters';
     import { characterSchema } from '$lib/zod';
 
 
     let { data }: { data: PageData } = $props();
-	$inspect(data.characters,"dati", data,"dati2 ");
+	$inspect(data.characters,"dati", data,"dati2 "); 
 
-	 const form = superForm(data.form,{validators:zod4Client(characterSchema)});
+	 
 
+
+	 const form = superForm(data.form, {
+		validators: zod4Client(characterSchema),
+		SPA: true,
+		onUpdated: ({ form: f }) => {
+				if (f.valid) {
+					openCreationDialog = false;
+				}
+			}
+	});
+
+	const { form: formData, enhance } = form;
 	let openCreationDialog = $state(false);
 
 </script>
@@ -48,7 +59,7 @@
 		
 		<Dialog.Content>
 			<Dialog.Header>
-      			<Dialog.Title>Crea un Personaggio</Dialog.Title>
+      			<Dialog.Title>Nuovo Personaggio</Dialog.Title>
 				<Dialog.Description>
 					Dai un nome al tuo Eroe e scegli le sue prime classi.
 				</Dialog.Description>
@@ -78,7 +89,38 @@
     		</div> -->
 
 			<form method="POST" use:enhance>
-				
+				<Form.Field {form} name="name">
+				<Form.Control>
+					<Form.Label>Name</Form.Label>
+					<Input bind:value={$formData.name} />
+				</Form.Control>
+				<Form.FieldErrors />
+			</Form.Field>
+
+			<Form.Field {form} name="prima_classe">
+				<Form.Control >
+					<Form.Label>Prima Classe</Form.Label>
+					<Input  bind:value={$formData.prima_classe} />
+				</Form.Control>
+				<Form.FieldErrors />
+			</Form.Field>
+
+			<Form.Field {form} name="seconda_classe">
+				<Form.Control >
+					<Form.Label>Seconda Classe</Form.Label>
+					<Input bind:value={$formData.seconda_classe} />
+				</Form.Control>
+				<Form.FieldErrors />
+			</Form.Field>
+
+			<Form.Field {form} name="terza_classe">
+				<Form.Control>
+					<Form.Label>Terza Classe</Form.Label>
+					<Input bind:value={$formData.terza_classe} />
+				</Form.Control>
+				<Form.FieldErrors />
+			</Form.Field>
+
 			</form>	
 			<Dialog.Footer>
 				<Button type="submit">Save changes</Button>
