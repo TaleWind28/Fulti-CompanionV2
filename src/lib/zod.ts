@@ -1,4 +1,5 @@
-import {z} from 'zod';
+import type { ZodValidationSchema } from 'sveltekit-superforms/adapters';
+import {z} from 'zod/v4';
 
 /* codici per schemi zod
     0 - Arma,
@@ -131,3 +132,15 @@ export const FabulaUltimaCharacterScheme = z.object({
 
 
 export type FabulaUltimaCharacter = z.infer<typeof FabulaUltimaCharacterScheme>;
+
+
+//FORM SCHEMES  
+
+export const characterSchema = z.object({
+	name: z.string().min(3, { message: "Il nome deve contenere almeno 3 caratteri." }),
+	prima_classe: z.string().min(1, { message: "La prima classe è obbligatoria." }),
+	seconda_classe: z.string().min(1, { message: "La seconda classe è obbligatoria." }),
+	terza_classe: z.string().optional()
+}) as ZodValidationSchema;
+
+export type FormCharacterSchema = typeof characterSchema;

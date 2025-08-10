@@ -1,12 +1,22 @@
-// src/routes/dashboard/+page.server.js
+// src/routes/characters/+page.server.js
 
 import { adminDB } from '$lib/firebase_admin'; // Importa l'istanza del DB admin
-import { FabulaUltimaCharacterScheme, type FabulaUltimaCharacter } from '$lib/zod.js';
-import { error, redirect } from '@sveltejs/kit';
+import { characterSchema, FabulaUltimaCharacterScheme, type FabulaUltimaCharacter } from '$lib/zod.js';
+import { error, fail, redirect } from '@sveltejs/kit';
+import { superValidate } from 'sveltekit-superforms';
+import { zod4, type ZodValidationSchema } from 'sveltekit-superforms/adapters';
+import { z } from 'zod/v4';
+
+// const characterSchema = z.object({
+// 	name: z.string().min(3, { message: "Il nome deve contenere almeno 3 caratteri." }),
+// 	prima_classe: z.string().min(1, { message: "La prima classe è obbligatoria." }),
+// 	seconda_classe: z.string().min(1, { message: "La seconda classe è obbligatoria." }),
+// 	terza_classe: z.string().optional()
+// });
 
 
 export async function load({ locals }) {
-
+    const form = await superValidate(zod4(characterSchema))
     const currentUser = locals.user;
 
     if (!currentUser) {
@@ -43,7 +53,8 @@ export async function load({ locals }) {
 
 
         return {
-            characters: validCharacters
+            characters: validCharacters,
+            form: form
         };
 
     } catch (err) {
@@ -51,3 +62,18 @@ export async function load({ locals }) {
         throw error(500, "Non è stato possibile caricare i dati dei personaggi.");
     }
 }
+
+// export const actions = {
+//     default: async ({ request }) => {
+//         const form = await superValidate(request, zod(formCharacterSchema));
+
+// 		if (!form.valid) {
+// 			return fail(400, { form });
+// 		}
+
+// 		console.log('Dati del personaggio (con Superforms):', form.data);
+// 		// Logica per salvare su DB...
+
+// 		return { form };
+//     }
+// }

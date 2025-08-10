@@ -27,6 +27,7 @@
 		"clsx": "^2.1.1",
 		"eslint": "^9.18.0",
 		"eslint-plugin-svelte": "^3.0.0",
+		"formsnap": "^2.0.1",
 		"globals": "^16.0.0",
 		"mode-watcher": "^1.1.0",
 		"svelte": "^5.0.0",
@@ -55,6 +56,7 @@
 		"lucide-react": "^0.523.0",
 		"react-day-picker": "^9.7.0",
 		"svelte-fa": "^4.0.4",
-		"zod": "^4.0.5"
+		"sveltekit-superforms": "^2.27.1",
+		"zod": "^4.0.17"
 	}
 }
