@@ -34,9 +34,9 @@
 
 	const { form: formData , enhance} = form;
 	let openCreationDialog = $state(false);
-	
-	let selectedClass = $state("");
+	//fetchare da db;
 	let classes:string[] = $state(["Elementalista","MAestro d'armi","Pippo"]);
+
 	const triggerFirstClass = $derived(
 		classes.find((c)=> c === $formData.prima_classe) || "Scegli una Classe"
 	)
