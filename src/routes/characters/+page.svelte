@@ -5,7 +5,9 @@
 	import * as Dialog from "$lib/components/ui/dialog/index.js";
     import type { PageData } from './$types';
     import Input from '$lib/components/ui/input/input.svelte';
+	import Label from '$lib/components/ui/label/label.svelte';
 	import * as Form from "$lib/components/ui/form/index.js";
+	import * as Select from "$lib/components/ui/select/index";
     import { message, superForm } from 'sveltekit-superforms';
     import { zod4, zod4Client } from 'sveltekit-superforms/adapters';
     import { characterSchema } from '$lib/zod';
@@ -32,6 +34,20 @@
 
 	const { form: formData , enhance} = form;
 	let openCreationDialog = $state(false);
+	
+	let selectedClass = $state("");
+	let classes:string[] = $state(["Elementalista","MAestro d'armi","Pippo"]);
+	const triggerFirstClass = $derived(
+		classes.find((c)=> c === $formData.prima_classe) || "Scegli una Classe"
+	)
+
+	const triggerSecondClass = $derived(
+		classes.find((c)=> c === $formData.seconda_classe) || "Scegli una Classe"
+	)
+
+	const triggerThirdClass = $derived(
+		classes.find((c)=> c === $formData.terza_classe) || "Scegli una Classe"
+	)
 	$inspect($formData)
 </script>
 
@@ -79,29 +95,83 @@
 					<Form.FieldErrors />
 				</Form.Field>
 
-				<!-- Prima Classe -->
-				<Form.Field {form} name="prima_classe">
-					<Form.Control >
-						<Form.Label>Prima Classe</Form.Label>
-						<Input  bind:value={$formData.prima_classe} />
-					</Form.Control>
-					<Form.FieldErrors />
-				</Form.Field>
+				<!-- Prime due classi, le uniche richieste -->
+				<div class="flex flex-row items-center gap-5">
+					<!-- Prima Classe -->
+					<Form.Field {form} name="prima_classe">
+						<Form.Control >
+							<Form.Label>Prima Classe</Form.Label>    
+							<Select.Root type="single" name="prima_classe" bind:value={$formData.prima_classe}>
+								<Select.Trigger class="w-auto min-w-30">
+									{triggerFirstClass}
+								</Select.Trigger>
+								<Select.Content>
+									<Select.Group >
+										{#each classes as characterClass}
+											<Select.Item
+											value={characterClass}
+											label={characterClass}
+											disabled={characterClass.includes("Manuale")}
+											>
+												{characterClass}
+											</Select.Item>
+										{/each}
+									</Select.Group>
+								</Select.Content>
+							</Select.Root>
+						</Form.Control>
+						<Form.FieldErrors />
+					</Form.Field>
 
-				<!-- Seconda Classe -->
-				<Form.Field {form} name="seconda_classe">
-					<Form.Control >
-						<Form.Label>Seconda Classe</Form.Label>
-						<Input bind:value={$formData.seconda_classe} />
-					</Form.Control>
-					<Form.FieldErrors />
-				</Form.Field>
-
+					<!-- Seconda Classe -->
+					<Form.Field {form} name="seconda_classe">
+						<Form.Control >
+							<Form.Label>Seconda Classe</Form.Label>    
+							<Select.Root type="single" name="prima_classe" bind:value={$formData.seconda_classe}>
+								<Select.Trigger class="w-auto min-w-30">
+									{triggerSecondClass}
+								</Select.Trigger>
+								<Select.Content>
+									<Select.Group >
+										{#each classes as characterClass}
+											<Select.Item
+											value={characterClass}
+											label={characterClass}
+											disabled={characterClass.includes("Manuale")}
+											>
+												{characterClass}
+											</Select.Item>
+										{/each}
+									</Select.Group>
+								</Select.Content>
+							</Select.Root>
+						</Form.Control>
+						<Form.FieldErrors />
+					</Form.Field>
+				</div>
+				
 				<!-- Terza Classe (Opzionale) -->
 				<Form.Field {form} name="terza_classe">
-					<Form.Control>
-						<Form.Label>Terza Classe</Form.Label>
-						<Input bind:value={$formData.terza_classe} />
+					<Form.Control >
+						<Form.Label>Terza Classe</Form.Label>    
+						<Select.Root type="single" name="prima_classe" bind:value={$formData.terza_classe}>
+							<Select.Trigger class="w-auto min-w-30">
+								{triggerThirdClass}
+							</Select.Trigger>
+							<Select.Content>
+								<Select.Group >
+									{#each classes as characterClass}
+										<Select.Item
+										value={characterClass}
+										label={characterClass}
+										disabled={characterClass.includes("Manuale")}
+										>
+											{characterClass}
+										</Select.Item>
+									{/each}
+								</Select.Group>
+							</Select.Content>
+						</Select.Root>
 					</Form.Control>
 					<Form.FieldErrors />
 				</Form.Field>

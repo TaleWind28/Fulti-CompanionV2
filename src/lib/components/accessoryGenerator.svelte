@@ -152,14 +152,14 @@
                 <div class="flex flex-row gap-5 items-center justify-between">
                     <!-- Nome Accessorio -->
                     <span class="flex flex-col gap-2 ">
-                        <Label for="nome_arma">Nome</Label>
+                        <Label for="nome_accessorio">Nome</Label>
                         <Input type="text" id="nome_accessorio" placeholder="Nome Accessorio" bind:value={accessoryName}/>
                     </span>
                 
                     <!-- Qualità Standard -->
                     <span class="flex flex-col gap-2 ">    
-                        <Label for="arma_base">Qualità</Label>
-                        <Select.Root type="single" name="arma_base" bind:value={baseQuality}>
+                        <Label for="accessorio_base">Qualità</Label>
+                        <Select.Root type="single" name="accessorio_base" bind:value={baseQuality}>
                             <Select.Trigger class="w-auto min-w-30">
                                 {triggerQuality}
                             </Select.Trigger>
