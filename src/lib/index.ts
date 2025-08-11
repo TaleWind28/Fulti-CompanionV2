@@ -18,7 +18,14 @@ export type Accessory = {name:string,quality:string, pic?:string, price:number, 
 
 export type Traits = {identity:string, origin:string, theme:string}
 
-export type Stats = {HP:number,MP:number,IP:number,DEF:number,MDEF:number,LV:number}
+export type Stats = {
+    HP:{max:number,actual:number},
+    MP:{max:number,actual:number},
+    IP:{max:number,actual:number},
+    DEF:{max:number,actual:number},
+    MDEF:{max:number,actual:number},
+    LV:{max:number,actual:number}
+}
 
 export interface Bond {
     with:string,

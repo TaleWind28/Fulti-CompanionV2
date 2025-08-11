@@ -3,11 +3,12 @@
 import type { CharacterClasses } from '$lib';
 import { db } from '$lib/firebase';
 import { adminDB } from '$lib/firebase_admin'; // Importa l'istanza del DB admin
-import { characterSchema, FabulaUltimaCharacterScheme, type FabulaUltimaCharacter } from '$lib/zod.js';
+import { characterSchema, FabulaUltimaCharacterScheme, statsScheme, traitsScheme, type FabulaUltimaCharacter } from '$lib/zod.js';
 import { error, fail, redirect, type Actions } from '@sveltejs/kit';
 import { collection, getDocs, orderBy, query, where } from 'firebase/firestore';
 import { message, superValidate } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
+import z from 'zod/v4';
 
 
 
@@ -107,12 +108,13 @@ export const actions: Actions = {
 			querySnapshot.forEach((doc) => {
 				characterClasses.push({ ...doc.data() });
 			});
-            console.log(characterClasses,"classes");
         }catch(error:any){
             console.log(error,"aia");
         }
-        // const names = snapshot.docs.map(doc => doc.get("name") as string);
-        //e le metto nel personaggio
+        console.log(characterClasses);
+        const createdStats = statsScheme.parse({});
+
+        console.log(createdStats,"stats");
         const createdCharacter = FabulaUltimaCharacterScheme.parse({
             name:form.data.name,
             traits:{},

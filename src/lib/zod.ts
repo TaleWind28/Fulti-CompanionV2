@@ -1,5 +1,5 @@
 import type { ZodValidationSchema } from 'sveltekit-superforms/adapters';
-import {z} from 'zod/v4';
+import {number, z} from 'zod/v4';
 
 /* codici per schemi zod
     0 - Arma,
@@ -71,9 +71,9 @@ export const traitsScheme = z.object({
 })
 
 export const statsScheme = z.object({
-    HP:z.number().default(45),
-    MP:z.number().default(45),
-    IP:z.number().default(6),
+    HP:z.object({max:z.number(),actual:z.number()}).default({max:45,actual:45}),
+    MP:z.object({max:z.number(),actual:z.number()}).default({max:45,actual:45}),
+    IP:z.object({max:z.number(),actual:z.number()}).default({max:6,actual:6}),
     DEF:z.number().default(8),
     MDEF:z.number().default(8),
     LV:z.number().default(5),

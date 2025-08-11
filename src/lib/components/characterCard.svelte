@@ -7,6 +7,7 @@
     import { faFileExport, faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
     import { downloadFile } from "$lib/utils";
     import { type Attributes, type Traits } from "$lib";
+    import ProgressiveBar from "./progressiveBar.svelte";
     const { character }: { character: FabulaUltimaCharacter & { id: string } } = $props();
     
 
@@ -73,10 +74,16 @@
       </p>
     </Card.Header>
 
-    <Card.Content class="flex items-center flex-row gap-5 py-5 bg-white">
+    <Card.Content class="flex items-start flex-row gap-5 py-5 bg-white">
 
-      <!-- CharacterPic -->
-      <img src={currentPic} alt="character-pic" class="w-40 h-40 border">
+      <!-- CharacterPic e ProgressBar -->
+      <div class="flex flex-col">
+        <img src={currentPic} alt="character-pic" class="w-40 h-40 border">
+        <ProgressiveBar color="bg-red-500" bgColor = "cafe_noir" label = "PV" actual={character.stats.HP.actual} max={character.stats.HP.max}></ProgressiveBar>
+        <ProgressiveBar color="bg-blue-500" bgColor = "cafe_noir" label = "PM"  actual={character.stats.MP.actual} max={character.stats.MP.max}></ProgressiveBar>
+        <ProgressiveBar color="bg-green-500" bgColor = "cafe_noir" label = "PI" actual={character.stats.IP.actual} max={character.stats.IP.max}></ProgressiveBar>
+      </div>
+      
       
       <!-- descrizione a dx -->
       <div class="flex flex-col gap-5">
@@ -95,7 +102,7 @@
         
       </div>
     </Card.Content>
-    <Card.Footer class="flex justify-between">
+    <Card.Footer class="flex justify-end items-center gap-5">
     <a href="/characters/{character.id}" class="card-link">
       <Fa icon={faPencil}></Fa>
     </a>
