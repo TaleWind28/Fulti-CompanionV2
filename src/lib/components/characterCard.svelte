@@ -12,11 +12,10 @@
         </Card.Header>
         <Card.Content> 
             {character.id}
-            <a href="/characters/{character.id}"> {character.name}</a>
         </Card.Content>
         <Card.Footer>
-
+            <a href="/characters/{character.id}" class="card-link"> premimi</a>
         </Card.Footer>
     </Card.Root>
-    <a href="/characters/{character.id}" class="card-link"> premimi</a>
+   
 </div>

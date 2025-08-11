@@ -74,6 +74,7 @@
 		<p>Non hai ancora creato nessuna Personaggio.</p>
 	{/if}
     
+	<!-- Dialog Creazione Personaggio -->
 	<Dialog.Root open={openCreationDialog} onOpenChange={(v)=> {openCreationDialog=v}}>
 		
 		<Dialog.Content>
