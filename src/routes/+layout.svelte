@@ -25,7 +25,6 @@
 		const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
 			user.set(firebaseUser);
 		});
-		console.log($user);
 		return unsubscribe;
 	})
 

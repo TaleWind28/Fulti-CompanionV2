@@ -29,7 +29,12 @@
 				console.log("inviato");
 				openCreationDialog = false;
 				
-                toast.success("Personaggio creato con successo!");
+                toast.success("Personaggio creato con successo!",{
+					action:{
+						label:"OK",
+						onClick: () =>{console.info("undo")}
+					}
+				});
 			}
 		}
 	});
@@ -85,7 +90,12 @@
 			}
 
 			await invalidateAll();
-			toast.success('Personaggio importato con successo');
+			toast.success('Personaggio importato con successo',{
+				action:{
+						label:"OK",
+						onClick: () =>{console.info("undo")}
+					}
+			});
 
 		}catch(error){
 			toast.error("Errore nell'importazione del file",{

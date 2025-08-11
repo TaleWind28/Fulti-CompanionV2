@@ -1,10 +1,11 @@
 // src/routes/characters/+page.server.js
 
+import type { CharacterClasses } from '$lib';
 import { db } from '$lib/firebase';
 import { adminDB } from '$lib/firebase_admin'; // Importa l'istanza del DB admin
 import { characterSchema, FabulaUltimaCharacterScheme, type FabulaUltimaCharacter } from '$lib/zod.js';
 import { error, fail, redirect, type Actions } from '@sveltejs/kit';
-import { collection, getDocs, orderBy, query } from 'firebase/firestore';
+import { collection, getDocs, orderBy, query, where } from 'firebase/firestore';
 import { message, superValidate } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 
@@ -88,12 +89,36 @@ export const actions: Actions = {
         
         const uid = currentUser.uid;
 		
+        const {prima_classe, seconda_classe, terza_classe} = form.data;
+
         // Logica per salvare su DB...
+        // Costruisci l'array di nomi di classi da cercare
+		const classNamesToQuery = [prima_classe, seconda_classe];
+		if (terza_classe) {
+			classNamesToQuery.push(terza_classe);
+		}
+        const characterClasses:any[] = [];
+        //recupero le classi dal db
+        try{
+            const q = query(collection(db, 'character_classes'), where('name', 'in', classNamesToQuery));
+
+			const querySnapshot = await getDocs(q);
+			
+			querySnapshot.forEach((doc) => {
+				characterClasses.push({ ...doc.data() });
+			});
+            console.log(characterClasses,"classes");
+        }catch(error:any){
+            console.log(error,"aia");
+        }
+        // const names = snapshot.docs.map(doc => doc.get("name") as string);
+        //e le metto nel personaggio
         const createdCharacter = FabulaUltimaCharacterScheme.parse({
             name:form.data.name,
             traits:{},
             stats:{},
             attributes:{},
+            classes:characterClasses,
         });
         console.log(createdCharacter,"default");
         

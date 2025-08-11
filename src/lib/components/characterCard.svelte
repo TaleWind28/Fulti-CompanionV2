@@ -6,6 +6,7 @@
     import Fa from "svelte-fa";
     import { faFileExport, faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
     import { downloadFile } from "$lib/utils";
+    import { type Attributes, type Traits } from "$lib";
     const { character }: { character: FabulaUltimaCharacter & { id: string } } = $props();
     
 
@@ -24,17 +25,30 @@
 
       if (!response.ok) {
         const errorData = await response.json();
-        toast.error(`Errore: ${errorData.message || 'Impossibile eliminare il personaggio.'}`);
+        toast.error(`Errore: 'Impossibile eliminare il personaggio.'`,{
+          action:{
+						label:"OK",
+						onClick: () =>{console.info("undo")}
+					}
+        });
         return;
       }
 
       //ricarica la pagina
       await invalidateAll();
-      toast.success('Personaggio eliminato con successo!');
+      toast.success('Personaggio eliminato con successo!',{
+        action:{
+						label:"OK",
+						onClick: () =>{console.info("undo")}
+					}
+      });
 
     } catch (err) {
       console.error('Errore nella richiesta di cancellazione:', err);
-      toast.error('Si è verificato un errore di rete. Riprova.');
+      toast.error('Si è verificato un errore di rete. Riprova.',{action:{
+						label:"OK",
+						onClick: () =>{console.info("undo")}
+					}});
     }
   }
   async function handleExport(){
@@ -43,31 +57,88 @@
     return;
   }
 
-  
+  let currentPic = $derived(
+    character.pic || '/images/defaultCharacterAvatar.jpg'
+  );
 </script>
 
 <div>
-    <Card.Root> 
-        <Card.Header> 
-            {character.name}
-        </Card.Header>
-        <Card.Content> 
-            {character.id}
-        </Card.Content>
-        <Card.Footer class="flex justify-between">
-            <a href="/characters/{character.id}" class="card-link">
-                <Fa icon={faPencil}></Fa>
-            </a>
+  <Card.Root class="bg-lion-600 border-0 "> 
+    
+    <Card.Header class="flex items-center justify-between">
+      <p>{character.name}</p>
+      <p>
+      LV  
+      {character.stats.LV}
+      </p>
+    </Card.Header>
 
-            <button onclick={()=>handleDelete(character.id)}>
-                <Fa icon={faTrash} class="cursor-pointer px-2 w-auto"/>
-            </button>
+    <Card.Content class="flex items-center flex-row gap-5 py-5 bg-white">
 
-             <button onclick={handleExport}>
-                    <Fa icon={faFileExport} class="cursor-pointer px-2 w-auto"></Fa>
-            </button>
-            
-        </Card.Footer>
-    </Card.Root>
-   
+      <!-- CharacterPic -->
+      <img src={currentPic} alt="character-pic" class="w-40 h-40 border">
+      
+      <!-- descrizione a dx -->
+      <div class="flex flex-col gap-5">
+        <!-- Tratti -->
+        <span class="flex flex-row border">
+          <p class="bg-lion-200 text-white  px-1 py-1 rounded flex-shrink-0 [writing-mode:vertical-lr] rotate-180 text-center">
+          TRATTI
+          </p>
+          {@render traits(character.traits)}
+        </span>
+
+        <!-- Caratteristiche -->
+        <span>
+          {@render characterStats(character.attributes)}
+        </span>
+        
+      </div>
+    </Card.Content>
+    <Card.Footer class="flex justify-between">
+    <a href="/characters/{character.id}" class="card-link">
+      <Fa icon={faPencil}></Fa>
+    </a>
+
+    <button onclick={()=>handleDelete(character.id)}>
+      <Fa icon={faTrash} class="cursor-pointer px-2 w-auto"/>
+    </button>
+
+    <button onclick={handleExport}>
+      <Fa icon={faFileExport} class="cursor-pointer px-2 w-auto"></Fa>
+    </button>
+
+    </Card.Footer>
+  </Card.Root>
+
 </div>
+
+
+{#snippet traits(traits:Traits)}
+  <div class="flex flex-col w-full">
+    <p class="font-bold">Identità: </p>{traits.identity }
+    <p class="font-bold">Tema: </p>{traits.theme}
+    <p class="font-bold">Origine:</p>{traits.origin}  
+  </div>
+{/snippet}
+
+{#snippet characterStats(stats:Attributes)}    
+  <div class="grid grid-cols-2 justify-between">
+      <div class="flex px-2 text-xl font-semi-bold">
+          <p>DES</p>:
+          d{stats.DEX}
+      </div>
+      <div class="flex px-2 text-xl font-semi-bold">
+          <p>INT</p>:
+          d{stats.INS}
+      </div>
+      <div class="flex px-2 text-xl font-semi-bold">
+        <p>VIG</p>:
+        d{stats.MIG}
+    </div>
+    <div class="flex px-2 text-xl font-semi-bold">
+        <p>VOL</p>:
+        d{stats.WLP}
+    </div>
+  </div>
+{/snippet}
