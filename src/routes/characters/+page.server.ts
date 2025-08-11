@@ -1,5 +1,6 @@
 // src/routes/characters/+page.server.js
 
+import { db } from '$lib/firebase';
 import { adminDB } from '$lib/firebase_admin'; // Importa l'istanza del DB admin
 import { characterSchema, FabulaUltimaCharacterScheme, type FabulaUltimaCharacter } from '$lib/zod.js';
 import { error, fail, redirect, type Actions } from '@sveltejs/kit';
@@ -16,40 +17,14 @@ export async function load({ locals }) {
     if (!currentUser) {
         throw redirect(303, '/login');
     }
+    //recupero solo il nome delle classi
+    const snapshot = await adminDB.collection("character_classes").select("name").orderBy("name", "asc").get();
+
+    const names = snapshot.docs.map(doc => doc.get("name") as string);
 
     const uid = currentUser.uid;
-    //recupero classi esistenti nel db
-//       try {
-//      // 1. Definisci la query
-//         const classesCollection = collection(db, 'characterClasses');
-    
-//     // 2. Crea una query ottimizzata:
-//     //    - Seleziona *solo* il campo 'name'. Questo è molto più efficiente!
-//     //    - Ordina i risultati alfabeticamente per nome.
-//     const q = query(classesCollection, orderBy('name'), select('name'));
+    let validCharacters;
 
-//     // 3. Esegui la query
-//     const querySnapshot = await getDocs(q);
-
-//     // 4. Estrai i nomi in un array di stringhe
-//     const classNames = querySnapshot.docs.map(doc => doc.data().name as string);
-
-//     console.log(`Recuperati ${classNames.length} nomi di classi.`);
-
-//     // 5. Restituisci i dati. Saranno disponibili nella pagina Svelte.
-//     return {
-//       classNames: classNames
-//     };
-
-//   } catch (error) {
-//     console.error("Errore nel recuperare le classi da Firestore:", error);
-//     // In caso di errore, restituisci un oggetto di errore e uno stato HTTP appropriato.
-//     return {
-//       status: 500,
-//       error: 'Impossibile caricare i dati delle classi dal database.'
-//     };
-//   }
-//};
     
     //recupero personaggi
     try {
@@ -75,43 +50,44 @@ export async function load({ locals }) {
                 }
             })
             
-            const validCharacters = characters.filter((character):character is FabulaUltimaCharacter & {id:string} => character !==null)
+            validCharacters = characters.filter((character):character is FabulaUltimaCharacter & {id:string} => character !==null)
 
 
-        return {
-            characters: validCharacters,
-            form: form
-        };
+        
 
     } catch (err) {
         console.error("Errore nel recuperare i personaggi da Firestore:", err);
-        throw error(500, "Non è stato possibile caricare i dati dei personaggi.");
     }
-
+    finally{
+        return {
+            characters: validCharacters,
+            form: form,
+            classNames:names
+        };
+    }
 
 }
 
 export const actions: Actions = {
     default: async ({ request, locals }) => {
-        console.log("ricevuto");
+        
         const form = await superValidate(request, zod4(characterSchema));
-        console.log("superformato")
+       
 
-        console.log(form.data,"formData",form.valid);
+        console.log(form.data,"formData",form.valid,form.data.prima_classe);
         
 		if (!form.valid) {
 			return fail(400, { form, message:'Form non valido' });
-		}
-        console.log("valido");
+        }
 
         const currentUser = locals.user;
-        console.log("valido");
+        
         if (!currentUser) {
             return fail(401, { form, message: 'Devi essere loggato per creare un personaggio.' });
         }
-        console.log("valido");
+        
         const uid = currentUser.uid;
-		console.log("pino");
+		
         // Logica per salvare su DB...
         const createdCharacter = FabulaUltimaCharacterScheme.parse({
             name:form.data.name,
@@ -121,7 +97,7 @@ export const actions: Actions = {
         });
         console.log(createdCharacter,"default");
         
-         try {
+        try {
             // 4. Salva l'oggetto COMPLETO nel database
             await adminDB
                 .collection('users')

@@ -97,10 +97,36 @@ export const attributesScheme = z.object({
     WLP:z.number().default(8),
 })
 
+export const benefitScheme = z.object({
+    hp:z.object({active:z.boolean(),quantity:z.number()}),
+    mp:z.object({active:z.boolean(),quantity:z.number()}),
+    ip:z.object({active:z.boolean(),quantity:z.number()}),
+    martial:z.object({
+        weapons:z.object({
+            melee:z.boolean(),
+            ranged:z.boolean()
+        }),
+        equipment:z.object({
+            armor:z.boolean(),
+            shields:z.boolean()
+        })
+    }),
+    rituals:z.object({
+        arcanism:z.boolean(),
+        chimerism:z.boolean(),
+        elementalism:z.boolean(),
+        entropism:z.boolean(),
+        ritualism:z.boolean(),
+        spiritism:z.boolean()
+    }),
+    other:z.object({active:z.boolean(),content:z.string()})
+})
+
 export const skillScheme = z.object({
     name:z.string(),
     description:z.string(),
-    level:z.object({max:z.number(),actual:z.number()})
+    level:z.object({max:z.number(),actual:z.number()}),
+    benefits:benefitScheme.optional()
 }
 )
 
@@ -109,9 +135,12 @@ export const heroicSkillScheme = z.object({
     description:z.string()
 })
 
+
+
 export const characterClassScheme = z.object({
     name:z.string(),
     level:z.number(),
+    benefits:benefitScheme,
     skills:z.array(skillScheme),
     spellClass: z.string(),
     heroic:heroicSkillScheme
@@ -141,6 +170,35 @@ export const characterSchema = z.object({
 	prima_classe: z.string().min(1, { message: "La prima classe è obbligatoria." }),
 	seconda_classe: z.string().min(1, { message: "La seconda classe è obbligatoria." }),
 	terza_classe: z.string().optional()
+}).superRefine((data, ctx) => {
+  // 1. Controlla che prima_classe e seconda_classe siano diverse
+  if (data.prima_classe === data.seconda_classe) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "La seconda classe non può essere uguale alla prima.",
+      path: ['seconda_classe']
+    });
+  }
+
+  // 2. Se terza_classe è stata selezionata, controlla che sia diversa dalle altre
+  if (data.terza_classe && data.terza_classe.length > 0) {
+    if (data.prima_classe === data.terza_classe) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "La terza classe non può essere uguale alla prima.",
+        path: ['terza_classe']
+      });
+    }
+    if (data.seconda_classe === data.terza_classe) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "La terza classe non può essere uguale alla seconda.",
+        path: ['terza_classe']
+      });
+    }
+  }
 }) as ZodValidationSchema;
+
+
 
 export type FormCharacterSchema = typeof characterSchema;

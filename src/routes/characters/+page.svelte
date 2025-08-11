@@ -5,12 +5,14 @@
 	import * as Dialog from "$lib/components/ui/dialog/index.js";
     import type { PageData } from './$types';
     import Input from '$lib/components/ui/input/input.svelte';
-	import Label from '$lib/components/ui/label/label.svelte';
 	import * as Form from "$lib/components/ui/form/index.js";
 	import * as Select from "$lib/components/ui/select/index";
-    import { message, superForm } from 'sveltekit-superforms';
-    import { zod4, zod4Client } from 'sveltekit-superforms/adapters';
+    import { superForm } from 'sveltekit-superforms';
+    import { zod4Client } from 'sveltekit-superforms/adapters';
     import { characterSchema } from '$lib/zod';
+    import { uploadFile } from '$lib/utils';
+    import { PUT } from '../api/login/+server';
+    import { invalidateAll } from '$app/navigation';
 
 
 
@@ -34,8 +36,9 @@
 
 	const { form: formData , enhance} = form;
 	let openCreationDialog = $state(false);
+
 	//fetchare da db;
-	let classes:string[] = $state(["Elementalista","MAestro d'armi","Pippo"]);
+	let classes:string[] = data.classNames;
 
 	const triggerFirstClass = $derived(
 		classes.find((c)=> c === $formData.prima_classe) || "Scegli una Classe"
@@ -48,7 +51,53 @@
 	const triggerThirdClass = $derived(
 		classes.find((c)=> c === $formData.terza_classe) || "Scegli una Classe"
 	)
-	$inspect($formData)
+
+	
+	async function handleImport(){
+		try{
+			
+			const {name, content} = await uploadFile('.json');
+			
+			const parsedCharacter = await JSON.parse(content);
+			
+
+			if(parsedCharacter.code !== 4) throw new Error()
+
+			const response = await fetch('/api/characters',{
+				method:'PUT',
+				headers:{
+					'Content-Type':'application/json'
+				},
+				body:JSON.stringify({
+					character: parsedCharacter
+				})
+			});
+
+			if(!response.ok){
+
+				toast.error( 'Impossibile importare il personaggio.',{
+					action:{
+						label:"OK",
+						onClick: () =>{console.info("undo")}
+					}
+				});
+				return;
+			}
+
+			await invalidateAll();
+			toast.success('Personaggio importato con successo');
+
+		}catch(error){
+			toast.error("Errore nell'importazione del file",{
+				description: "Il file selezionato non rappresenta un'accessorio Json",
+				action: {
+					label: "OK",
+					onClick: () => console.info("Undo")
+				}
+			});
+		}
+	}
+	   
 </script>
 
 <div class="p-5 flex flex-col gap-10 bg-cafe_noir-900 items-center justify-center">
@@ -56,9 +105,8 @@
 	<div class="p-5 flex flex-row gap-10 bg-white items-center justify-center border  rounded-2xl ">
 		<Input placeholder="Ricerca col nome del Personaggio" oninput={()=>toast.error("implementami")}/>
 		<Button id="character_creation_dialog" class="bg-cafe_noir-400 w-50" onclick={()=>{openCreationDialog = true}}>Crea un nuovo Personaggio</Button>
-		<Button class="bg-cafe_noir-400 w-50" onclick={()=>toast.error("implementami")}>Carica Personaggio da Json</Button>
-
-	</div>	
+		<Button class="bg-cafe_noir-400 w-50" onclick={handleImport}>Carica Personaggio da Json</Button>
+	</div>
 
 	{#if data.characters && data.characters.length > 0}
 		{@const rows = (Math.floor(data.characters.length))}
@@ -67,20 +115,20 @@
 				<CharacterCard character={char}>
 
 				</CharacterCard>
-        {/each}
+        	{/each}
 		</div>
-        
 	{:else}
 		<p>Non hai ancora creato nessuna Personaggio.</p>
 	{/if}
     
 	<!-- Dialog Creazione Personaggio -->
-	<Dialog.Root open={openCreationDialog} onOpenChange={(v)=> {openCreationDialog=v}}>
+	<Dialog.Root open={openCreationDialog} onOpenChange={(v)=> {openCreationDialog=v}} >
 		
-		<Dialog.Content>
+		<Dialog.Content class="bg-cafe_noir-600 border-0">
+
 			<Dialog.Header>
       			<Dialog.Title>Nuovo Personaggio</Dialog.Title>
-				<Dialog.Description>
+				<Dialog.Description class="text-black">
 					Dai un nome al tuo Eroe e scegli le sue prime classi.
 				</Dialog.Description>
     		</Dialog.Header>
@@ -90,8 +138,8 @@
 				<!-- Nome Personaggio -->
 				<Form.Field {form} name="name">
 					<Form.Control>
-						<Form.Label>Name</Form.Label>
-						<Input bind:value={$formData.name} />
+						<Form.Label>Nome</Form.Label>
+						<Input bind:value={$formData.name}/>
 					</Form.Control>
 					<Form.FieldErrors />
 				</Form.Field>
@@ -99,27 +147,30 @@
 				<!-- Prime due classi, le uniche richieste -->
 				<div class="flex flex-row items-center gap-5">
 					<!-- Prima Classe -->
-					<Form.Field {form} name="prima_classe">
-						<Form.Control >
-							<Form.Label>Prima Classe</Form.Label>    
-							<Select.Root type="single" name="prima_classe" bind:value={$formData.prima_classe}>
-								<Select.Trigger class="w-auto min-w-30">
-									{triggerFirstClass}
-								</Select.Trigger>
-								<Select.Content>
-									<Select.Group >
-										{#each classes as characterClass}
-											<Select.Item
-											value={characterClass}
-											label={characterClass}
-											disabled={characterClass.includes("Manuale")}
-											>
-												{characterClass}
-											</Select.Item>
-										{/each}
-									</Select.Group>
-								</Select.Content>
-							</Select.Root>
+					<Form.Field {form} name="prima_classe" >
+						<Form.Control>
+							<Form.Label >Prima Classe</Form.Label>
+							
+								<Select.Root type="single" name="prima_classe" bind:value={$formData.prima_classe} allowDeselect={true}>
+									
+									<Select.Trigger class="w-auto min-w-30 text-black bg-white">
+										{triggerFirstClass}
+									</Select.Trigger>
+									<Select.Content>
+										<Select.Group class="bg-white">
+											{#each classes as characterClass}
+												<Select.Item
+												value={characterClass}
+												label={characterClass}
+												disabled={characterClass.includes("Manuale")}
+												>
+													{characterClass}
+												</Select.Item>
+											{/each}
+										</Select.Group>
+									</Select.Content>
+								</Select.Root>
+							
 						</Form.Control>
 						<Form.FieldErrors />
 					</Form.Field>
@@ -129,7 +180,7 @@
 						<Form.Control >
 							<Form.Label>Seconda Classe</Form.Label>    
 							<Select.Root type="single" name="prima_classe" bind:value={$formData.seconda_classe}>
-								<Select.Trigger class="w-auto min-w-30">
+								<Select.Trigger class="w-auto min-w-30 text-black bg-white">
 									{triggerSecondClass}
 								</Select.Trigger>
 								<Select.Content>
@@ -156,7 +207,7 @@
 					<Form.Control >
 						<Form.Label>Terza Classe</Form.Label>    
 						<Select.Root type="single" name="prima_classe" bind:value={$formData.terza_classe}>
-							<Select.Trigger class="w-auto min-w-30">
+							<Select.Trigger class="w-39 min-w-30 text-black bg-white">
 								{triggerThirdClass}
 							</Select.Trigger>
 							<Select.Content>
