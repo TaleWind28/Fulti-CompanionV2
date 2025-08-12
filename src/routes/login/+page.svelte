@@ -11,24 +11,47 @@
 	import CardHeader from "$lib/components/ui/card/card-header.svelte";
 	import { CardTitle, CardDescription, CardContent, CardFooter } from "$lib/components/ui/card/index";
 	import { page } from "$app/state";
-  	import { goto } from "$app/navigation";
+  	import { afterNavigate, beforeNavigate, goto } from "$app/navigation";
   	import { login, registerUser } from "$lib/firebase";
+    import { onMount } from "svelte";
+    import type { PageData } from "../$types";
 	
 	let email = $state("");
 	let password = $state("");
 	let username = $state("");
+	let { data }: { data: {redirectTo:string} } = $props();
+
 	
+	let successRoute = $state("/");
 	async function firebaseLogin(){
 		login(email,password)
-		.then(()=>goto('/'))
+		.then(()=>goto(successRoute))
 		.catch((error)=>{alert(error)});
 	}
 
 	async function firebaseRegister() {
 		registerUser(email,password,username)
-		.then(()=>goto('/'))
+		.then(()=>goto(successRoute))
 		.catch((error)=>{alert(error)});
 	}
+	
+
+	afterNavigate(({ to, from }) => {
+        // Cancella i dati qui
+		console.log('ho navigato da', from?.url.pathname, 'a', to?.url.pathname);
+
+		if(from){
+			if(from?.url.pathname === "/")successRoute = "/"; //cambiare con userHomePage <-------------------------------------------------------------
+			else successRoute = from?.url.pathname;
+		}
+		if(data.redirectTo !== '/')successRoute = data.redirectTo;
+    });
+
+	beforeNavigate(({ to, from, cancel }) => {
+        // Cancella i dati qui          
+		console.log('Sto per navigare da', from?.url.pathname, 'a', to?.url.pathname);               
+        //personaggiStore.reset();
+    });
 
 	let logo = "images/Logo5.1.png";
 
@@ -108,7 +131,7 @@
 		else return val;
 		}
 	)
-	$inspect(initialValue);
+	$inspect(successRoute,"route",data.redirectTo,"redirect");
 </script>
 <div class="bg-cafe_noir-900 flex h-screen">
 
@@ -123,7 +146,7 @@
 			</div>
 			<!-- creo un contenuto per ogni trigger -->
 			{#each tabSelector.contents as card,i }
-				<form onsubmit={card.clickFun}>				
+				<form onsubmit={(e) => { e.preventDefault(); card.clickFun(); }}>		
 					<TabsContent value ={tabSelector.triggers[i].value}>
 						<Card class="w-700 max-w-sm bg-caribbean_current-400">
 							<CardHeader>

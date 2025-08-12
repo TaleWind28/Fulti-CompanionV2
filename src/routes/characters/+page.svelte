@@ -9,7 +9,7 @@
 	import * as Select from "$lib/components/ui/select/index";
     import { superForm } from 'sveltekit-superforms';
     import { zod4Client } from 'sveltekit-superforms/adapters';
-    import { characterSchema } from '$lib/zod';
+    import { characterSchema, type FabulaUltimaCharacter } from '$lib/zod';
     import { uploadFile } from '$lib/utils';
     import { PUT } from '../api/login/+server';
     import { invalidateAll } from '$app/navigation';
@@ -107,28 +107,38 @@
 			});
 		}
 	}
+	
+	let searchQuery = $state('');
+
+	let filteredCharacters= $derived(
+		data.characters?.filter(character => character.name.toLowerCase().includes(searchQuery.toLowerCase())) || []
+	)
 	   
 </script>
 
-<div class="p-5 flex flex-col gap-10 bg-cafe_noir-900 items-center justify-center">
+<div class=" flex flex-col gap-10 bg-cafe_noir-900 items-center justify-center p-5">
     
 	<div class="p-5 flex flex-row gap-10 bg-white items-center justify-center border  rounded-2xl ">
-		<Input placeholder="Ricerca col nome del Personaggio" oninput={()=>toast.error("implementami")}/>
+		<Input placeholder="Ricerca col nome del Personaggio" bind:value={searchQuery}/>
 		<Button id="character_creation_dialog" class="bg-cafe_noir-400 w-50" onclick={()=>{openCreationDialog = true}}>Crea un nuovo Personaggio</Button>
 		<Button class="bg-cafe_noir-400 w-50" onclick={handleImport}>Carica Personaggio da Json</Button>
 	</div>
 
 	{#if data.characters && data.characters.length > 0}
-		{@const rows = (Math.floor(data.characters.length))}
-		<div class="grid grid-cols-3 {`grid-rows-${rows}`} gap-4">
-			{#each data.characters as char}
-				<CharacterCard character={char}>
+		{#if filteredCharacters.length>0}
+			{@const rows = (Math.floor(data.characters.length))}
+			<div class="grid grid-cols-3 {`grid-rows-${rows}`}  gap-4">
+				{#each filteredCharacters as char}
+					<CharacterCard character={char} >
 
-				</CharacterCard>
-        	{/each}
-		</div>
+					</CharacterCard>
+				{/each}
+			</div>
+		{:else}
+			<p class="font-bold"> Non è stato trovato alcun personaggio</p>
+		{/if}
 	{:else}
-		<p>Non hai ancora creato nessuna Personaggio.</p>
+		<p class="font-bold">Non hai ancora creato nessun Personaggio.</p>
 	{/if}
     
 	<!-- Dialog Creazione Personaggio -->

@@ -1,6 +1,6 @@
 <script lang="ts">
     import * as Card from "$lib/components/ui/card/index.js"; 
-    import type { FabulaUltimaCharacter } from "$lib/zod";
+    import type { Affinity, FabulaUltimaCharacter } from "$lib/zod";
     import { toast } from "svelte-sonner";
     import { invalidateAll } from "$app/navigation";
     import Fa from "svelte-fa";
@@ -63,7 +63,7 @@
   );
 </script>
 
-<div>
+<div class="w-130">
   <Card.Root class="bg-lion-600 border-0 "> 
     
     <Card.Header class="flex items-center justify-between">
@@ -99,7 +99,10 @@
         <span>
           {@render characterStats(character.attributes)}
         </span>
-        
+      
+        <span>
+          {@render affinitiesTable(character.affinities)}
+        </span>
       </div>
     </Card.Content>
     <Card.Footer class="flex justify-end items-center gap-5">
@@ -122,10 +125,20 @@
 
 
 {#snippet traits(traits:Traits)}
-  <div class="flex flex-col w-full">
-    <p class="font-bold">Identità: </p>{traits.identity }
-    <p class="font-bold">Tema: </p>{traits.theme}
-    <p class="font-bold">Origine:</p>{traits.origin}  
+  <div class="flex flex-col w-60">
+
+    <h1 class="flex flex-row">
+      <p class="font-bold">Identità: </p>{traits.identity }
+    </h1>
+    
+    <h1 class="flex flex-row">
+      <p class="font-bold">Origine:</p>{traits.origin}  
+    </h1>
+    <h1 class="flex flex-row">
+      <p class="font-bold">Tema: </p>{traits.theme}
+    </h1>
+
+    
   </div>
 {/snippet}
 
@@ -147,5 +160,18 @@
         <p>VOL</p>:
         d{stats.WLP}
     </div>
+  </div>
+{/snippet}
+
+{#snippet affinitiesTable(affinities:Affinity)}
+  {@const iterableAffinity = Object.entries(affinities)}
+  <div class="grid grid-cols-9 border">
+    
+    {#each iterableAffinity as [name]}
+      <div class="flex items-center border-l pl-2">
+        {name}
+      </div>
+      
+    {/each}
   </div>
 {/snippet}

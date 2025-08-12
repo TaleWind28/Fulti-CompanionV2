@@ -3,21 +3,22 @@
 import type { CharacterClasses } from '$lib';
 import { db } from '$lib/firebase';
 import { adminDB } from '$lib/firebase_admin'; // Importa l'istanza del DB admin
-import { characterSchema, FabulaUltimaCharacterScheme, statsScheme, traitsScheme, type FabulaUltimaCharacter } from '$lib/zod.js';
+import { affinitiesScheme, characterSchema, FabulaUltimaCharacterScheme, statsScheme, traitsScheme, type FabulaUltimaCharacter } from '$lib/zod.js';
 import { error, fail, redirect, type Actions } from '@sveltejs/kit';
 import { collection, getDocs, orderBy, query, where } from 'firebase/firestore';
 import { message, superValidate } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
-import z from 'zod/v4';
+import z, { url } from 'zod/v4';
 
 
 
-export async function load({ locals }) {
+export async function load({url, locals }) {
     const form = await superValidate(zod4(characterSchema))
     const currentUser = locals.user;
 
     if (!currentUser) {
-        throw redirect(303, '/login');
+        console.log(url.pathname,"pathname")
+        throw redirect(302, `/login?redirectTo=${encodeURIComponent(url.pathname)}`);
     }
     //recupero solo il nome delle classi
     const snapshot = await adminDB.collection("character_classes").select("name").orderBy("name", "asc").get();
@@ -111,15 +112,15 @@ export const actions: Actions = {
         }catch(error:any){
             console.log(error,"aia");
         }
-        console.log(characterClasses);
-        const createdStats = statsScheme.parse({});
-
-        console.log(createdStats,"stats");
+        //console.log(characterClasses);
+        
         const createdCharacter = FabulaUltimaCharacterScheme.parse({
             name:form.data.name,
             traits:{},
             stats:{},
             attributes:{},
+            affinities:{},
+            status:{},
             classes:characterClasses,
         });
         console.log(createdCharacter,"default");
@@ -130,7 +131,7 @@ export const actions: Actions = {
                 .collection('users')
                 .doc(uid)
                 .collection('characters')
-                .add(createdCharacter); // Usa `finalCharacterData` invece di `form.data`
+                .add(createdCharacter);
 
             console.log(`Personaggio completo salvato per l'utente ${uid}`);
 

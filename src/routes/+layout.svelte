@@ -12,6 +12,7 @@
 	import { auth, logout } from '$lib/firebase';
 	import { Toaster } from "$lib/components/ui/sonner/index.js";
 	import * as MenuBar from '$lib/components/ui/menubar/index';
+    import { goto } from '$app/navigation';
 
   	
 		
@@ -82,7 +83,7 @@
 									Vai al tuo profilo
 								</MenuBar.Item>
 								<MenuBar.Item>
-									<button onclick={logout}>
+									<button onclick={()=>{logout();goto('/')}}>
 										Logout
 									</button>
 								</MenuBar.Item>

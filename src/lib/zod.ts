@@ -146,7 +146,35 @@ export const characterClassScheme = z.object({
     heroic:heroicSkillScheme
 })
 
+export const vulnerabilityScheme = z.object({
+    weak:z.boolean().default(false),
+    resistant:z.boolean().default(false),
+    immune:z.boolean().default(false),
+    absorb:z.boolean().default(false),
+})
 
+export const affinitiesScheme = z.object({
+    physical:z.object({weak:z.boolean(),resistant:z.boolean(),immune:z.boolean(),absorb:z.boolean()}).default({weak:false,resistant:false,immune:false,absorb:false}),
+    wind:z.object({weak:z.boolean(),resistant:z.boolean(),immune:z.boolean(),absorb:z.boolean()}).default({weak:false,resistant:false,immune:false,absorb:false}),
+    bolt:z.object({weak:z.boolean(),resistant:z.boolean(),immune:z.boolean(),absorb:z.boolean()}).default({weak:false,resistant:false,immune:false,absorb:false}),
+    fire:z.object({weak:z.boolean(),resistant:z.boolean(),immune:z.boolean(),absorb:z.boolean()}).default({weak:false,resistant:false,immune:false,absorb:false}),
+    ice:z.object({weak:z.boolean(),resistant:z.boolean(),immune:z.boolean(),absorb:z.boolean()}).default({weak:false,resistant:false,immune:false,absorb:false}),
+    light:z.object({weak:z.boolean(),resistant:z.boolean(),immune:z.boolean(),absorb:z.boolean()}).default({weak:false,resistant:false,immune:false,absorb:false}),
+    dark:z.object({weak:z.boolean(),resistant:z.boolean(),immune:z.boolean(),absorb:z.boolean()}).default({weak:false,resistant:false,immune:false,absorb:false}),
+    earth:z.object({weak:z.boolean(),resistant:z.boolean(),immune:z.boolean(),absorb:z.boolean()}).default({weak:false,resistant:false,immune:false,absorb:false}),
+    poison:z.object({weak:z.boolean(),resistant:z.boolean(),immune:z.boolean(),absorb:z.boolean()}).default({weak:false,resistant:false,immune:false,absorb:false}),
+})
+
+export type Affinity = z.infer<typeof affinitiesScheme>;
+
+export const statusScheme = z.object({
+    poisoned:z.boolean().default(false),
+    dazed:z.boolean().default(false),
+    shaken:z.boolean().default(false),
+    enraged:z.boolean().default(false),
+    slow:z.boolean().default(false),
+    weak:z.boolean().default(false),
+})
 
 export const FabulaUltimaCharacterScheme = z.object({
     name:z.string(),
@@ -155,6 +183,8 @@ export const FabulaUltimaCharacterScheme = z.object({
     bonds:z.array(bondScheme).default([]),
     attributes: attributesScheme,
     classes: z.array(characterClassScheme).default([]),
+    affinities:affinitiesScheme,
+    status:statusScheme,
     pic:z.string().optional(),
     code:z.number().default(4)
 })
