@@ -6,7 +6,7 @@
     import Fa from "svelte-fa";
     import { faFileExport, faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
     import { downloadFile } from "$lib/utils";
-    import { type Attributes, type Traits } from "$lib";
+    import { elemGlams, type Attributes, type Traits } from "$lib";
     import ProgressiveBar from "./progressiveBar.svelte";
     const { character }: { character: FabulaUltimaCharacter & { id: string } } = $props();
     
@@ -61,6 +61,8 @@
   let currentPic = $derived(
     character.pic || '/images/defaultCharacterAvatar.jpg'
   );
+
+  $inspect(character.affinities);
 </script>
 
 <div class="w-130">
@@ -77,8 +79,9 @@
     <Card.Content class="flex items-start flex-row gap-5 py-5 bg-white">
 
       <!-- CharacterPic e ProgressBar -->
-      <div class="flex flex-col">
-        <img src={currentPic} alt="character-pic" class="w-40 h-40 border">
+      <div class="flex flex-col gap-2">
+        <img src={currentPic} alt="character-pic" class="w-40 h-40 border border-black">
+
         <ProgressiveBar color="bg-red-500" bgColor = "cafe_noir" label = "PV" actual={character.stats.HP.actual} max={character.stats.HP.max}></ProgressiveBar>
         <ProgressiveBar color="bg-blue-500" bgColor = "cafe_noir" label = "PM"  actual={character.stats.MP.actual} max={character.stats.MP.max}></ProgressiveBar>
         <ProgressiveBar color="bg-green-500" bgColor = "cafe_noir" label = "PI" actual={character.stats.IP.actual} max={character.stats.IP.max}></ProgressiveBar>
@@ -86,7 +89,7 @@
       
       
       <!-- descrizione a dx -->
-      <div class="flex flex-col gap-5">
+      <div class="flex flex-col gap-5 w-100">
         <!-- Tratti -->
         <span class="flex flex-row border">
           <p class="bg-lion-200 text-white  px-1 py-1 rounded flex-shrink-0 [writing-mode:vertical-lr] rotate-180 text-center">
@@ -101,7 +104,7 @@
         </span>
       
         <span>
-          {@render affinitiesTable(character.affinities)}
+          {@render affinitiesTable(character.affinities,elemGlams)}
         </span>
       </div>
     </Card.Content>
@@ -163,15 +166,62 @@
   </div>
 {/snippet}
 
-{#snippet affinitiesTable(affinities:Affinity)}
-  {@const iterableAffinity = Object.entries(affinities)}
-  <div class="grid grid-cols-9 border">
-    
-    {#each iterableAffinity as [name]}
-      <div class="flex items-center border-l pl-2">
-        {name}
+<!-- {#snippet affinitiesTable(affinities:Affinity)}
+ {@const activeAffinityNames = Object.entries(affinities)
+    .filter(([name, affinity]) => 
+      affinity.weak || affinity.resistant || affinity.immune || affinity.absorb
+    )
+    .map(([name]) => name)
+  }
+ {#if activeAffinityNames.length > 0}
+    <div class="active-affinities">
+      <h3>Affinità Attive:</h3>
+      <div class="affinity-list">
+        {#each activeAffinityNames as affinityName}
+          <span class="affinity-badge">
+            {affinityName}
+            <span class="affinity-details">
+              {#if affinities[affinityName].weak}
+                <span class="weak">Debole</span>
+              {/if}
+              {#if affinities[affinityName].resistant}
+                <span class="resistant">Resistente</span>
+              {/if}
+              {#if affinities[affinityName].immune}
+                <span class="immune">Immune</span>
+              {/if}
+              {#if affinities[affinityName].absorb}
+                <span class="absorb">Assorbe</span>
+              {/if}
+            </span>
+          </span>
+        {/each}
       </div>
-      
+    </div>
+  {:else}
+    <p>Nessuna affinità attiva</p>
+  {/if}
+{/snippet}
+ -->
+
+{#snippet affinitiesTable(affinities:Affinity, elemGlams:any)}
+  {@const affinityEntries = Object.entries(affinities)}
+  
+  <div class="grid grid-cols-9 border-r border-t border-b border-black">
+    {#each affinityEntries as [name, affinity]}
+      {@const hasActiveAffinity = affinity.weak || affinity.resistant || affinity.immune || affinity.absorb}
+      {@const glam = elemGlams[name]}
+      {#if glam}
+        <span class="flex items-center justify-center border-l border-black px-1">
+          <Fa icon={glam.icon} class={hasActiveAffinity ? glam.color : ''} />
+          <span>
+            {#if affinity.weak}db{/if}
+            {#if affinity.resistant}rs{/if}
+            {#if affinity.immune}im{/if}
+            {#if affinity.absorb}as{/if}
+          </span>
+        </span>
+      {/if}
     {/each}
   </div>
 {/snippet}

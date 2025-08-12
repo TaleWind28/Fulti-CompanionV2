@@ -118,7 +118,7 @@
 
 <div class=" flex flex-col gap-10 bg-cafe_noir-900 items-center justify-center p-5">
     
-	<div class="p-5 flex flex-row gap-10 bg-white items-center justify-center border  rounded-2xl ">
+	<div class="p-5 flex flex-row gap-10 bg-white items-center justify-center border rounded-2xl ">
 		<Input placeholder="Ricerca col nome del Personaggio" bind:value={searchQuery}/>
 		<Button id="character_creation_dialog" class="bg-cafe_noir-400 w-50" onclick={()=>{openCreationDialog = true}}>Crea un nuovo Personaggio</Button>
 		<Button class="bg-cafe_noir-400 w-50" onclick={handleImport}>Carica Personaggio da Json</Button>

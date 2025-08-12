@@ -1,3 +1,5 @@
+import { faBoltLightning, faFire, faFistRaised, faKhanda, faMoon, faMountain, faSkullCrossbones, faSnowflake, faSun, faWind } from "@fortawesome/free-solid-svg-icons"
+
 // place files you want to import through the `$lib` alias in this folder.
 export type Quality ={name:string, effect:string, price:number}
 export type SelectionItem = {label:string,value:string}
@@ -63,3 +65,41 @@ export type Skill = {
     }
 }
 
+export let elemGlams = {
+  veleno: {
+    icon: faSkullCrossbones,
+    color: 'text-purple-500', // Esempio di classe Tailwind per il colore
+  },
+  luce: {
+    icon: faSun,
+    color: 'text-yellow-300',
+  },
+  oscurità: {
+    icon: faMoon,
+    color: 'text-indigo-500',
+  },
+  ghiaccio: {
+    icon: faSnowflake,
+    color: 'text-blue-300',
+  },
+  fuoco: {
+    icon: faFire,
+    color: 'text-red-500',
+  },
+  terra: {
+    icon: faMountain,  // o faGlobeEurope, faSeedling
+    color: 'text-yellow-700', // o 'text-lime-700'
+  },
+  aria: {
+    icon: faWind,
+    color: 'text-teal-400',
+  },
+  fulmine: {
+    icon: faBoltLightning,
+    color: 'text-yellow-400',
+  },
+  fisico: {
+    icon: faFistRaised, // o faShieldAlt, faFistRaised
+    color: 'text-gray-500',
+  },
+}
