@@ -36,7 +36,12 @@
 					text:"Informazioni",
 					component:InfoSheet,
 					props:{
-						character:character,
+						name:character.name,
+						pic:character.pic,
+						traits:character.traits,
+						bonds:character.bonds,
+						info:character.info,
+
 						
 					},
 

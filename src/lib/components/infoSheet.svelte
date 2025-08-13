@@ -3,10 +3,14 @@
     import Input from "./ui/input/input.svelte";
 
     let {
-        character = $bindable(),
+        name,
+        pic,
+        traits,
+        bonds,
+        info
     } = $props();
 
-    $inspect("character infosheet",character)
+
 
 </script>
 
@@ -16,7 +20,7 @@
             <p>Informazioni Generali</p>
         </Card.Header>
         <Card.Content> 
-            <Input bind:value={character.name}/>
+            <Input value={name}/>
         </Card.Content>
     </Card.Root>
 </div>
