@@ -4,7 +4,7 @@
     import { toast } from "svelte-sonner";
     import { invalidateAll } from "$app/navigation";
     import Fa from "svelte-fa";
-    import { faFileExport, faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
+    import { faFileExport, faKhanda, faMagicWandSparkles, faPencil, faRunning, faShield, faTrash, type IconDefinition } from "@fortawesome/free-solid-svg-icons";
     import { downloadFile } from "$lib/utils";
     import { elemGlams, type Attributes, type Traits } from "$lib";
     import ProgressiveBar from "./progressiveBar.svelte";
@@ -102,10 +102,18 @@
         <span>
           {@render characterStats(character.attributes)}
         </span>
-      
+
+        <!-- Difesa Difesa Magica ed Iniziativa -->
+        <span class=" flex items-center justify-between px-4">
+          {@render derivedStats("DEF",character.stats.DEF,faShield,faKhanda)}
+          {@render derivedStats("M.DEF",character.stats.MDEF,faShield,faMagicWandSparkles)}
+        </span>
+
+        <!-- Affinità Elementali -->
         <span>
           {@render affinitiesTable(character.affinities,elemGlams)}
         </span>
+
       </div>
     </Card.Content>
     <Card.Footer class="flex justify-end items-center gap-5">
@@ -166,44 +174,6 @@
   </div>
 {/snippet}
 
-<!-- {#snippet affinitiesTable(affinities:Affinity)}
- {@const activeAffinityNames = Object.entries(affinities)
-    .filter(([name, affinity]) => 
-      affinity.weak || affinity.resistant || affinity.immune || affinity.absorb
-    )
-    .map(([name]) => name)
-  }
- {#if activeAffinityNames.length > 0}
-    <div class="active-affinities">
-      <h3>Affinità Attive:</h3>
-      <div class="affinity-list">
-        {#each activeAffinityNames as affinityName}
-          <span class="affinity-badge">
-            {affinityName}
-            <span class="affinity-details">
-              {#if affinities[affinityName].weak}
-                <span class="weak">Debole</span>
-              {/if}
-              {#if affinities[affinityName].resistant}
-                <span class="resistant">Resistente</span>
-              {/if}
-              {#if affinities[affinityName].immune}
-                <span class="immune">Immune</span>
-              {/if}
-              {#if affinities[affinityName].absorb}
-                <span class="absorb">Assorbe</span>
-              {/if}
-            </span>
-          </span>
-        {/each}
-      </div>
-    </div>
-  {:else}
-    <p>Nessuna affinità attiva</p>
-  {/if}
-{/snippet}
- -->
-
 {#snippet affinitiesTable(affinities:Affinity, elemGlams:any)}
   {@const affinityEntries = Object.entries(affinities)}
   
@@ -225,3 +195,30 @@
     {/each}
   </div>
 {/snippet}
+
+
+{#snippet iconComposer(icon1:IconDefinition|null, icon2:IconDefinition | null)}
+    <span class="relative inline-block">
+        {#if icon1!=null}
+            <Fa icon={icon1} class="text-4xl " />
+            {#if icon2 !== null}
+                <Fa icon={icon2} class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-2xl text-white" />
+            {/if}
+        {/if}
+    </span>
+{/snippet}
+
+
+{#snippet derivedStats(statName:string|null, stat:number|null, icon:IconDefinition|null, innerIcon:IconDefinition | null)}
+    {#if stat!=null}
+        <div>
+            {@render iconComposer(icon, innerIcon)}
+            <p>{statName}: {stat}</p>
+        </div>
+    {:else}
+        <div>
+
+        </div>
+    {/if}
+
+{/snippet} 
