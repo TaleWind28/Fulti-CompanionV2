@@ -121,6 +121,7 @@ export const actions: Actions = {
             attributes:{},
             affinities:{},
             status:{},
+            info:{},
             classes:characterClasses,
         });
         console.log(createdCharacter,"default");

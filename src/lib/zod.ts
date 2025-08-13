@@ -1,5 +1,5 @@
 import type { ZodValidationSchema } from 'sveltekit-superforms/adapters';
-import {number, z} from 'zod/v4';
+import {z} from 'zod/v4';
 
 /* codici per schemi zod
     0 - Arma,
@@ -76,7 +76,14 @@ export const statsScheme = z.object({
     IP:z.object({max:z.number(),actual:z.number()}).default({max:6,actual:6}),
     DEF:z.number().default(8),
     MDEF:z.number().default(8),
-    LV:z.number().default(5),
+})
+
+export const infoScheme = z.object({
+    description:z.string().default(""),
+    exp:z.number().default(0),
+    zenit:z.number().default(0),
+    fabulaPoints:z.number().default(3),
+    level:z.number().default(5)
 })
 
 export const bondScheme = z.object({
@@ -135,8 +142,6 @@ export const heroicSkillScheme = z.object({
     description:z.string()
 })
 
-
-
 export const characterClassScheme = z.object({
     name:z.string(),
     level:z.number(),
@@ -185,6 +190,7 @@ export const FabulaUltimaCharacterScheme = z.object({
     classes: z.array(characterClassScheme).default([]),
     affinities:affinitiesScheme,
     status:statusScheme,
+    info:infoScheme,
     pic:z.string().optional(),
     code:z.number().default(4)
 })

@@ -4,11 +4,11 @@
     import { toast } from "svelte-sonner";
     import { invalidateAll } from "$app/navigation";
     import Fa from "svelte-fa";
-    import { faFileExport, faKhanda, faMagicWandSparkles, faPencil, faRunning, faShield, faTrash, type IconDefinition } from "@fortawesome/free-solid-svg-icons";
+    import { faFileExport, faKhanda, faMagicWandSparkles, faPencil, faShield, faTrash, type IconDefinition } from "@fortawesome/free-solid-svg-icons";
     import { downloadFile } from "$lib/utils";
     import { elemGlams, type Attributes, type Traits } from "$lib";
-    import ProgressiveBar from "./progressiveBar.svelte";
-    let { character, showButtons=true }: { character: FabulaUltimaCharacter & { id: string }, showButtons:boolean } = $props();
+    import LabeledProgress from "./labeledProgress.svelte";
+    let { character, showButtons=false }: { character: FabulaUltimaCharacter & { id: string }, showButtons?:boolean } = $props();
     
 
 
@@ -65,12 +65,11 @@
 
   $inspect(showButtons,"pulsanti");
 </script>
-
   <Card.Root class="bg-lion-600 border-0 "> 
     
     <Card.Header class="flex items-center justify-between">
       <p class="font-bold">{character.name}</p>
-      <p class=""> LV {character.stats.LV}</p>
+      <p class=""> LV {character.info.level}</p>
     </Card.Header>
 
     <Card.Content class="flex items-start flex-row gap-5 py-5 bg-white">
@@ -78,10 +77,20 @@
       <!-- CharacterPic e ProgressBar -->
       <div class="flex flex-col gap-2">
         <img src={currentPic} alt="character-pic" class="w-40 h-40 border border-black">
+        <span class="flex flex-row items-center justify-center gap-2">
+          <LabeledProgress value={character.stats.HP.actual} max={character.stats.HP.max} trackColor = 'bg-red-200' progressColor='bg-red-500' class="h-3"/>
+          <p>HP</p>  
+        </span>
 
-        <ProgressiveBar color="bg-red-500" bgColor = "cafe_noir" label = "PV" actual={character.stats.HP.actual} max={character.stats.HP.max}></ProgressiveBar>
-        <ProgressiveBar color="bg-blue-500" bgColor = "cafe_noir" label = "PM"  actual={character.stats.MP.actual} max={character.stats.MP.max}></ProgressiveBar>
-        <ProgressiveBar color="bg-green-500" bgColor = "cafe_noir" label = "PI" actual={character.stats.IP.actual} max={character.stats.IP.max}></ProgressiveBar>
+        <span class="flex flex-row items-center justify-center gap-2">
+          <LabeledProgress value={character.stats.MP.actual} max={character.stats.MP.max} trackColor = 'bg-blue-200' progressColor='bg-blue-500' class="h-3"/>
+          <p>MP</p>  
+        </span>
+
+        <span class="flex flex-row items-center justify-center gap-2">
+          <LabeledProgress value={character.stats.IP.actual} max={character.stats.IP.max} trackColor = 'bg-green-200' progressColor='bg-green-500' class="h-3"/>
+          <p>IP</p>  
+        </span>
       </div>
       
       <!-- descrizione a dx -->
