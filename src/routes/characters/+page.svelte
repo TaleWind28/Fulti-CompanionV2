@@ -174,7 +174,7 @@
 						<Form.Control>
 							<Form.Label >Prima Classe</Form.Label>
 							
-								<Select.Root type="single" name="prima_classe" bind:value={$formData.prima_classe} allowDeselect={true}>
+								<Select.Root type="single" name="prima_classe" bind:value={$formData.prima_classe as string} allowDeselect={true}>
 									
 									<Select.Trigger class="w-auto min-w-30 text-black bg-white">
 										{triggerFirstClass}
@@ -202,7 +202,7 @@
 					<Form.Field {form} name="seconda_classe">
 						<Form.Control >
 							<Form.Label>Seconda Classe</Form.Label>    
-							<Select.Root type="single" name="prima_classe" bind:value={$formData.seconda_classe}>
+							<Select.Root type="single" name="prima_classe" bind:value={$formData.seconda_classe as string}>
 								<Select.Trigger class="w-auto min-w-30 text-black bg-white">
 									{triggerSecondClass}
 								</Select.Trigger>
@@ -229,7 +229,7 @@
 				<Form.Field {form} name="terza_classe">
 					<Form.Control >
 						<Form.Label>Terza Classe</Form.Label>    
-						<Select.Root type="single" name="prima_classe" bind:value={$formData.terza_classe}>
+						<Select.Root type="single" name="prima_classe" bind:value={$formData.terza_classe as string}>
 							<Select.Trigger class="w-39 min-w-30 text-black bg-white">
 								{triggerThirdClass}
 							</Select.Trigger>
