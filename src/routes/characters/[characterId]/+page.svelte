@@ -9,18 +9,44 @@
 
 	let character = $state(data.character);
 
-	let tabSelector = $derived.by(()=>
+	 // Callback per aggiornare il personaggio
+    function updateCharacter(field: string, value: any) {
+        character = {
+            ...character,
+            [field]: value
+        };
+        
+        // Opzionale: salva automaticamente nel database
+        // saveCharacterToDatabase();
+    }
+
+	 type CharacterCardProps = {
+        character: typeof character;
+    };
+
+    type InfoSheetProps = {
+        name: string;
+        pic: string | undefined;
+        traits: any;
+        bonds: any;
+        info: any;
+        onUpdate: (field: string, value: any) => void;
+    };
+
+	type TabContentProps = CharacterCardProps | InfoSheetProps;
+
+	 type TabContent = {
+        value: string;
+        text: string;
+        component: any;
+        props: TabContentProps;
+    };
+
+	let tabSelector = $derived.by(():{
+		contents:TabContent[]
+	}=>
 	(
 		{
-			triggers:[
-				{value:"sheet",text:character.name},
-				{value:"information",text:"Informazioni"},
-				{value:"stats",text:"Statistiche"},
-				{value:"classes",text:"Classi"},
-				{value:"spells",text:"Incantesimi"},
-				{value:"equipment",text:"Equipaggamenti"},
-				{value:"notes",text:"Note"},
-			],
 			contents:[
 				{
 					value:"sheet",
@@ -41,8 +67,7 @@
 						traits:character.traits,
 						bonds:character.bonds,
 						info:character.info,
-
-						
+						onUpdate:updateCharacter	
 					},
 
 					
@@ -99,7 +124,8 @@
 );
 
 	let tabValue = $state("sheet");
-	$inspect(tabValue,"tab",character,"personaggio",tabSelector.contents[0].props.character,data.character.traits);
+	/* IMPORTANTE PER CASTARE NON CANCELLARE    */
+	$inspect(tabValue,"tab",character,"personaggio",(tabSelector.contents[0].props as CharacterCardProps).character);
 	$effect(()=>{character = data.character});
 </script>
 
