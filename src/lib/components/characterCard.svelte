@@ -84,7 +84,6 @@
         <ProgressiveBar color="bg-green-500" bgColor = "cafe_noir" label = "PI" actual={character.stats.IP.actual} max={character.stats.IP.max}></ProgressiveBar>
       </div>
       
-      
       <!-- descrizione a dx -->
       <div class="flex flex-col gap-5 w-100">
         <!-- Tratti -->
@@ -135,14 +134,14 @@
 {#snippet traits(traits:Traits)}
   <div class="flex flex-col w-60">
 
-    <h1 class="flex flex-row">
+    <h1 class="flex flex-row gap-2">
       <p class="font-bold">Identità: </p>{traits.identity }
     </h1>
     
-    <h1 class="flex flex-row">
+    <h1 class="flex flex-row gap-2">
       <p class="font-bold">Origine:</p>{traits.origin}  
     </h1>
-    <h1 class="flex flex-row">
+    <h1 class="flex flex-row gap-2">
       <p class="font-bold">Tema: </p>{traits.theme}
     </h1>
 
