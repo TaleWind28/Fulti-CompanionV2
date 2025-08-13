@@ -63,7 +63,6 @@
     character.pic || '/images/defaultCharacterAvatar.jpg'
   );
 
-  $inspect(showButtons,"pulsanti");
 </script>
   <Card.Root class="bg-lion-600 border-0 "> 
     
