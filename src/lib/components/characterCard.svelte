@@ -8,8 +8,9 @@
     import { downloadFile } from "$lib/utils";
     import { elemGlams, type Attributes, type Traits } from "$lib";
     import ProgressiveBar from "./progressiveBar.svelte";
-    const { character }: { character: FabulaUltimaCharacter & { id: string } } = $props();
+    let { character, showButtons=true }: { character: FabulaUltimaCharacter & { id: string }, showButtons:boolean } = $props();
     
+
 
     // Questa funzione verrà chiamata al click del pulsante
   async function handleDelete(characterId: string) {
@@ -62,7 +63,7 @@
     character.pic || '/images/defaultCharacterAvatar.jpg'
   );
 
-  $inspect(character.affinities);
+  $inspect(showButtons,"pulsanti");
 </script>
 
 <div class="w-130">
@@ -117,18 +118,20 @@
       </div>
     </Card.Content>
     <Card.Footer class="flex justify-end items-center gap-5">
-    <a href="/characters/{character.id}" class="card-link">
-      <Fa icon={faPencil}></Fa>
-    </a>
+      
+      {#if showButtons}
+        <a href="/characters/{character.id}" class="card-link">
+          <Fa icon={faPencil}></Fa>
+        </a>
 
-    <button onclick={()=>handleDelete(character.id)}>
-      <Fa icon={faTrash} class="cursor-pointer px-2 w-auto"/>
-    </button>
+        <button onclick={()=>handleDelete(character.id)}>
+          <Fa icon={faTrash} class="cursor-pointer px-2 w-auto"/>
+        </button>
 
-    <button onclick={handleExport}>
-      <Fa icon={faFileExport} class="cursor-pointer px-2 w-auto"></Fa>
-    </button>
-
+        <button onclick={handleExport}>
+          <Fa icon={faFileExport} class="cursor-pointer px-2 w-auto"></Fa>
+        </button>
+      {/if}
     </Card.Footer>
   </Card.Root>
 
