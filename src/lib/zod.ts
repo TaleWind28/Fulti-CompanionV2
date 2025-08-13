@@ -196,9 +196,9 @@ export type FabulaUltimaCharacter = z.infer<typeof FabulaUltimaCharacterScheme>;
 //FORM SCHEMES  
 
 export const characterSchema = z.object({
-	name: z.string().min(3, { message: "Il nome deve contenere almeno 3 caratteri." }),
-	prima_classe: z.string().min(1, { message: "La prima classe è obbligatoria." }),
-	seconda_classe: z.string().min(1, { message: "La seconda classe è obbligatoria." }),
+	name: z.string().min(3, { message: "Il nome deve contenere almeno 3 caratteri." }).default(""),
+	prima_classe: z.string().min(1, { message: "La prima classe è obbligatoria." }).default(""),
+	seconda_classe: z.string().min(1, { message: "La seconda classe è obbligatoria." }).default(""),
 	terza_classe: z.string().optional()
 }).superRefine((data, ctx) => {
   // 1. Controlla che prima_classe e seconda_classe siano diverse

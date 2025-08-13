@@ -38,7 +38,6 @@ export const load: PageServerLoad = async ({ locals, params }) => {
             id: docSnap.id,
             ...result.data
         };
-        console.log(characterData.traits);
         return {
             character: characterData
         };
