@@ -66,15 +66,11 @@
   $inspect(showButtons,"pulsanti");
 </script>
 
-<div class="w-130">
   <Card.Root class="bg-lion-600 border-0 "> 
     
     <Card.Header class="flex items-center justify-between">
-      <p>{character.name}</p>
-      <p>
-      LV  
-      {character.stats.LV}
-      </p>
+      <p class="font-bold">{character.name}</p>
+      <p class=""> LV {character.stats.LV}</p>
     </Card.Header>
 
     <Card.Content class="flex items-start flex-row gap-5 py-5 bg-white">
@@ -135,8 +131,6 @@
     </Card.Footer>
   </Card.Root>
 
-</div>
-
 
 {#snippet traits(traits:Traits)}
   <div class="flex flex-col w-60">
@@ -158,19 +152,19 @@
 
 {#snippet characterStats(stats:Attributes)}    
   <div class="grid grid-cols-2 justify-between">
-      <div class="flex px-2 text-xl font-semi-bold">
+      <div class="flex text-xl font-semi-bold">
           <p>DES</p>:
           d{stats.DEX}
       </div>
-      <div class="flex px-2 text-xl font-semi-bold">
+      <div class="flex  text-xl font-semi-bold">
           <p>INT</p>:
           d{stats.INS}
       </div>
-      <div class="flex px-2 text-xl font-semi-bold">
+      <div class="flex  text-xl font-semi-bold">
         <p>VIG</p>:
         d{stats.MIG}
     </div>
-    <div class="flex px-2 text-xl font-semi-bold">
+    <div class="flex text-xl font-semi-bold">
         <p>VOL</p>:
         d{stats.WLP}
     </div>

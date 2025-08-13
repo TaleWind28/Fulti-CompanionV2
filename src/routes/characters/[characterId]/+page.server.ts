@@ -5,6 +5,7 @@ import type { PageServerLoad } from './$types';
 import { FabulaUltimaCharacterScheme, type FabulaUltimaCharacter } from '$lib/zod.js';
 
 export const load: PageServerLoad = async ({ locals, params }) => {
+    console.log("load chiamata");
     // Guardia di sicurezza: l'utente deve essere loggato
     if (!locals.user) {
         throw redirect(303, '/login');
@@ -37,7 +38,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
             id: docSnap.id,
             ...result.data
         };
-
+        console.log(characterData.traits);
         return {
             character: characterData
         };

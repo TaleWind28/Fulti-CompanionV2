@@ -129,9 +129,12 @@
 			{@const rows = (Math.floor(data.characters.length))}
 			<div class="grid grid-cols-3 {`grid-rows-${rows}`}  gap-4">
 				{#each filteredCharacters as char}
-					<CharacterCard character={char} >
+					<div class="w-130">
+						<CharacterCard character={char} showButtons={true}>
 
-					</CharacterCard>
+						</CharacterCard>
+					</div>
+					
 				{/each}
 			</div>
 		{:else}
