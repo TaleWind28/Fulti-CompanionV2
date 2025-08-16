@@ -5,7 +5,7 @@
     import Input from "./ui/input/input.svelte";
     import Label from "./ui/label/label.svelte";
     import Textarea from "./ui/textarea/textarea.svelte";
-    import { faAward, faChevronUp, faCoins, faFeather, faStar } from "@fortawesome/free-solid-svg-icons";
+    import { faAward, faChevronUp, faCoins, faFeather, faPlusCircle, faStar } from "@fortawesome/free-solid-svg-icons";
 
     let {
         name,
@@ -114,13 +114,27 @@
         <Card.Header> 
             <p>Tratti</p>
         </Card.Header>
-        <Card.Content class="bg-white py-5">
+        <Card.Content class="bg-white py-5 flex flex-col gap-5">
             <span class="flex flex-col gap-2">
                 <Label>
                     Identità
                 </Label>
-                <Input value={traits.identity}/>
+                <Input value={traits.identity} oninput={(e) => callbacks.traits.update('identity', (e.target as HTMLInputElement).value)}/>
             </span>
+            <div class="flex flex-row items-center justify-between">
+                <span class="flex flex-col gap-2">
+                    <Label>
+                        Tema
+                    </Label>
+                    <Input value={traits.theme} oninput={(e) => callbacks.traits.update('theme', (e.target as HTMLInputElement).value)}/>
+                </span>
+                <span class="flex flex-col gap-2">
+                    <Label>
+                        Origine
+                    </Label>
+                    <Input value={traits.origin} oninput={(e) => callbacks.traits.update('origin', (e.target as HTMLInputElement).value)}/>
+                </span>
+            </div>
         </Card.Content>
     </Card.Root>
 
@@ -128,7 +142,7 @@
     <Card.Root class="border-0 bg-cafe_noir-800"> 
         <Card.Header class="flex flex-row justify-between"> 
             <p>Legami</p>
-            <button class="text-3xl"> + </button>
+            <button class=""> <Fa icon={faPlusCircle} class="text-2xl"/> </button>
         </Card.Header>
         <Card.Content> 
                 
