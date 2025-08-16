@@ -181,7 +181,7 @@
         </Card.Header>
         <Card.Content> 
             {#each bonds as bond,i }
-                <Bond bond={bond} updateBond={callbacks.bonds.update} id={i}> 
+                <Bond bond={bond} updateBond={callbacks.bonds.update} removeBond={callbacks.bonds.remove} id={i}> 
 
                 </Bond>
             {/each}
