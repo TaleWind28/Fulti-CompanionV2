@@ -1,11 +1,14 @@
 <script lang="ts">
     import * as Card from "$lib/components/ui/card/index.js";
+    import * as Dialog from "$lib/components/ui/dialog/index";
     import Fa from "svelte-fa";
     import Button from "./ui/button/button.svelte";
     import Input from "./ui/input/input.svelte";
     import Label from "./ui/label/label.svelte";
     import Textarea from "./ui/textarea/textarea.svelte";
-    import { faAward, faChevronUp, faCoins, faFeather, faPlusCircle, faStar } from "@fortawesome/free-solid-svg-icons";
+    import { faAward, faCoins, faFeather, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
+    import Checkbox from "./ui/checkbox/checkbox.svelte";
+
 
     let {
         name,
@@ -16,21 +19,31 @@
         callbacks
     } = $props();
 
-    //  function updateName(newName: string) {
-    //     onUpdate('name', newName);
-    // }
+    let createBondDialog = $state(false);
 
-    // function updateTraits(newTraits: any) {
-    //     onUpdate('traits', newTraits);
-    // }
+    let wit = $state("");
+   
+    let affection = $state(false);
+    let admiration = $state(false);
+    let loyalty = $state(false);
+    let hatred = $state(false);
+    let mistrust = $state(false);
+    let inferiority = $state(false);
 
-    // function updateBonds(newBonds: any) {
-    //     onUpdate('bonds', newBonds);
-    // }
+    function handleCreateBond(){
+       //dovrei aver creato il legame
+        let  b = {
+            wit,
+            admiration,
+            loyalty,
+            hatred,
+            mistrust,
+            inferiority
+        }
+        //aggiungo il legame
+        callbacks.bonds.add(b);
 
-    // function updateInfo(position: any,value:any) { 
-    //     onUpdate('info', info);
-    // }
+    }
 
 </script>
 
@@ -142,42 +155,40 @@
     <Card.Root class="border-0 bg-cafe_noir-800"> 
         <Card.Header class="flex flex-row justify-between"> 
             <p>Legami</p>
-            <button class=""> <Fa icon={faPlusCircle} class="text-2xl"/> </button>
+            <button class="cursor-pointer" onclick={()=>createBondDialog = true}> <Fa icon={faPlusCircle} class="text-2xl text-lion-300"/> </button>
         </Card.Header>
         <Card.Content> 
                 
         </Card.Content>
     </Card.Root>
 
-    <!-- <div>
-                    <label for="traits" class="block text-sm font-medium mb-2">Tratti</label>
-                    <Input 
-                        id = "traits"
-                        value={traits || ''}
-                        oninput={(e) => updateTraits((e.target as HTMLInputElement).value)}
-                        placeholder="Inserisci i tratti del personaggio"
-                    />
-                </div>
-                
-                <div>
-                    <label for = "bonds" class="block text-sm font-medium mb-2">Legami</label>
-                    <Input 
-                        id="bonds"
-                        value={bonds || ''}
-                        oninput={(e) => updateBonds((e.target as HTMLInputElement).value)}
-                        placeholder="Inserisci i legami del personaggio"
-                    />
-                </div>
-                
-                <div>
-                    <label for="info" class="block text-sm font-medium mb-2">Informazioni</label>
-                    <textarea 
-                        id="info"
-                        class="w-full p-2 border rounded-md"
-                        value={info || ''}
-                        oninput={(e) => updateInfo((e.target as HTMLTextAreaElement).value)}
-                        placeholder="Inserisci informazioni aggiuntive"
-                        rows="4"
-                    ></textarea>
-                </div> -->
+    <Dialog.Root open={createBondDialog} onOpenChange={(v)=> {createBondDialog = v}}> 
+        <Dialog.Content class="bg-cafe_noir-600 border-0"> 
+            <Dialog.Header> 
+                <Dialog.Title class="text-black"> 
+                    Inserirsci il nome ed il tipo di Legame che hai con quel personaggio
+                </Dialog.Title>
+                <Dialog.Description> 
+                    <span>
+                        <Label>
+                            Personaggio
+                        </Label>
+                        <Input value={wit}/>
+                    </span>
+                    <span class="grid grid-cols-3 gap-5">
+                        <Checkbox checked={affection}/>
+                        <Checkbox checked={admiration}/>
+                        <Checkbox checked={loyalty}/>
+                        <Checkbox checked={hatred}/>
+                        <Checkbox checked={mistrust}/>
+                        <Checkbox checked={inferiority}/>
+                    </span>
+                </Dialog.Description>
+                <Dialog.Footer> 
+                    <Button onclick={handleCreateBond}> Crea Legame </Button>
+                </Dialog.Footer>
+            </Dialog.Header>
+            
+        </Dialog.Content> 
+    </Dialog.Root>
 </div>

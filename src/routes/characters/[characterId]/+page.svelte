@@ -123,12 +123,14 @@
                 };
             },
             
-            add: () => {
+            add: (newBond:any) => {
+                
+
                 character = {
                     ...character,
                     bonds: [
                         ...character.bonds,
-                        bondScheme.parse({})
+                        newBond
                     ]
                 };
             },
