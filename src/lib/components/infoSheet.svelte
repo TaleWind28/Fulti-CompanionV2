@@ -8,6 +8,8 @@
     import Textarea from "./ui/textarea/textarea.svelte";
     import { faAward, faCoins, faFeather, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
     import Checkbox from "./ui/checkbox/checkbox.svelte";
+    import { toast } from "svelte-sonner";
+    import Bond from "./bond.svelte";
 
 
     let {
@@ -26,24 +28,44 @@
     let affection = $state(false);
     let admiration = $state(false);
     let loyalty = $state(false);
+
     let hatred = $state(false);
     let mistrust = $state(false);
     let inferiority = $state(false);
 
     function handleCreateBond(){
-       //dovrei aver creato il legame
+
+        //controllo che il nome del personaggio sia presente
+        if(wit === ""){
+            toast.error('devi inserire il Personaggio con cui vuoi formare un legame',{action:{label:"OK",onClick:()=>console.info("Undo")}});
+            return;
+        }
+        
+        //controllo che almeno un legame sia selezionato
+        if( !affection && !hatred && !admiration && !inferiority && !loyalty && !mistrust){
+            toast.error('Devi scegliere un legame',{action:{label:"OK",onClick:()=>console.info("Undo")}});
+            return;
+        }
+
+        //creo il legame
         let  b = {
-            wit,
+            with:wit,
+            affection,
             admiration,
             loyalty,
             hatred,
             mistrust,
             inferiority
         }
+
         //aggiungo il legame
         callbacks.bonds.add(b);
 
+        //chiudo il dialog
+        createBondDialog = false;
+
     }
+    $inspect(wit,affection)
 
 </script>
 
@@ -158,33 +180,63 @@
             <button class="cursor-pointer" onclick={()=>createBondDialog = true}> <Fa icon={faPlusCircle} class="text-2xl text-lion-300"/> </button>
         </Card.Header>
         <Card.Content> 
+            {#each bonds as bond,i }
+                <Bond bond={bond} updateBond={callbacks.bonds.update} id={i}> 
+
+                </Bond>
+            {/each}
                 
         </Card.Content>
     </Card.Root>
 
+    <!-- Creazione Legame -->
     <Dialog.Root open={createBondDialog} onOpenChange={(v)=> {createBondDialog = v}}> 
-        <Dialog.Content class="bg-cafe_noir-600 border-0"> 
+        <Dialog.Content class="bg-cafe_noir-700 border-0"> 
             <Dialog.Header> 
                 <Dialog.Title class="text-black"> 
-                    Inserirsci il nome ed il tipo di Legame che hai con quel personaggio
+                    Inserirsci il nome del Personaggio ed il tipo di Legame che vuoi avere con lui
                 </Dialog.Title>
-                <Dialog.Description> 
-                    <span>
-                        <Label>
+                <Dialog.Description class="flex gap-5 items-center justify-evenly"> 
+                    <span class="flex flex-col gap-5">
+                        <Label class="text-black">
                             Personaggio
                         </Label>
-                        <Input value={wit}/>
+                        <Input bind:value={wit}/>
                     </span>
                     <span class="grid grid-cols-3 gap-5">
-                        <Checkbox checked={affection}/>
-                        <Checkbox checked={admiration}/>
-                        <Checkbox checked={loyalty}/>
-                        <Checkbox checked={hatred}/>
-                        <Checkbox checked={mistrust}/>
-                        <Checkbox checked={inferiority}/>
+                        <span class="flex flex-col items-center gap-2">
+                            <Label class="text-black">Affetto</Label>
+                            <Checkbox bind:checked={affection} disabled={hatred}/>
+                        </span>
+
+                        <span class="flex flex-col items-center gap-2">
+                            <Label class="text-black">Ammirazione</Label>
+                            <Checkbox bind:checked={admiration} disabled={inferiority}/>
+                        </span>
+
+                        <span class="flex flex-col items-center gap-2">
+                            <Label class="text-black">Lealtà</Label>
+                            <Checkbox bind:checked={loyalty} disabled={mistrust}/>
+                        </span>
+
+                        <span class="flex flex-col items-center gap-2">
+                            <Label class="text-black">Odio</Label>
+                            <Checkbox bind:checked={hatred} disabled={affection}/>
+                        </span>
+
+                        <span class="flex flex-col items-center gap-2">
+                            <Label class="text-black">Inferiorità</Label>
+                            <Checkbox bind:checked={inferiority} disabled={admiration}/>
+                        </span>
+
+                        <span class="flex flex-col items-center gap-2">
+                            <Label class="text-black">Sfiducia</Label>
+                            <Checkbox bind:checked={mistrust} disabled={loyalty}/>
+                        </span>
                     </span>
                 </Dialog.Description>
-                <Dialog.Footer> 
+
+                <Dialog.Footer class="flex items-center justify-centerS"> 
                     <Button onclick={handleCreateBond}> Crea Legame </Button>
                 </Dialog.Footer>
             </Dialog.Header>

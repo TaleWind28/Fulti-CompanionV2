@@ -14,6 +14,7 @@
         <Input value={bond.with} oninput={(e)=> updateBond(id,"with",(e.target as HTMLInputElement).value)}/>
     </span>
     <span>
+        
         <Checkbox checked={bond.affection} onCheckedChange={(checked)=> updateBond(id,"affection",checked)}></Checkbox>
         <Checkbox checked={bond.admiration} onCheckedChange={(checked)=> updateBond(id,"admiration",checked)}></Checkbox>
         <Checkbox checked={bond.loyalty} onCheckedChange={(checked)=> updateBond(id,"loyalty",checked)}></Checkbox>
