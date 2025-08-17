@@ -101,13 +101,13 @@ export let elemGlams = {
   },
   fisico: {
     icon: faFistRaised, // o faShieldAlt, faFistRaised
-    color: 'text-gray-500',
+    color: 'text-lion-500',
   },
 }
 
 export type StatsSheetProps = {
-        attributes: Attributes;
-        affinity:Affinity;
-        statuses: Status;
-        callbacks:any;
-    }
+  attributes: Attributes;
+  affinity:Affinity;
+  statuses: Status;
+  callbacks:any;
+}

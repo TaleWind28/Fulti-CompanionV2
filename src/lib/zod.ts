@@ -183,6 +183,10 @@ export const statusScheme = z.object({
     enraged:z.boolean().default(false),
     slow:z.boolean().default(false),
     weak:z.boolean().default(false),
+    dexUp:z.boolean().default(false),
+    insUp:z.boolean().default(false),
+    migUp:z.boolean().default(false),
+    wlpUp:z.boolean().default(false),
 })
 
 export type Status = z.infer<typeof statusScheme>
