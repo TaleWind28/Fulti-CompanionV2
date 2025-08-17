@@ -61,6 +61,15 @@
         //aggiungo il legame
         callbacks.bonds.add(b);
 
+        //resetto i campi dell'oggetto
+        affection = false;
+        admiration = false;
+        loyalty = false;
+        hatred = false;
+        mistrust = false;
+        inferiority = false;
+        wit = "";
+
         //chiudo il dialog
         createBondDialog = false;
 
@@ -179,7 +188,7 @@
             <p>Legami</p>
             <button class="cursor-pointer" onclick={()=>createBondDialog = true}> <Fa icon={faPlusCircle} class="text-2xl text-lion-300"/> </button>
         </Card.Header>
-        <Card.Content> 
+        <Card.Content class="flex flex-col gap-7"> 
             {#each bonds as bond,i }
                 <Bond bond={bond} updateBond={callbacks.bonds.update} removeBond={callbacks.bonds.remove} id={i}> 
 
