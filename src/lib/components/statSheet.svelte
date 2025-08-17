@@ -101,18 +101,18 @@
     <div class="flex flex-row">
         <p class="w-20">{attribute}</p>
         <div class="flex flex-col w-50">
-        <Slider.Root type="single" class="relative flex w-full touch-none select-none items-center" value={value} onValueChange={()=>{toast.error("fare callback")}} max={12} min={6} step={2}>
+        <Slider.Root type="single" class="relative flex w-full touch-none select-none items-center" value={value} onValueCommit={()=>{toast.error("fare callback")}} max={12} min={6} step={2}>
             {#snippet children({ tickItems, thumbItems })}
-            <!-- Traccia dello slider -->
+                <!-- Traccia dello slider -->
                 <div class="relative h-2 w-full grow rounded-full bg-gray-200">
-                    <Slider.Range class="absolute h-full rounded-full bg-blue-500" />
+                    <Slider.Range class="absolute h-full rounded-full bg-lion-300 " />
                 </div>
                     
                 <!-- Thumb -->
                 {#each thumbItems as { index } (index)}
                 <Slider.Thumb 
                     {index}
-                    class="block h-5 w-5 rounded-full border-2 border-blue-500 bg-white shadow transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 z-10"
+                    class="block h-5 w-5 rounded-full border-2 border-white border-rounded bg-white shadow transition-colors focus:outline-none focus:ring-2  z-10"
                 />
                 {/each}
                 
@@ -149,59 +149,40 @@
         <div class="flex flex-row gap-2 items-center">
             <Fa icon={glam.icon} class={glam.color}/>
             <p class="w-50">{affinity}</p>
-            <Slider.Root type="single" value={affinityValue} min={0} max={4} onValueChange={()=>toast.error("fare Callback")}>
-                <Slider.Range>
-                </Slider.Range>
+            <Slider.Root type="single" class="relative flex w-full touch-none select-none items-center" value={affinityValue} min={0} max={4} step={1} onValueCommit={()=>toast.error("fare Callback")}>
+                {#snippet children({ tickItems, thumbItems })}
+                <!-- Traccia dello slider -->
+                <div class="relative h-2 w-full grow rounded-full bg-gray-200">
+                    <Slider.Range class="absolute h-full rounded-full bg-lion-300 " />
+                </div>
+                    
+                <!-- Thumb -->
+                {#each thumbItems as { index } (index)}
+                <Slider.Thumb 
+                    {index}
+                    class="block h-5 w-5 rounded-full border-2 border-white border-rounded bg-white shadow transition-colors focus:outline-none focus:ring-2  z-10"
+                />
+                {/each}
+                
+                    <!-- Ticks e Labels -->
+                    {#each tickItems as { index } (index)}
+                    {@const labels = ["Immune","Debole","Normale","Resistente","Assorbe"]}
+                        <Slider.Tick 
+                            {index}
+                            class="absolute h-2 w-0.5 bg-gray-400 z-0"
+                        />
+                        {#if affinity === "Veleno"}    
+                            <Slider.TickLabel 
+                                {index}
+                                position="bottom"
+                                class="text-xs text-gray-600 mt-2 font-medium"
+                            >
+                                {labels[index]}
+                            </Slider.TickLabel>
+                        {/if}
+                    {/each}
+            {/snippet}
             </Slider.Root>
         </div>
     </div>
 {/snippet}
-
-
-
-
-
-	
-<!-- <Slider.Root type="single" step={[0, 4, 8, 16, 24]}>
-  {#snippet children({ tickItems })}
-    {#each tickItems as { value, index } (index)}
-      <Slider.Tick {index} />
-      <Slider.TickLabel {index} position="top">
-        {value}
-      </Slider.TickLabel>
-    {/each}
-  {/snippet}
-  {@render children({value:"Immune",index:0})}
-</Slider.Root> -->
-
-<Slider.Root type="single" class="relative flex w-full touch-none select-none items-center" value={attributes.DEX} onValueChange={()=>{toast.error("fare callback")}} max={12} min={6} step={2}>
-    {#snippet children({ tickItems, thumbItems })}
-        <!-- Traccia dello slider -->
-        <div class="relative h-2 w-full grow rounded-full bg-gray-200">
-          <Slider.Range class="absolute h-full rounded-full bg-blue-500" />
-        </div>
-
-        <!-- Thumb -->
-        {#each thumbItems as { index } (index)}
-          <Slider.Thumb 
-            {index}
-            class="block h-5 w-5 rounded-full border-2 border-blue-500 bg-white shadow transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 z-10"
-          />
-        {/each}
-
-        <!-- Ticks e Labels -->
-        {#each tickItems as { index, value } (index)}
-          <Slider.Tick 
-            {index}
-            class="absolute h-2 w-0.5 bg-gray-400 z-0"
-          />
-          <Slider.TickLabel 
-            {index}
-            position="bottom"
-            class="text-xs text-gray-600 mt-2 font-medium"
-          >
-            d{value}
-          </Slider.TickLabel>
-        {/each}
-      {/snippet}
-</Slider.Root>
