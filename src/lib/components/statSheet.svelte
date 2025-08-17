@@ -1,9 +1,12 @@
 <script lang="ts">
     import { elemGlams, type StatsSheetProps } from "$lib";
     import * as Card from "$lib/components/ui/card/index"
+    import {Slider} from "bits-ui"
     import { toast } from "svelte-sonner";
-    import Slider from "./ui/slider/slider.svelte";
+    
     import Fa from "svelte-fa";
+    import { Root } from "./ui/button";
+    import { cn } from "$lib/utils";
 
     let {
         attributes,
@@ -11,6 +14,13 @@
         statuses,
         callbacks
     } : StatsSheetProps = $props();
+
+    let singleValue = $state(50);
+  let rangeValue = [25, 75];
+
+  function handleValueChange(value:any) {
+    console.log("Nuovo valore:", value);
+  }
 
 
 </script>
@@ -27,6 +37,11 @@
                 {@render attributeRender("VIG",attributes.MIG)}
                 {@render attributeRender("VOL",attributes.WLP)}
             </div>
+
+            
+
+
+
             <!-- 
             fare un gradiente
             bg-gradient-to-r from-lion-500  to-lion-700 
@@ -85,17 +100,43 @@
 {#snippet attributeRender(attribute:string,value:number)}
     <div class="flex flex-row">
         <p class="w-20">{attribute}</p>
-        <div class="flex flex-col">
-            <Slider type="single" class="w-50 py-3" value={value} onValueChange={()=>{toast.error("fare callback")}} max={12} min={6} step={2}></Slider>
-            {#if attribute === "VOL"}
-                <!-- il div serve solo per occupare una colonna -->
-                <div class="flex justify-between text-xs text-gray-500 mt-1 pl-1">
-                    <span>d6</span>
-                    <span>d8</span>
-                    <span>d10</span>
-                    <span>d12</span>
+        <div class="flex flex-col w-50">
+        <Slider.Root type="single" class="relative flex w-full touch-none select-none items-center" value={value} onValueChange={()=>{toast.error("fare callback")}} max={12} min={6} step={2}>
+            {#snippet children({ tickItems, thumbItems })}
+            <!-- Traccia dello slider -->
+                <div class="relative h-2 w-full grow rounded-full bg-gray-200">
+                    <Slider.Range class="absolute h-full rounded-full bg-blue-500" />
                 </div>
-            {/if}
+                    
+                <!-- Thumb -->
+                {#each thumbItems as { index } (index)}
+                <Slider.Thumb 
+                    {index}
+                    class="block h-5 w-5 rounded-full border-2 border-blue-500 bg-white shadow transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 z-10"
+                />
+                {/each}
+                
+                    <!-- Ticks e Labels -->
+                    {#each tickItems as { index, value } (index)}
+                        <Slider.Tick 
+                            {index}
+                            class="absolute h-2 w-0.5 bg-gray-400 z-0"
+                        />
+                        {#if attribute === "VOL"}    
+                            <Slider.TickLabel 
+                                {index}
+                                position="bottom"
+                                class="text-xs text-gray-600 mt-2 font-medium"
+                            >
+                                d{value}
+                            </Slider.TickLabel>
+                        {/if}
+                    {/each}
+                
+            {/snippet}
+
+        </Slider.Root>
+ 
         </div>
     </div>
            
@@ -108,19 +149,59 @@
         <div class="flex flex-row gap-2 items-center">
             <Fa icon={glam.icon} class={glam.color}/>
             <p class="w-50">{affinity}</p>
-            <Slider type="single" value={affinityValue} min={0} max={4} onValueChange={()=>toast.error("fare Callback")}/>
+            <Slider.Root type="single" value={affinityValue} min={0} max={4} onValueChange={()=>toast.error("fare Callback")}>
+                <Slider.Range>
+                </Slider.Range>
+            </Slider.Root>
         </div>
-        {#if affinity==="Veleno"}
-            <!-- Etichette sotto solo all'ultimo slider -->
-            <div class="grid grid-cols-5 text-xs text-gray-600 mt-1">
-                <span>Immune</span>
-                <span>Debole</span>
-                <span>Normale</span>
-                <span>Resistente</span>
-                <span>Assorbe</span>
-            </div>
-        {/if}
     </div>
-    
-    
 {/snippet}
+
+
+
+
+
+	
+<!-- <Slider.Root type="single" step={[0, 4, 8, 16, 24]}>
+  {#snippet children({ tickItems })}
+    {#each tickItems as { value, index } (index)}
+      <Slider.Tick {index} />
+      <Slider.TickLabel {index} position="top">
+        {value}
+      </Slider.TickLabel>
+    {/each}
+  {/snippet}
+  {@render children({value:"Immune",index:0})}
+</Slider.Root> -->
+
+<Slider.Root type="single" class="relative flex w-full touch-none select-none items-center" value={attributes.DEX} onValueChange={()=>{toast.error("fare callback")}} max={12} min={6} step={2}>
+    {#snippet children({ tickItems, thumbItems })}
+        <!-- Traccia dello slider -->
+        <div class="relative h-2 w-full grow rounded-full bg-gray-200">
+          <Slider.Range class="absolute h-full rounded-full bg-blue-500" />
+        </div>
+
+        <!-- Thumb -->
+        {#each thumbItems as { index } (index)}
+          <Slider.Thumb 
+            {index}
+            class="block h-5 w-5 rounded-full border-2 border-blue-500 bg-white shadow transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 z-10"
+          />
+        {/each}
+
+        <!-- Ticks e Labels -->
+        {#each tickItems as { index, value } (index)}
+          <Slider.Tick 
+            {index}
+            class="absolute h-2 w-0.5 bg-gray-400 z-0"
+          />
+          <Slider.TickLabel 
+            {index}
+            position="bottom"
+            class="text-xs text-gray-600 mt-2 font-medium"
+          >
+            d{value}
+          </Slider.TickLabel>
+        {/each}
+      {/snippet}
+</Slider.Root>
