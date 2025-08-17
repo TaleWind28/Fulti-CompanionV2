@@ -9,16 +9,6 @@ export type Armor = {name:string,nickname?:string,def:string,mdef:string,quality
 export type Shield = {name:string,nickname?:string,def:number,mdef:number,quality:string,martial:boolean,price:number,pic?:string,code:number}
 export type Accessory = {name:string,quality:string, pic?:string, price:number, code:number}
 
-// export interface FabulaUltimaCharacter {
-//     name:string,
-//     traits:Traits,
-//     stats:Stats,
-//     bonds:Bond[],
-//     attributes:Attributes,
-//     classes:CharacterClasses[],
-//     code:4
-// }
-
 export type Traits = {identity:string, origin:string, theme:string}
 
 export type Stats = {

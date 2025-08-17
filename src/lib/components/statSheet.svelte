@@ -23,11 +23,11 @@
         <!-- Slider e Spiegazione Spread -->
         <Card.Content class="flex flex-row gap-30 bg-white py-2"> 
             <!-- Slider per modificare le caratteristiche -->
-            <div class="flex flex-col gap-2 w-100">    
-                {@render attributeRender("DES",attributes.DEX)}
-                {@render attributeRender("INT",attributes.INS)}
-                {@render attributeRender("VIG",attributes.MIG)}
-                {@render attributeRender("VOL",attributes.WLP)}
+            <div class="flex flex-col item-center gap-2 w-50">    
+                {@render attributeRender(["DES","DEX"],attributes.DEX)}
+                {@render attributeRender(["INT","INS"],attributes.INS)}
+                {@render attributeRender(["VIG","MIG"],attributes.MIG)}
+                {@render attributeRender(["VOL","WLP"],attributes.WLP)}
             </div>
 
             <!-- Spiegazione delle spread -->
@@ -80,31 +80,31 @@
         </Card.Header>
         <!-- Slider per modificare le affinità Elementali -->
         <Card.Content class="grid grid-cols-2 gap-2 bg-white py-4">
-            {@render statusRender("Lento",statuses.slow,"Destrezza ridotta di 2")}
-            {@render statusRender("Confuso",statuses.dazed,"Intuito ridotto di 2")}
-            {@render statusRender("Furente",statuses.enraged,"Destrezza ed Intuito sono ridotti di 2")}
-            {@render statusRender("Debole",statuses.weak,"Vigore ridotto di 2")}
-            {@render statusRender("Scosso",statuses.shaken,"Volonta ridotta di 2")}
-            {@render statusRender("Avvelenato",statuses.poisoned,"Vigore e Volontà sono ridotti di 2")}
+            {@render statusRender(["Lento","slow"],statuses.slow,"Destrezza ridotta di 2")}
+            {@render statusRender(["Confuso","dazed"],statuses.dazed,"Intuito ridotto di 2")}
+            {@render statusRender(["Furente","enraged"],statuses.enraged,"Destrezza ed Intuito sono ridotti di 2")}
+            {@render statusRender(["Debole","weak"],statuses.weak,"Vigore ridotto di 2")}
+            {@render statusRender(["Scosso","shaken"],statuses.shaken,"Volonta ridotta di 2")}
+            {@render statusRender(["Avvelenato","poisoned"],statuses.poisoned,"Vigore e Volontà sono ridotti di 2")}
             <hr><hr>
-            {@render statusRender("DES UP",statuses.dexUp,"Destrezza aumentata di 2")}
-            {@render statusRender("INT UP",statuses.insUp,"Intuito aumentato di 2")}
-            {@render statusRender("VIG UP",statuses.migUp,"Vigore aumentato di 2")}
-            {@render statusRender("WLP UP",statuses.wlpUp,"Volontà aumentata di 2")}
+            {@render statusRender(["DES UP","dexUp"],statuses.dexUp,"Destrezza aumentata di 2")}
+            {@render statusRender(["INT UP","insUp"],statuses.insUp,"Intuito aumentato di 2")}
+            {@render statusRender(["VIG UP","migUp"],statuses.migUp,"Vigore aumentato di 2")}
+            {@render statusRender(["WLP UP","wlpUp"],statuses.wlpUp,"Volontà aumentata di 2")}
         </Card.Content>
     </Card.Root>
 
 </div>
 
-{#snippet attributeRender(attribute:string,value:number)}
+{#snippet attributeRender(attribute:string[],value:number)}
     <div class="flex flex-row items-center justify-center">
-        <p class="w-20">{attribute}</p>
+        <p class="w-20">{attribute[0]}</p>
         <Slider.Root 
             type="single" 
             class="relative flex w-full touch-none select-none items-center" 
             value={value}  
             max={12} min={6} step={2}
-            onValueCommit={()=>{toast.error("fare callback")}}
+            onValueCommit={(value)=>{callbacks.attributes.update(attribute[1],value)}}
             >
             {#snippet children({ tickItems, thumbItems })}
                 <!-- Traccia dello slider -->
@@ -120,22 +120,22 @@
                 />
                 {/each}
                 
-                    <!-- Ticks e Labels -->
-                    {#each tickItems as { index, value } (index)}
-                        <Slider.Tick 
+                <!-- Ticks e Labels -->
+                {#each tickItems as { index, value } (index)}
+                    <Slider.Tick 
+                        {index}
+                        class="absolute h-2 w-0.5 bg-gray-400 z-0"
+                    />
+                    {#if attribute[0] === "VOL"}    
+                        <Slider.TickLabel 
                             {index}
-                            class="absolute h-2 w-0.5 bg-gray-400 z-0"
-                        />
-                        {#if attribute === "VOL"}    
-                            <Slider.TickLabel 
-                                {index}
-                                position="bottom"
-                                class="text-xs text-gray-600 mt-2 font-medium"
-                            >
-                                d{value}
-                            </Slider.TickLabel>
-                        {/if}
-                    {/each}
+                            position="bottom"
+                            class="text-xs text-gray-600 mt-2 font-medium"
+                        >
+                            d{value}
+                        </Slider.TickLabel>
+                    {/if}
+                {/each}
                 
             {/snippet}
 
@@ -146,16 +146,16 @@
 
 {#snippet affinityRender(affinity:string,value:any,elemGlams:any)}
     {@const glam = elemGlams[affinity.toLowerCase()]}    
-    {@const affinityValue = value.weak ? 1	: value.resistant ? 2	: value.absorb ? 3 	: value.immune ? 4 	: 0}
+    {@const affinityValue = value.weak ? 1	: value.resistant ? 3	: value.absorb ? 4 	: value.immune ? 0 	: 2}
     <div class="flex flex-row gap-2 items-center w-auto justify-center">
         <Fa icon={glam.icon} class={glam.color}/>
         <p class="w-20">{affinity}</p>
         <Slider.Root 
             type="single" 
-            class=" border relative flex w-full touch-none select-none items-center" 
+            class=" relative flex w-full touch-none select-none items-center" 
             value={affinityValue} 
             min={0} max={4} step={1} 
-            onValueCommit={()=>toast.error("fare Callback")}
+            onValueCommit={(value)=>callbacks.affinity.update(affinity.toLowerCase(),value)}
             >
             {#snippet children({ tickItems, thumbItems })}
                 <!-- Traccia dello slider -->
@@ -193,10 +193,10 @@
     </div>
 {/snippet}
 
-{#snippet statusRender(status:string,value:any,description:string)}
+{#snippet statusRender(status:string[],value:any,description:string)}
     <div class="flex flex-row items-center justify-start gap-5">
-        <p class="w-20 font-semibold ">{status}</p>
-        <Checkbox checked={value} onCheckedChange={()=>toast.error("callbackdiocaneeee")}></Checkbox>
+        <p class="w-20 font-semibold ">{status[0]}</p>
+        <Checkbox checked={value} onCheckedChange={(checked)=>callbacks.status.update(status[1],checked)}></Checkbox>
         <p class="text-xs">{description}</p>
     </div>
     

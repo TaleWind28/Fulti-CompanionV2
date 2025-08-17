@@ -183,6 +183,100 @@
             }
         },
 
+        // Callback per Status
+        status:{
+            update:(statusField:string,value:boolean)=>{
+                console.log(statusField," :field\t",value," :value\t")
+                //assegno lo status
+                character = {
+                    ...character,
+                    status: {
+                        ...character.status,
+                        [statusField]: value
+                    }
+                };
+                //ha più senso fare una funzione che viene invocata ogni volta e calcola quanto aumentare/diminuire
+                //il for each serve solo per gli status furente ed avvelenato
+                // interestedAttributes.forEach((attribute)=>{    
+                //     //controllo se posso modificare il valore interessato dallo status
+                //     if( character.attributes[attribute]<= 12 || character.attributes[attribute] >= 6){   
+                //         //controllo l'operazione da fare
+                //         if(statusField === "slow" || statusField === "dazed" || statusField === "enraged" || statusField === "weak" || statusField === "shaken" || statusField === "poisoned"){
+                //             //status negativi => sottrarre
+                            
+                //             character = {
+                //                 ...character,
+                //                 attributes:{
+                //                     ...character.attributes,
+                //                     [attribute]:character.attributes[attribute]-2
+                //                 }
+                //             }
+
+                //         }
+                //         else if(statusField.includes("Up")){
+                //             //statust positivi => aggiungere
+                //             character = {
+                //                 ...character,
+                //                 attributes:{
+                //                     ...character.attributes,
+                //                     [attribute]:character.attributes[attribute]+2
+                //                 }
+                //             }
+                //         }
+                //     }
+                    
+                // })
+            }
+        },
+
+        //Callback per Affinità Elementali
+        affinity:{
+            update:(affinity:"fisico"|"aria"|"fulmine"|"fuoco"|"ghiaccio"|"luce"|"oscurità"|"terra"|"veleno",value:any)=>{
+                
+                let affinityType = value === 0 ? "immune" : value === 1 ? "weak" : value === 3 ? "resistant" : value === 4 ? "absorb" : "";
+                console.log(affinity," :field\t",value," :value\t",affinityType,"\t affinityType")
+                //resetto l'oggetto per mantere la mutua esclusione
+                character = {
+                    ...character,
+                    affinities:{
+                        ...character.affinities,
+                        [affinity]:{
+                            weak:false,
+                            immune:false,
+                            resistant:false,
+                            absorb:false
+                        }
+                    }
+                }    
+                //controllo che l'affinità al tipo sia diversa da quella neutra
+                if(affinityType === "")return;
+                //metto a true solo il campo interessato
+                character = {
+                    ...character,
+                    affinities:{
+                        ...character.affinities,
+                        [affinity]:{
+                            ...character.affinities[affinity],
+                            [affinityType]:true
+                        }
+                    }
+                }
+            }
+        },
+
+        attributes:{
+            update:(attribute:"DEX"|"MIG"|"INS"|"WLP",value:number)=>{
+                console.log(attribute,"attribute", value,"value");
+                character = {
+                    ...character,
+                    attributes:{
+                        ...character.attributes,
+                        [attribute]:value
+                    }
+                }
+            }
+        },
+
         // Utility callback con salvataggio su firestore
         save: async () => {
             try {
