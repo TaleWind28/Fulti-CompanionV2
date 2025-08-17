@@ -43,7 +43,7 @@
         
         //controllo che almeno un legame sia selezionato
         if( !affection && !hatred && !admiration && !inferiority && !loyalty && !mistrust){
-            toast.error('Devi scegliere un legame',{action:{label:"OK",onClick:()=>console.info("Undo")}});
+            toast.error('Devi scegliere almeno un legame',{action:{label:"OK",onClick:()=>console.info("Undo")}});
             return;
         }
 
