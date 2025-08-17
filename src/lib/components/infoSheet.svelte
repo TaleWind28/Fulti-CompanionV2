@@ -86,31 +86,41 @@
             <p>Informazioni Generali</p>
         </Card.Header>
         <Card.Content class="bg-white py-5 flex flex-col gap-5">
-
-            <!-- Primo Riquadro: Nome, Livello, Descrizione-->
-            <div class="flex flex-row justify-between">
-                <!-- Nome -->
-                <span>
-                    <label for="name" class="block text-sm font-medium mb-2">Nome</label>
-                    <Input 
-                        id="name"
-                        value={name}
-                        oninput={(e) => callbacks.updateField('name', (e.target as HTMLInputElement).value)}
-                    />
+            <div class="flex flex-row justify-start gap-30">
+                <span class="flex flex-col gap-5">
+                    <img src="/images/defaultCharacterAvatar.jpg" alt="charPic" class="w-40 h-40 border border-black">
+                    <Button onclick={()=>toast.error("dialog che fa get http per le immagini dato un url, oppure caricare da locale")}> Aggiorna Immagine </Button>
                 </span>
+                <!-- Primo Riquadro: Nome, Livello, Descrizione-->
+                <span class="flex flex-col gap-5">
+                    <!-- Nome e Livello -->
+                    <div class="flex flex-row justify-between gap-5">
+                        <!-- Nome -->
+                        <span>
+                            <label for="name" class="block text-sm font-medium mb-2">Nome</label>
+                            <Input 
+                                id="name"
+                                value={name}
+                                oninput={(e) => callbacks.updateField('name', (e.target as HTMLInputElement).value)}
+                            />
+                        </span>
 
-                <!-- Livello -->
-                <span class="flex flex-col">
-                    <label for="level" class="block text-sm font-medium mb-2">Livello</label>
-                    <Input id="level" class="w-20" value={info.level} type="number" oninput={(e) => callbacks.info.update("level",(e.target as HTMLInputElement).value)}/>
+                        <!-- Livello -->
+                        <span class="flex flex-col">
+                            <label for="level" class="block text-sm font-medium mb-2">Livello</label>
+                            <Input id="level" class="w-20" value={info.level} type="number" oninput={(e) => callbacks.info.update("level",(e.target as HTMLInputElement).value)}/>
+                        </span>
+                    </div>
+
+                    <!-- Descrizione -->
+                    <div class="flex flex-col gap-2">
+                        <Label>Descrizione</Label>
+                        <Textarea value={info.description} oninput={(e)=> callbacks.info.update("description",(e.target as HTMLTextAreaElement).value)}></Textarea>
+                    </div>
                 </span>
+                
             </div>
-
-            <!-- Secondo Riquadro: Descrizione -->
-            <div class="flex flex-col gap-2">
-                <Label>Descrizione</Label>
-                <Textarea value={info.description} oninput={(e)=> callbacks.info.update("description",(e.target as HTMLTextAreaElement).value)}></Textarea>
-            </div>
+                
 
             <!--Terzo Riquadro: Punti Fabula, Exp e Zenit -->
             <div class="flex flex-row justify-between items-center">

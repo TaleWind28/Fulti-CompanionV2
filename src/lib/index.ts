@@ -1,4 +1,5 @@
 import { faBoltLightning, faFire, faFistRaised, faKhanda, faMoon, faMountain, faSkullCrossbones, faSnowflake, faSun, faWind } from "@fortawesome/free-solid-svg-icons"
+import type { Affinity, Status } from "./zod"
 
 // place files you want to import through the `$lib` alias in this folder.
 export type Quality ={name:string, effect:string, price:number}
@@ -103,3 +104,10 @@ export let elemGlams = {
     color: 'text-gray-500',
   },
 }
+
+export type StatsSheetProps = {
+        attributes: Attributes;
+        affinity:Affinity;
+        statuses: Status;
+        callbacks:any;
+    }

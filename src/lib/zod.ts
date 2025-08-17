@@ -78,6 +78,8 @@ export const statsScheme = z.object({
     MDEF:z.number().default(8),
 })
 
+export type Stats = z.infer<typeof statsScheme>;
+
 export const infoScheme = z.object({
     description:z.string().default(""),
     exp:z.number().default(0),
@@ -103,6 +105,8 @@ export const attributesScheme = z.object({
     MIG:z.number().default(8),
     WLP:z.number().default(8),
 })
+
+export type Attributes = z.infer<typeof attributesScheme>;
 
 export const benefitScheme = z.object({
     hp:z.object({active:z.boolean(),quantity:z.number()}),
@@ -180,6 +184,8 @@ export const statusScheme = z.object({
     slow:z.boolean().default(false),
     weak:z.boolean().default(false),
 })
+
+export type Status = z.infer<typeof statusScheme>
 
 export const FabulaUltimaCharacterScheme = z.object({
     name:z.string(),

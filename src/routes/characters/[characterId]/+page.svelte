@@ -1,10 +1,12 @@
 <script lang="ts">
     import { invalidateAll } from '$app/navigation';
+    import type { Attributes, StatsSheetProps } from '$lib';
     import CharacterCard from '$lib/components/characterCard.svelte';
     import InfoSheet from '$lib/components/infoSheet.svelte';
+    import StatSheet from '$lib/components/statSheet.svelte';
     import Separator from '$lib/components/ui/separator/separator.svelte';
     import * as Tabs from '$lib/components/ui/tabs/index.js';
-    import { bondScheme, infoScheme } from '$lib/zod.js';
+    import { bondScheme, infoScheme, type Affinity, type Status } from '$lib/zod.js';
 
 	let { data } = $props();
 
@@ -201,8 +203,7 @@
         }
     };
 
-
-	 type CharacterCardProps = {
+	type CharacterCardProps = {
         character: typeof character;
     };
 
@@ -215,7 +216,7 @@
         callbacks:any;
     };
 
-	type TabContentProps = CharacterCardProps | InfoSheetProps;
+	type TabContentProps = CharacterCardProps | InfoSheetProps | StatsSheetProps;
 
 	 type TabContent = {
         value: string;
@@ -230,6 +231,7 @@
 	(
 		{
 			contents:[
+                //scheda personaggio
 				{
 					value:"sheet",
 					text:"Scheda Personaggio",
@@ -239,6 +241,7 @@
 						},
 					
 				},
+                //infosheet
 					{
 					value:"information",
 					text:"Informazioni",
@@ -254,15 +257,21 @@
 
 					
 				},
+                //statsheet
 					{
 					value:"stats",
 					text:"Statistiche",
-					component:CharacterCard,
+					component:StatSheet,
 					props:{
-						character:character,
-						},
+						attributes:character.attributes,
+                        affinity:character.affinities,
+                        statuses:character.status,
+                        callbacks:characterCallbacks
+					},
 					
-				},	{
+				},
+                //classSheet	
+                {
 					value:"classes",
 					text:"Classi",
 					component:CharacterCard,
@@ -271,6 +280,7 @@
 						},
 					
 				},
+                //spellSheet
 				{
 					value:"spells",
 					text:"Incantesimi",
@@ -280,6 +290,7 @@
 						},
 					
 				},
+                //equipmentSheet
 				{
 					value:"equipment",
 					text:"Equipaggiamento",
@@ -289,6 +300,7 @@
 						},
 					
 				},
+                //notes
 				{
 					value:"notes",
 					text:"Note",
@@ -325,11 +337,6 @@
 				{/if}
 			{/each}
 		</Tabs.List>
-		{character.info.description}
-		{character.info.level}
-		{character.info.zenit}
-		{character.info.fabulaPoints}
-		{character.info.exp}
 		{#each tabSelector.contents as content }
 			<Tabs.Content value={content.value} class="py-10" > 
 				<div class="w-full">
