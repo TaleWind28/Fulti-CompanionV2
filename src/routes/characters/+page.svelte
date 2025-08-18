@@ -127,7 +127,8 @@
 	{#if data.characters && data.characters.length > 0}
 		{#if filteredCharacters.length>0}
 			{@const rows = (Math.floor(data.characters.length))}
-			<div class="grid grid-cols-3 {`grid-rows-${rows}`}  gap-4">
+			<!-- <div class="grid md:grid-cols-2 lg:grid-cols-3 {`grid-rows-${rows}`}  gap-4"> -->
+			<div class="grid grid-cols-2 {`grid-rows-${rows}`}  gap-4">
 				{#each filteredCharacters as char}
 					<div class="w-130">
 						<CharacterCard character={char} showButtons={true}>
