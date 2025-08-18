@@ -8,7 +8,7 @@
     import Fa from "svelte-fa";
     import { faDownload, faFileExport } from "@fortawesome/free-solid-svg-icons";
     import { exportHtmlToImage } from "$lib/utils";
-    import ImageUploader2 from "./imageUploader2.svelte";
+    import ImageUploader2 from "./imageUploader3.svelte";
   import { onMount } from "svelte";
 
     //Arcana markdown Variables

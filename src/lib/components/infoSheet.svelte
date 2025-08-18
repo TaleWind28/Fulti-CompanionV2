@@ -10,6 +10,7 @@
     import Checkbox from "./ui/checkbox/checkbox.svelte";
     import { toast } from "svelte-sonner";
     import Bond from "./bond.svelte";
+    import ImageUploader2 from "./imageUploader2.svelte";
 
 
     let {
@@ -22,6 +23,8 @@
     } = $props();
 
     let createBondDialog = $state(false);
+
+    let uploadPicDialog = $state(false);
 
     let wit = $state("");
    
@@ -74,7 +77,9 @@
         createBondDialog = false;
 
     }
-    $inspect(wit,affection)
+    let characterImage = pic ;
+    let newImageUrl = $state("");
+    $inspect(uploadPicDialog,"dialog");
 
 </script>
 
@@ -87,10 +92,39 @@
         </Card.Header>
         <Card.Content class="bg-white py-5 flex flex-col gap-5">
             <div class="flex flex-row justify-start gap-30">
+                <!-- Immagine Personaggio e pulsante per aggiornarla -->
                 <span class="flex flex-col gap-5">
-                    <img src="/images/defaultCharacterAvatar.jpg" alt="charPic" class="w-40 h-40 border border-black">
-                    <Button onclick={()=>toast.error("dialog che fa get http per le immagini dato un url, oppure caricare da locale")}> Aggiorna Immagine </Button>
+                    <img src={characterImage} alt="charPic" class="w-40 h-40 border border-black">
+                    <Button onclick={()=>uploadPicDialog = true}> Aggiorna Immagine </Button>
                 </span>
+
+                <Dialog.Root open={uploadPicDialog} onOpenChange={(v)=> {uploadPicDialog = v}}> 
+                     <Dialog.Content class="bg-cafe_noir-700 border-0"> 
+                        <Dialog.Header> 
+                            <Dialog.Title class="text-black"> 
+                               Premi sull'immagine per caricarne una locale oppure usa una URL
+                            </Dialog.Title>                
+                        </Dialog.Header>
+                        <div class="bg-cafe_noir-900 border items-center justify-center flex">
+                            <ImageUploader2
+                                bind:imageUrl={newImageUrl}
+                                padre="myUploader"
+                                allowUrlInput={true}
+                                placeholder="Inserisci URL immagine..."
+                                dimensions="w-64 h-64"
+                                showButtons={true}
+                                showDeletion={true}
+                            />
+                        </div> 
+                            
+                             
+                        <Dialog.Footer class="flex items-center justify-center "> 
+                            <Button onclick={()=>{callbacks.updateField("pic",newImageUrl);uploadPicDialog=false;}}> Aggiorna Immagine </Button>
+                        </Dialog.Footer>         
+                    </Dialog.Content>
+                    
+                </Dialog.Root>
+
                 <!-- Primo Riquadro: Nome, Livello, Descrizione-->
                 <span class="flex flex-col gap-5">
                     <!-- Nome e Livello -->

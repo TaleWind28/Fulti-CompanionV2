@@ -5,7 +5,7 @@
     import Checkbox from "./ui/checkbox/checkbox.svelte";
     import Label from "./ui/label/label.svelte";
     import Textarea from "./ui/textarea/textarea.svelte";
-    import ImageUploader2 from "./imageUploader2.svelte";
+    import ImageUploader2 from "./imageUploader3.svelte";
     import Fa from "svelte-fa";
     import { faDownload, faFileExport } from "@fortawesome/free-solid-svg-icons";
     import { onMount } from "svelte";

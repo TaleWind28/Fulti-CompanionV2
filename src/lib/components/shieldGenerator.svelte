@@ -104,6 +104,7 @@
             isMartial = parsedEquip.martial;
             isRealCustomQuality = true;
             equipImageUrl = parsedEquip.pic;
+            console.log(equipImageUrl);
             calculateParams();
 
             if (parsedEquip.code === 1 )toast.success("Scudo importato Correttamente!");
@@ -129,6 +130,7 @@
         customQuality ="";
         customCost = 0;
         isRealCustomQuality = false;
+        equipImageUrl = "";
         
     }
 
