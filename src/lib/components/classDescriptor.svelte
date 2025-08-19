@@ -7,16 +7,34 @@
     import Input from "./ui/input/input.svelte";
     import Textarea from "./ui/textarea/textarea.svelte";
     import Button from "./ui/button/button.svelte";
-  import { getContext } from "svelte";
+    import { getContext } from "svelte";
+    import { toast } from "svelte-sonner";
 
     let { characterClass } : {characterClass : CharacterClass} = $props();
     let editHeroicSkill = $state(false);
     let heroicSkillName = $state("");
     let heroicSkillDescription = $state("");
+    
     function handleSave(){
+        
+        const result = editHeroic(characterClass.name,heroicSkillName,heroicSkillDescription);
+        if(result){
+            toast.success('Abilità Eroica aggiornata con successo',{
+                action:{
+                    label:"OK",
+                    onClick:()=>console.info("undo")
+                }
+            })
+        }
         editHeroicSkill = false;
     }
-    type SkillUp = (skillName:string,up:boolean)=> boolean;
+
+    type Heroic =(className:string,heroicName:string,heroicDescription:string)=> boolean;
+    const editHeroic = getContext<Heroic>('editHeroic');
+    type ClassUp = (className:string,up:boolean)=> boolean;
+    const levelClass = getContext<ClassUp>('classUp');
+
+    type SkillUp = (skillName:string,up:boolean,className:string)=> boolean;
     const levelSkill = getContext<SkillUp>('skillUp');
     
 </script>
@@ -28,8 +46,17 @@
                     {characterClass.name.toUpperCase()}
                 </h1>
                 
-                <h1>
+                <h1 class="flex flex-row items-center gap-2">
                     {characterClass.level} / 10
+                    <div class="flex flex-col">
+                        <button onclick={()=> levelClass(characterClass.name,true)}>
+                            <Fa icon={faChevronUp} class="text-cafe_noir-500 cursor-pointer"/>
+                        </button>
+                        <button onclick={()=> levelClass(characterClass.name,false)}>
+                            <Fa icon={faChevronDown} class="text-cafe_noir-500 cursor-pointer"/>
+                        </button>
+                    </div>
+                    
                 </h1> 
                 
             </Card.Title>
@@ -83,10 +110,10 @@
         <span class="flex flex-row gap-5">
             <h1 class="text-cafe_noir-600">{skill.level.actual} / {skill.level.max}</h1>
             <span class="flex flex-col">
-                <button onclick={()=>levelSkill(skill.name,true)}>
+                <button onclick={()=> levelSkill(skill.name,true,characterClass.name)}>
                     <Fa icon={faChevronUp} class="text-cafe_noir-500 cursor-pointer"/>
                 </button>
-                <button onclick={()=>levelSkill(skill.name,false)}>
+                <button onclick={()=> levelSkill(skill.name,false,characterClass.name)}>
                     <Fa icon={faChevronDown} class="text-cafe_noir-500 cursor-pointer"/>
                 </button>
             </span>

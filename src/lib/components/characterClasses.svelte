@@ -6,7 +6,7 @@
     import SelectContent from "./ui/select/select-content.svelte";
     import SelectGroup from "./ui/select/select-group.svelte";
 
-    let {classNames, classes} = $props();
+    let {classNames, classes, callbacks} = $props();
     //logica della select
     let selectedClass = $state("");
     const triggerClass = $derived(
@@ -15,7 +15,7 @@
 </script>
 
 
-<div class="flex flex-col gap-2">
+<div class="flex flex-col gap-5">
     <!-- Pulsanti per aggiungere le classi o caricare una classe da json --> 
      
     <Card.Root class=" border-0">
@@ -50,21 +50,19 @@
             </SelectContent>
         </Select.Root>
 
-            <Button class="bg-cafe_noir-600 hover:bg-cafe_noir-500" onclick={()=>console.log("pippo")}>
+            <Button class="bg-cafe_noir-600 hover:bg-cafe_noir-500" onclick={()=>callbacks.classes.update(selectedClass)}>
                 Aggiungi Classe
-            </Button>
-
-            <Button class="bg-cafe_noir-600 hover:bg-cafe_noir-500" onclick={()=>console.log("pippo")}>
-                Aggiungi Classe HomeBrew
             </Button>
         </Card.Content>
     </Card.Root>
 
     <hr class="bg-caribbean_current-500  border-caribbean_current-500 h-0.5  rounded">
-    
-    {#each classes as clas}
-        <ClassDescriptor characterClass = {clas}>
+    <div class="flex flex-col gap-10">
+        {#each classes as clas}
             
-        </ClassDescriptor>
-    {/each}
+                <ClassDescriptor characterClass = {clas}/>
+            
+            
+        {/each}
+    </div>
 </div>

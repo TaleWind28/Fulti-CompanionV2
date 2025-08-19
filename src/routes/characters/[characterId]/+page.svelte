@@ -9,6 +9,8 @@
     import * as Tabs from '$lib/components/ui/tabs/index.js';
     import { bondScheme, characterClassScheme, infoScheme, type Affinity, type Status } from '$lib/zod.js';
   import { setContext } from 'svelte';
+    import { toast } from 'svelte-sonner';
+    import { message } from 'sveltekit-superforms';
 
 	let { data } = $props();
 
@@ -254,15 +256,29 @@
                 const response = await  fetch(`/api/characters?classNames=${JSON.stringify([className])}`);
                 const result = await response.json();
                 if(result.success){
-                    const newClass = result.characterClasses;
-                    for(const classe in character.classes){
-                        
+                    console.log("provo con: ",className)
+                    const newClass = result.characterClasses[0];
+                    console.log("ci sono",newClass);
+                    if(character.classes.some(classe => classe.name === newClass.name)){
+                        toast.error('Classe già presente',{
+                            action:{
+						        label:"OK",
+						        onClick: () =>{console.info("undo")}
+                            }
+                        })
+                        return;
                     }
-
+                    
                     character = {
                         ...character,
-                        classes:character.classes.push(newClass)
+                        classes:[...character.classes,newClass]
                     }
+                    toast.success('Classe aggiunta con successo!',{
+                            action:{
+						        label:"OK",
+						        onClick: () =>{console.info("undo")}
+                            }
+                        })
                 }
 
             }
@@ -289,29 +305,128 @@
     };
 
 
-    type SkillUp = (skillName:string,up:boolean)=> boolean;
-    function levelSkill(skillName: string,up:boolean): boolean {
-    // Trova la skill in tutte le classi del personaggio
-        for (const characterClass of character.classes) {
-            const skill = characterClass.skills.find(s => s.name === skillName);
-            if (skill && skill.level.actual < skill.level.max && up) {
-                skill.level.actual += 1;
-                return true;
-            }
-            if(skill && skill.level.actual >= 1 && !up){
-                skill.level.actual -= 1;
-                return true;
-            }
-            
+    type SkillUp = (skillName:string,up:boolean,className:string)=> boolean;
+    function levelSkill(skillName: string,up:boolean,className:string): boolean {
+
+        // Trova la classe e la skill
+        const desiredClass = character.classes.find(c => c.name === className); 
+        if(!desiredClass)return false;       
+        const skill = desiredClass.skills.find(s => s.name === skillName);
+        if(!skill)return false;
+        let skillLevels = 0;
+        for(const skillz of desiredClass.skills){
+            skillLevels+=skillz.level.actual;
         }
-        return false;
+        
+        //controllo che il livello della classe possa aumentare se l'operazione è di aumento
+        if(skillLevels >= desiredClass.level && up){
+            toast.error('La classe ha raggiunto il livello massimo',{
+            action:{
+                label:"OK",
+                onClick: () =>{console.info("undo")}
+            }})
+            return false;
+        }
+        //controllo che il livello dell'abilità possa aumentare se l'operazione è di aumento
+        if(skill.level.actual === skill.level.max && up){
+                toast.error('L\'abilità ha raggiunto il livello massimo',{
+                action:{
+                label:"OK",
+                    onClick: () =>{console.info("undo")}
+                }
+            })
+            return false;
+        }
+
+            //controllo che il livello dell'abilità possa diminuire se l'operazione è di diminuzione
+        if(skill.level.actual === 0 && !up){
+            toast.error('Il livello abilità non può essere inferiore a 0',{
+                action:{
+                label:"OK",
+                    onClick: () =>{console.info("undo")}
+                }
+            })
+            return false;
+        }
+
+            //controllo l'operazione da fare sul livello
+        if (up) {
+            skill.level.actual += 1;
+            return true;
+        }else{
+            skill.level.actual -= 1;
+            return true;
+        }
     }
 
+    type Heroic =(className:string,heroicName:string,heroicDescription:string)=> boolean;
+    
+    type ClassUp = (className:string,up:boolean)=> boolean;
+
+    function levelClass(className:string,up:boolean):boolean{
+        const desiredClass = character.classes.find(c => c.name === className);
+        if(!desiredClass){
+            toast.error('La classe non è stata trovata',{
+                action:{
+                    label:"OK",
+                    onClick:()=>console.log("undo")
+                }
+            })
+            return false;
+        }
+        if(desiredClass?.level>=10 && up){
+            toast.error('La classe ha raggiunto il livello massimo',{
+                action:{
+                    label:"OK",
+                    onClick:()=>console.log("undo")
+                }
+            })
+            return false;
+        }
+
+        if(desiredClass?.level<=1 && !up){
+            toast.error('Il livello della classe non può essere inferiore ad 1',{
+                action:{
+                    label:"OK",
+                    onClick:()=>console.log("undo")
+                }
+            })
+            return false;
+        }
+        //cerco la classe nell'oggetto character ed aggiorno il suo livello
+        if(up){
+            desiredClass.level+=1;
+        }else{
+            desiredClass.level-=1;
+        }
+    
+        let index = character.classes.findIndex(c=>c.name===desiredClass.name);
+        character.classes[index] = desiredClass;
+
+        return true;
+    };
+
+    function editHeroic(className:string,heroicName:string,heroicDescription:string):boolean{
+        if(heroicName ==="")return false;
+        if(heroicDescription ==="")return false;
+        const heroic = character.classes.find(c => c.name === className)?.heroic;
+
+        if(heroic){
+            heroic.name = heroicName;
+            heroic.description = heroicDescription;
+        }
+        
+
+        return false;
+    }
+    setContext<ClassUp>('classUp',levelClass);
+    setContext<Heroic>('editHeroic',editHeroic);
     setContext<SkillUp>('skillUp',levelSkill);
 
     type CharacterClassesProps ={
         classes: typeof character.classes,
-        classNames:string[]
+        classNames:string[],
+        callbacks:any
 
     }
 
@@ -389,7 +504,8 @@
 					component:CharacterClasses,
 					props:{
 						classes:character.classes,
-                        classNames:data.classNames
+                        classNames:data.classNames,
+                        callbacks:characterCallbacks
 						},
 					
 				},
