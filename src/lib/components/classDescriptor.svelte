@@ -7,6 +7,7 @@
     import Input from "./ui/input/input.svelte";
     import Textarea from "./ui/textarea/textarea.svelte";
     import Button from "./ui/button/button.svelte";
+  import { getContext } from "svelte";
 
     let { characterClass } : {characterClass : CharacterClass} = $props();
     let editHeroicSkill = $state(false);
@@ -15,8 +16,9 @@
     function handleSave(){
         editHeroicSkill = false;
     }
-
-
+    type SkillUp = (skillName:string,up:boolean)=> boolean;
+    const levelSkill = getContext<SkillUp>('skillUp');
+    
 </script>
 
     <Card.Root class="border-0 bg-cafe_noir-700"> 
@@ -81,10 +83,10 @@
         <span class="flex flex-row gap-5">
             <h1 class="text-cafe_noir-600">{skill.level.actual} / {skill.level.max}</h1>
             <span class="flex flex-col">
-                <button onclick={()=>console.log("callback")}>
+                <button onclick={()=>levelSkill(skill.name,true)}>
                     <Fa icon={faChevronUp} class="text-cafe_noir-500 cursor-pointer"/>
                 </button>
-                <button onclick={()=>console.log("callback")}>
+                <button onclick={()=>levelSkill(skill.name,false)}>
                     <Fa icon={faChevronDown} class="text-cafe_noir-500 cursor-pointer"/>
                 </button>
             </span>

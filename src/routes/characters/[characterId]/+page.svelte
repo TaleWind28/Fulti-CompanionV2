@@ -8,6 +8,7 @@
     import Separator from '$lib/components/ui/separator/separator.svelte';
     import * as Tabs from '$lib/components/ui/tabs/index.js';
     import { bondScheme, characterClassScheme, infoScheme, type Affinity, type Status } from '$lib/zod.js';
+  import { setContext } from 'svelte';
 
 	let { data } = $props();
 
@@ -268,6 +269,25 @@
     };
 
 
+    type SkillUp = (skillName:string,up:boolean)=> boolean;
+    function levelSkill(skillName: string,up:boolean): boolean {
+    // Trova la skill in tutte le classi del personaggio
+        for (const characterClass of character.classes) {
+            const skill = characterClass.skills.find(s => s.name === skillName);
+            if (skill && skill.level.actual < skill.level.max && up) {
+                skill.level.actual += 1;
+                return true;
+            }
+            if(skill && skill.level.actual >= 1 && !up){
+                skill.level.actual -= 1;
+                return true;
+            }
+            
+        }
+        return false;
+    }
+
+    setContext<SkillUp>('skillUp',levelSkill);
 
     type CharacterClassesProps ={
         classes: typeof character.classes,
