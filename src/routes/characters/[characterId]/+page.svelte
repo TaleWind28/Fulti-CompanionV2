@@ -267,6 +267,8 @@
         }
     };
 
+
+
     type CharacterClassesProps ={
         classes: typeof character.classes,
         classNames:string[]
@@ -386,6 +388,7 @@
 
 		}
 	)
+
 );
 
 	let tabValue = $state("sheet");

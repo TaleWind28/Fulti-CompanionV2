@@ -4,9 +4,18 @@
     import type { CharacterClass, Skill } from "$lib/zod";
     import {faChevronDown, faChevronUp, faPencilRuler } from "@fortawesome/free-solid-svg-icons";
     import Fa from "svelte-fa";
+    import Input from "./ui/input/input.svelte";
+    import Textarea from "./ui/textarea/textarea.svelte";
+    import Button from "./ui/button/button.svelte";
 
     let { characterClass } : {characterClass : CharacterClass} = $props();
     let editHeroicSkill = $state(false);
+    let heroicSkillName = $state("");
+    let heroicSkillDescription = $state("");
+    function handleSave(){
+        editHeroicSkill = false;
+    }
+
 
 </script>
 
@@ -34,10 +43,9 @@
                 <div class="border p-2">
                     <span class="flex flex-row justify-between">
                         <h1 class="text-cafe_noir-600 ">ABILITÀ EROICA: {characterClass.heroic.name.toUpperCase()}</h1>
-                        <button onclick={()=>editHeroicSkill = true}>
-                            <Fa icon={faPencilRuler}></Fa>
+                        <button onclick={()=> editHeroicSkill = true}>
+                            <Fa class="cursor-pointer" icon={faPencilRuler}></Fa>
                         </button>
-                            
                     </span>
                     <hr class="bg-cafe_noir-600 border-cafe_noir-600 h-1 rounded">
                     <div class="w-80 text-sm">
@@ -49,7 +57,20 @@
 
     </Card.Root>
 
-    <Dialog.Root> 
+    <Dialog.Root open={editHeroicSkill} onOpenChange={(v)=> editHeroicSkill = v}> 
+        <Dialog.Content> 
+            <Dialog.Header> 
+                Nome Abilità Eroica: 
+                <Input type="text" bind:value={heroicSkillName}/>
+            </Dialog.Header>
+            Descrizione Abilità
+            <Textarea bind:value={heroicSkillDescription}/>
+            
+            <Button class="cursor-pointer" onclick={handleSave}>
+                Salva
+            </Button>
+    
+        </Dialog.Content> 
 
     </Dialog.Root>
 
@@ -60,8 +81,12 @@
         <span class="flex flex-row gap-5">
             <h1 class="text-cafe_noir-600">{skill.level.actual} / {skill.level.max}</h1>
             <span class="flex flex-col">
-                <Fa icon={faChevronUp} class="text-cafe_noir-500"> </Fa>
-                <Fa icon={faChevronDown} class="text-cafe_noir-500"> </Fa>
+                <button onclick={()=>console.log("callback")}>
+                    <Fa icon={faChevronUp} class="text-cafe_noir-500 cursor-pointer"/>
+                </button>
+                <button onclick={()=>console.log("callback")}>
+                    <Fa icon={faChevronDown} class="text-cafe_noir-500 cursor-pointer"/>
+                </button>
             </span>
             
         </span>
@@ -73,6 +98,5 @@
     <div class="w-80 text-sm ">
         {skill.description}
     </div>
-    
     
 {/snippet}
