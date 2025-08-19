@@ -50,11 +50,11 @@
             </SelectContent>
         </Select.Root>
 
-            <Button class="bg-cafe_noir-600 hover:bg-cafe_noir-500">
+            <Button class="bg-cafe_noir-600 hover:bg-cafe_noir-500" onclick={()=>console.log("pippo")}>
                 Aggiungi Classe
             </Button>
 
-            <Button class="bg-cafe_noir-600 hover:bg-cafe_noir-500">
+            <Button class="bg-cafe_noir-600 hover:bg-cafe_noir-500" onclick={()=>console.log("pippo")}>
                 Aggiungi Classe HomeBrew
             </Button>
         </Card.Content>

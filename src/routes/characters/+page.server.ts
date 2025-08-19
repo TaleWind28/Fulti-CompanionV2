@@ -85,7 +85,7 @@ export async function load({url, locals, fetch}) {
 }
 
 export const actions: Actions = {
-    default: async ({ request, locals }) => {
+    default: async ({ request, locals, fetch }) => {
         
         const form = await superValidate(request, zod4(characterSchema));
         
@@ -108,20 +108,22 @@ export const actions: Actions = {
 		if (terza_classe) {
 			classNamesToQuery.push(terza_classe);
 		}
-        const characterClasses:any[] = [];
-        //recupero le classi dal db
-        try{
-            const q = query(collection(db, 'character_classes'), where('name', 'in', classNamesToQuery));
-
-			const querySnapshot = await getDocs(q);
-			
-			querySnapshot.forEach((doc) => {
-				characterClasses.push({ ...doc.data() });
-			});
-        }catch(error:any){
-            console.log(error,"aia");
-        }
         
+        //recupero le classi dal db
+        console.log(classNamesToQuery,"")
+        const response = await  fetch(`/api/characters?classNames=${JSON.stringify(classNamesToQuery)}`);
+        const result = await response.json();
+
+        console.log(result,"result");
+        let characterClasses;
+        if(result.success){
+            console.log(result.characterClasses,"cc")
+            characterClasses = result.characterClasses;
+        }
+        else{
+            return fail(400,{message:"le classi non esistono"});
+        }
+
         const createdCharacter = FabulaUltimaCharacterScheme.parse({
             name:form.data.name,
             traits:{},
@@ -132,7 +134,6 @@ export const actions: Actions = {
             info:{},
             classes:characterClasses,
         });
-        console.log(createdCharacter,"default");
         
         try {
             // 4. Salva l'oggetto COMPLETO nel database
@@ -149,7 +150,6 @@ export const actions: Actions = {
             return fail(500, { form, message: 'Impossibile salvare il personaggio nel database.' });
         }
 
-console.log("valido");
 		return {form};
     }
 }

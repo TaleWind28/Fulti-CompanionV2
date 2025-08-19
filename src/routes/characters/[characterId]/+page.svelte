@@ -248,6 +248,26 @@
             }
         },
 
+        classes:{
+            update:async (className:string)=>{
+                //recupero le classi dal db
+                const response = await  fetch(`/api/characters?classNames=${JSON.stringify([className])}`);
+                const result = await response.json();
+                if(result.success){
+                    const newClass = result.characterClasses;
+                    for(const classe in character.classes){
+                        
+                    }
+
+                    character = {
+                        ...character,
+                        classes:character.classes.push(newClass)
+                    }
+                }
+
+            }
+        },
+
         // Utility callback con salvataggio su firestore
         save: async () => {
             try {

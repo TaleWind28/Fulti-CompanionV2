@@ -40,9 +40,32 @@ export const PUT: RequestHandler = async ({request,locals}) =>{
     return json({success:true, message:"personaggio importato con successo"});
 }
 
-export const GET: RequestHandler = async () => {
-    const snapshot = await adminDB.collection("character_classes").select("name").orderBy("name", "asc").get();
-    //recupero i nomi delle classi
-    const names = snapshot.docs.map(doc => doc.get("name") as string);
-    return json({success:true, classNames:names});
+export const GET: RequestHandler = async ({url}) => {
+    const classNames = url.searchParams.get('classNames');
+    if(classNames){
+        const classNamesToQuery = JSON.parse(classNames);
+        console.log(classNamesToQuery,classNamesToQuery?.length,"cntq","isArray?:",!Array.isArray(classNamesToQuery));
+         if (!Array.isArray(classNamesToQuery) || classNamesToQuery.length === 0) {
+                throw error(400, 'classNames deve essere un array non vuoto');
+            }
+
+            // Firestore Admin SDK ha una sintassi leggermente diversa
+            const characterClasses: any[] = [];
+            const snapshot = await adminDB
+                .collection('character_classes')
+                .where('name', 'in', classNamesToQuery)
+                .get();
+            
+            snapshot.forEach((doc) => {
+                characterClasses.push({ id: doc.id, ...doc.data() });
+            });
+
+        return json({ success: true, characterClasses });
+    }
+    else{
+        const snapshot = await adminDB.collection("character_classes").select("name").orderBy("name", "asc").get();
+        //recupero i nomi delle classi
+        const names = snapshot.docs.map(doc => doc.get("name") as string);
+        return json({success:true, classNames:names});
+    }
 }
