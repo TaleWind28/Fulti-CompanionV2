@@ -141,6 +141,8 @@ export const skillScheme = z.object({
 }
 )
 
+export type Skill = z.infer<typeof skillScheme>
+
 export const heroicSkillScheme = z.object({
     name:z.string(),
     description:z.string()
@@ -154,6 +156,8 @@ export const characterClassScheme = z.object({
     spellClass: z.string(),
     heroic:heroicSkillScheme
 })
+
+export type CharacterClass = z.infer<typeof characterClassScheme>;
 
 export const vulnerabilityScheme = z.object({
     weak:z.boolean().default(false),

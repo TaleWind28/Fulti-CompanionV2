@@ -1,0 +1,78 @@
+<script lang="ts">
+    import * as Card from "$lib/components/ui/card/index";
+    import * as Dialog from "$lib/components/ui/dialog/index";
+    import type { CharacterClass, Skill } from "$lib/zod";
+    import {faChevronDown, faChevronUp, faPencilRuler } from "@fortawesome/free-solid-svg-icons";
+    import Fa from "svelte-fa";
+
+    let { characterClass } : {characterClass : CharacterClass} = $props();
+    let editHeroicSkill = $state(false);
+
+</script>
+
+    <Card.Root class="border-0 bg-cafe_noir-700"> 
+        <Card.Header> 
+            <Card.Title class="text-white flex flex-row justify-between"> 
+                <h1>
+                    {characterClass.name.toUpperCase()}
+                </h1>
+                
+                <h1>
+                    {characterClass.level} / 10
+                </h1> 
+                
+            </Card.Title>
+        </Card.Header>
+        
+        <Card.Content class="bg-white py-2 grid grid-cols-2 gap-5"> 
+            {#each characterClass.skills as skill}
+                <div class="border p-2">
+                    {@render skillRender(skill)}
+                </div>
+            {/each}
+            {#if characterClass.level === 10}
+                <div class="border p-2">
+                    <span class="flex flex-row justify-between">
+                        <h1 class="text-cafe_noir-600 ">ABILITÀ EROICA: {characterClass.heroic.name.toUpperCase()}</h1>
+                        <button onclick={()=>editHeroicSkill = true}>
+                            <Fa icon={faPencilRuler}></Fa>
+                        </button>
+                            
+                    </span>
+                    <hr class="bg-cafe_noir-600 border-cafe_noir-600 h-1 rounded">
+                    <div class="w-80 text-sm">
+                        {characterClass.heroic.description}
+                    </div>
+                </div>
+            {/if}
+        </Card.Content>
+
+    </Card.Root>
+
+    <Dialog.Root> 
+
+    </Dialog.Root>
+
+{#snippet skillRender(skill: Skill)}
+    <div class="flex flex-row justify-between w-auto">
+        <h1 class="text-cafe_noir-600 ">{skill.name.toUpperCase()}</h1>
+        
+        <span class="flex flex-row gap-5">
+            <h1 class="text-cafe_noir-600">{skill.level.actual} / {skill.level.max}</h1>
+            <span class="flex flex-col">
+                <Fa icon={faChevronUp} class="text-cafe_noir-500"> </Fa>
+                <Fa icon={faChevronDown} class="text-cafe_noir-500"> </Fa>
+            </span>
+            
+        </span>
+            
+    </div>
+
+    <hr class="bg-cafe_noir-600 border-cafe_noir-600 h-1 rounded">
+
+    <div class="w-80 text-sm ">
+        {skill.description}
+    </div>
+    
+    
+{/snippet}

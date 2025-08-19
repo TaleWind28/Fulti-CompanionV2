@@ -12,7 +12,7 @@ import z, { url } from 'zod/v4';
 
 
 
-export async function load({url, locals }) {
+export async function load({url, locals, fetch}) {
     const form = await superValidate(zod4(characterSchema))
     const currentUser = locals.user;
 
@@ -20,16 +20,34 @@ export async function load({url, locals }) {
         console.log(url.pathname,"pathname")
         throw redirect(302, `/login?redirectTo=${encodeURIComponent(url.pathname)}`);
     }
-    //recupero solo il nome delle classi
-    const snapshot = await adminDB.collection("character_classes").select("name").orderBy("name", "asc").get();
+    // //recupero i documenti ordinati per nome
+    // const snapshot = await adminDB.collection("character_classes").select("name").orderBy("name", "asc").get();
+    // //recupero i nomi delle classi
+    // const names = snapshot.docs.map(doc => doc.get("name") as string);
+    let classNames: string[] = [];
 
-    const names = snapshot.docs.map(doc => doc.get("name") as string);
+    //fetcho l'api per il recupero delle classi e le memorizzo nella variabile classnames
+    const response = await fetch('/api/characters',{
+        method:'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+    const result = await response.json();
+    if (!result.success) {
+        console.error("Errore nel recupero delle classi:", result.message);
+    }
+    else {
+        classNames = result.classNames;
+    }
 
+    //memorizzo l'uid dell'utente
     const uid = currentUser.uid;
+
     let validCharacters;
 
     
-    //recupero personaggi
+    //recupero personaggi per mostrarli nella pagina
     try {
         const snapshot = await adminDB.collection('users').doc(uid).collection('characters').get();
 
@@ -37,10 +55,8 @@ export async function load({url, locals }) {
             .map(doc => {
                 // `safeParse` tenta di validare i dati del documento
                 const result = FabulaUltimaCharacterScheme.safeParse(doc.data());
-                
 
-                // Se la validazione ha successo, restituisci l'oggetto validato e tipizzato,
-                // aggiungendo l'ID del documento che non fa parte dello schema.
+                // Se la validazione ha successo, restituisci l'oggetto validato e tipizzato, aggiungendo l'ID del documento che non fa parte dello schema.
                 if (result.success) {
                     return {
                         id: doc.id,
@@ -53,10 +69,7 @@ export async function load({url, locals }) {
                 }
             })
             
-            validCharacters = characters.filter((character):character is FabulaUltimaCharacter & {id:string} => character !==null)
-
-
-        
+        validCharacters = characters.filter((character):character is FabulaUltimaCharacter & {id:string} => character !==null)
 
     } catch (err) {
         console.error("Errore nel recuperare i personaggi da Firestore:", err);
@@ -65,7 +78,7 @@ export async function load({url, locals }) {
         return {
             characters: validCharacters,
             form: form,
-            classNames:names
+            classNames:classNames
         };
     }
 
@@ -75,9 +88,6 @@ export const actions: Actions = {
     default: async ({ request, locals }) => {
         
         const form = await superValidate(request, zod4(characterSchema));
-       
-
-        console.log(form.data,"formData",form.valid,form.data.prima_classe);
         
 		if (!form.valid) {
 			return fail(400, { form, message:'Form non valido' });
@@ -93,8 +103,7 @@ export const actions: Actions = {
 		
         const {prima_classe, seconda_classe, terza_classe} = form.data;
 
-        // Logica per salvare su DB...
-        // Costruisci l'array di nomi di classi da cercare
+        //preparo la query per recuperare le classi dal db
 		const classNamesToQuery = [prima_classe, seconda_classe];
 		if (terza_classe) {
 			classNamesToQuery.push(terza_classe);
@@ -112,7 +121,6 @@ export const actions: Actions = {
         }catch(error:any){
             console.log(error,"aia");
         }
-        //console.log(characterClasses);
         
         const createdCharacter = FabulaUltimaCharacterScheme.parse({
             name:form.data.name,

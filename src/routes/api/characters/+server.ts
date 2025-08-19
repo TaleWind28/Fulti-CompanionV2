@@ -39,3 +39,10 @@ export const PUT: RequestHandler = async ({request,locals}) =>{
 
     return json({success:true, message:"personaggio importato con successo"});
 }
+
+export const GET: RequestHandler = async () => {
+    const snapshot = await adminDB.collection("character_classes").select("name").orderBy("name", "asc").get();
+    //recupero i nomi delle classi
+    const names = snapshot.docs.map(doc => doc.get("name") as string);
+    return json({success:true, classNames:names});
+}

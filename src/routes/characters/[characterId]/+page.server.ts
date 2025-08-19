@@ -4,7 +4,7 @@ import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { FabulaUltimaCharacterScheme, type FabulaUltimaCharacter } from '$lib/zod.js';
 
-export const load: PageServerLoad = async ({ locals, params }) => {
+export const load: PageServerLoad = async ({ locals, params, fetch }) => {
     // Guardia di sicurezza: l'utente deve essere loggato
     if (!locals.user) {
         throw redirect(303, '/login');
@@ -13,6 +13,23 @@ export const load: PageServerLoad = async ({ locals, params }) => {
     // 1. Ottieni l'ID del personaggio direttamente dall'URL
     const characterId = params.characterId;
     const uid = locals.user.uid;
+
+    let classNames:string[] = [];
+    //fetcho l'api per il recupero delle classi e le memorizzo nella variabile classnames
+    const response = await fetch('/api/characters',{
+        method:'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+    const result = await response.json();
+    if (!result.success) {
+        console.error("Errore nel recupero delle classi:", result.message);
+    }
+    else {
+        classNames = result.classNames;
+    }
+
 
     try {
         // 2. Interroga Firestore per ottenere UN SOLO documento
@@ -38,7 +55,8 @@ export const load: PageServerLoad = async ({ locals, params }) => {
             ...result.data
         };
         return {
-            character: characterData
+            character: characterData,
+            classNames: classNames
         };
 
     } catch (err:any) {
@@ -51,3 +69,4 @@ export const load: PageServerLoad = async ({ locals, params }) => {
         throw err;
     }
 };
+

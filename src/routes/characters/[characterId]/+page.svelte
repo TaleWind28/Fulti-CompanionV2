@@ -2,11 +2,12 @@
     import { invalidateAll } from '$app/navigation';
     import type { Attributes, StatsSheetProps } from '$lib';
     import CharacterCard from '$lib/components/characterCard.svelte';
+  import CharacterClasses from '$lib/components/characterClasses.svelte';
     import InfoSheet from '$lib/components/infoSheet.svelte';
     import StatSheet from '$lib/components/statSheet.svelte';
     import Separator from '$lib/components/ui/separator/separator.svelte';
     import * as Tabs from '$lib/components/ui/tabs/index.js';
-    import { bondScheme, infoScheme, type Affinity, type Status } from '$lib/zod.js';
+    import { bondScheme, characterClassScheme, infoScheme, type Affinity, type Status } from '$lib/zod.js';
 
 	let { data } = $props();
 
@@ -195,37 +196,6 @@
                         [statusField]: value
                     }
                 };
-                //ha più senso fare una funzione che viene invocata ogni volta e calcola quanto aumentare/diminuire
-                //il for each serve solo per gli status furente ed avvelenato
-                // interestedAttributes.forEach((attribute)=>{    
-                //     //controllo se posso modificare il valore interessato dallo status
-                //     if( character.attributes[attribute]<= 12 || character.attributes[attribute] >= 6){   
-                //         //controllo l'operazione da fare
-                //         if(statusField === "slow" || statusField === "dazed" || statusField === "enraged" || statusField === "weak" || statusField === "shaken" || statusField === "poisoned"){
-                //             //status negativi => sottrarre
-                            
-                //             character = {
-                //                 ...character,
-                //                 attributes:{
-                //                     ...character.attributes,
-                //                     [attribute]:character.attributes[attribute]-2
-                //                 }
-                //             }
-
-                //         }
-                //         else if(statusField.includes("Up")){
-                //             //statust positivi => aggiungere
-                //             character = {
-                //                 ...character,
-                //                 attributes:{
-                //                     ...character.attributes,
-                //                     [attribute]:character.attributes[attribute]+2
-                //                 }
-                //             }
-                //         }
-                //     }
-                    
-                // })
             }
         },
 
@@ -297,6 +267,12 @@
         }
     };
 
+    type CharacterClassesProps ={
+        classes: typeof character.classes,
+        classNames:string[]
+
+    }
+
 	type CharacterCardProps = {
         character: typeof character;
     };
@@ -310,7 +286,7 @@
         callbacks:any;
     };
 
-	type TabContentProps = CharacterCardProps | InfoSheetProps | StatsSheetProps;
+	type TabContentProps = CharacterCardProps | InfoSheetProps | StatsSheetProps | CharacterClassesProps;
 
 	 type TabContent = {
         value: string;
@@ -368,9 +344,10 @@
                 {
 					value:"classes",
 					text:"Classi",
-					component:CharacterCard,
+					component:CharacterClasses,
 					props:{
-						character:character,
+						classes:character.classes,
+                        classNames:data.classNames
 						},
 					
 				},
@@ -431,13 +408,14 @@
 				{/if}
 			{/each}
 		</Tabs.List>
-		{#each tabSelector.contents as content }
-			<Tabs.Content value={content.value} class="py-10" > 
-				<div class="w-full">
-					<content.component {...content.props}> </content.component>
-				</div>
-				</Tabs.Content>
-		{/each}
+
+        {#each tabSelector.contents as content }
+            <Tabs.Content value={content.value} class="py-10" > 
+                <div>
+                    <content.component {...content.props}> </content.component>
+                </div>
+                </Tabs.Content>
+        {/each}
 
 	</Tabs.Root>
 </div>

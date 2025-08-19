@@ -90,7 +90,7 @@
             {@render statusRender(["DES UP","dexUp"],statuses.dexUp,"Destrezza aumentata di 2")}
             {@render statusRender(["INT UP","insUp"],statuses.insUp,"Intuito aumentato di 2")}
             {@render statusRender(["VIG UP","migUp"],statuses.migUp,"Vigore aumentato di 2")}
-            {@render statusRender(["WLP UP","wlpUp"],statuses.wlpUp,"Volontà aumentata di 2")}
+            {@render statusRender(["VOL UP","wlpUp"],statuses.wlpUp,"Volontà aumentata di 2")}
         </Card.Content>
     </Card.Root>
 

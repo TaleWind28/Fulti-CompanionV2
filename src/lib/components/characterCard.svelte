@@ -95,7 +95,7 @@
       <!-- descrizione a dx -->
       <div class="flex flex-col gap-5 w-100">
         <!-- Tratti -->
-        <span class="flex flex-row border">
+        <span class="flex flex-row border gap-2">
           <p class="bg-lion-200 text-white  px-1 py-1 rounded flex-shrink-0 [writing-mode:vertical-lr] rotate-180 text-center">
           TRATTI
           </p>

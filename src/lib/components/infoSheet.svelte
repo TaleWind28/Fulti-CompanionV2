@@ -26,6 +26,7 @@
 
     let uploadPicDialog = $state(false);
 
+    //creazione legame
     let wit = $state("");
    
     let affection = $state(false);
@@ -77,7 +78,7 @@
         createBondDialog = false;
 
     }
-    let characterImage = pic ;
+    
     let newImageUrl = $state("");
     $inspect(uploadPicDialog,"dialog");
 
@@ -94,7 +95,7 @@
             <div class="flex flex-row justify-start gap-30">
                 <!-- Immagine Personaggio e pulsante per aggiornarla -->
                 <span class="flex flex-col gap-5">
-                    <img src={characterImage} alt="charPic" class="w-40 h-40 border border-black">
+                    <img src={pic} alt="charPic" class="w-40 h-40 border border-black">
                     <Button onclick={()=>uploadPicDialog = true}> Aggiorna Immagine </Button>
                 </span>
 
