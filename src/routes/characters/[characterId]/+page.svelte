@@ -8,12 +8,14 @@
     import Separator from '$lib/components/ui/separator/separator.svelte';
     import * as Tabs from '$lib/components/ui/tabs/index.js';
     import {  infoScheme} from '$lib/zod.js';
+    import { faSave } from '@fortawesome/free-solid-svg-icons';
     import { setContext } from 'svelte';
+    import Fa from 'svelte-fa';
     import { toast } from 'svelte-sonner';
 
 	let { data } = $props();
 
-	let character = $state.raw(data.character);
+	let character = $state(data.character);
 
 	const characterCallbacks = {
         // Callback per campi semplici
@@ -235,7 +237,7 @@
         // Utility callback con salvataggio su firestore
         save: async () => {
             try {
-                // Sanitizza i dati prima dell'invio
+                // Non so perchè ma firestore vede il livello come un a stringa
                 const sanitizedCharacter = {
                     ...character,
                     info:{
@@ -262,6 +264,7 @@
                 });
                 
                 if (response.ok) {
+                    
                     console.log('Personaggio salvato!');
                     toast.success('Personaggio salvato con successo!',{
                         action:{
@@ -270,6 +273,7 @@
                         }
                     })
                     await invalidateAll();
+                    hasBeenChanged = false;
                 } else {
                     console.error('Errore nel salvataggio');
                 }
@@ -283,15 +287,21 @@
     type SkillUp = (skillName:string,up:boolean,className:string)=> boolean;
     type Heroic =(className:string,heroicName:string,heroicDescription:string)=> boolean;
     type ClassUp = (className:string,up:boolean)=> boolean;
+    type DeleteClass = (className:string)=>boolean;
 
     function levelSkill(skillName: string,up:boolean,className:string): boolean {
 
         // Trova la classe e la skill
         const desiredClass = character.classes.find(c => c.name === className); 
+        
         if(!desiredClass)return false;       
+        
         const skill = desiredClass.skills.find(s => s.name === skillName);
+        
         if(!skill)return false;
+        
         let skillLevels = 0;
+        
         for(const skillz of desiredClass.skills){
             skillLevels+=skillz.level.actual;
         }
@@ -305,6 +315,7 @@
             }})
             return false;
         }
+        
         //controllo che il livello dell'abilità possa aumentare se l'operazione è di aumento
         if(skill.level.actual === skill.level.max && up){
                 toast.error('L\'abilità ha raggiunto il livello massimo',{
@@ -316,7 +327,7 @@
             return false;
         }
 
-            //controllo che il livello dell'abilità possa diminuire se l'operazione è di diminuzione
+        //controllo che il livello dell'abilità possa diminuire se l'operazione è di diminuzione
         if(skill.level.actual === 0 && !up){
             toast.error('Il livello abilità non può essere inferiore a 0',{
                 action:{
@@ -340,15 +351,33 @@
    
     function levelClass(className:string,up:boolean):boolean{
         const desiredClass = character.classes.find(c => c.name === className);
-        if(!desiredClass){
-            toast.error('La classe non è stata trovata',{
+
+        let classLevels = 0;
+        
+        for(const classe of character.classes){
+            classLevels+=classe.level;
+        }
+
+        if(classLevels>=character.info.level && up){
+            toast.error("Devi prima salire di livello!",{
                 action:{
                     label:"OK",
-                    onClick:()=>console.log("undo")
+                    onClick:()=>console.info("undo")
                 }
             })
             return false;
         }
+
+        if(!desiredClass){
+            toast.error('La classe non è stata trovata',{
+                action:{
+                    label:"OK",
+                    onClick:()=>console.info("undo")
+                }
+            })
+            return false;
+        }
+
         if(desiredClass?.level>=10 && up){
             toast.error('La classe ha raggiunto il livello massimo',{
                 action:{
@@ -374,9 +403,11 @@
         }else{
             desiredClass.level-=1;
         }
-    
-        let index = character.classes.findIndex(c=>c.name===desiredClass.name);
-        character.classes[index] = desiredClass;
+        
+        character = {
+            ...character,
+            classes: character.classes.map(c => c.name === desiredClass.name ? desiredClass : c)
+        };
 
         return true;
     };
@@ -394,10 +425,25 @@
 
         return false;
     }
+
+    function deleteClass(className: string): boolean {
+        const i = character.classes.findIndex(c => c.name === className);
+        if (i !== -1) {
+            character.classes.splice(i, 1);
+            toast.success("Classe rimossa con successo",{
+                action:{
+                    label:"OK",
+                    onClick:()=>console.info("Undo")
+                }
+            })
+            return true;
+        }
+        return false;
+    }
     setContext<ClassUp>('classUp',levelClass);
     setContext<Heroic>('editHeroic',editHeroic);
     setContext<SkillUp>('skillUp',levelSkill);
-
+    setContext<DeleteClass>('delete',deleteClass)
     type CharacterClassesProps ={
         classes: typeof character.classes,
         classNames:string[],
@@ -527,10 +573,11 @@
 	$inspect(tabValue,"tab",character,"personaggio",(tabSelector.contents[0].props as CharacterCardProps).character);
 	//consenter aggiornamento di character dopo la chiamata alla load a causa dell'invalidateAll
 	$effect(()=>{
-        if(character !== data.character){
+        if(JSON.stringify($state.snapshot(character)) !== JSON.stringify(data.character)){
             hasBeenChanged = true;
             console.log("cambiato");    
         }
+        
         });
 </script>
 
@@ -563,7 +610,8 @@
         class="fixed bottom-6 right-6 bg-green-600 hover:bg-green-700 text-white p-4 rounded-full shadow-lg transition-all duration-300 ease-in-out hover:scale-110 focus:outline-none focus:ring-4 focus:ring-green-300"
         aria-label="Salva modifiche"
     >
-        <i class="fas fa-save text-xl"></i>
+        <!-- <i class="fas fa-save text-xl"></i> -->
+        <Fa icon={faSave}/>
     </button>
 {/if}
 </div>

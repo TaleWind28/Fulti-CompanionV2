@@ -2,7 +2,6 @@
     import { elemGlams, type StatsSheetProps } from "$lib";
     import * as Card from "$lib/components/ui/card/index"
     import { Slider } from "bits-ui"
-    import { toast } from "svelte-sonner";
     import Fa from "svelte-fa";
     import Checkbox from "./ui/checkbox/checkbox.svelte";
 

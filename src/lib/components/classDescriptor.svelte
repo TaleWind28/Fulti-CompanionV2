@@ -2,7 +2,7 @@
     import * as Card from "$lib/components/ui/card/index";
     import * as Dialog from "$lib/components/ui/dialog/index";
     import type { CharacterClass, Skill } from "$lib/zod";
-    import {faChevronDown, faChevronUp, faPencilRuler } from "@fortawesome/free-solid-svg-icons";
+    import {faChevronDown, faChevronUp, faPencilRuler, faTrashCan } from "@fortawesome/free-solid-svg-icons";
     import Fa from "svelte-fa";
     import Input from "./ui/input/input.svelte";
     import Textarea from "./ui/textarea/textarea.svelte";
@@ -37,6 +37,9 @@
     type SkillUp = (skillName:string,up:boolean,className:string)=> boolean;
     const levelSkill = getContext<SkillUp>('skillUp');
     
+    type DeleteClass = (className:string)=>boolean;
+    const deleteClass = getContext<DeleteClass>('delete');
+    
 </script>
 
     <Card.Root class="border-0 bg-cafe_noir-700"> 
@@ -56,7 +59,6 @@
                             <Fa icon={faChevronDown} class="text-cafe_noir-500 cursor-pointer"/>
                         </button>
                     </div>
-                    
                 </h1> 
                 
             </Card.Title>
@@ -83,6 +85,13 @@
                 </div>
             {/if}
         </Card.Content>
+
+        <Card.Footer class="flex flex-row justify-end">
+            <button onclick={()=>deleteClass(characterClass.name)}>
+                <Fa icon={faTrashCan}/>
+            </button>
+            
+        </Card.Footer>
 
     </Card.Root>
 
