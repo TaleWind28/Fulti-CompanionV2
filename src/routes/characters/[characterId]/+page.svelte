@@ -235,10 +235,30 @@
         // Utility callback con salvataggio su firestore
         save: async () => {
             try {
+                // Sanitizza i dati prima dell'invio
+                const sanitizedCharacter = {
+                    ...character,
+                    info:{
+                        ...character.info,
+                        level:Number(character.info.level)
+                    },
+                    classes: character.classes.map(cls => ({
+                        ...cls,
+                        level: Number(cls.level), // Assicurati che sia un numero
+                        skills: cls.skills.map(skill => ({
+                            ...skill,
+                            level: {
+                                actual: Number(skill.level.actual),
+                                max: Number(skill.level.max)
+                            }
+                        }))
+                    }))
+                };
+
                 const response = await fetch(`/api/characters/${character.id}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(character)
+                    body: JSON.stringify(sanitizedCharacter)
                 });
                 
                 if (response.ok) {
