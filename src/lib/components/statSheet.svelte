@@ -67,7 +67,7 @@
             {@render affinityRender("Terra",affinity.terra,elemGlams)}
             {@render affinityRender("Fuoco",affinity.fuoco,elemGlams)}
             {@render affinityRender("Ghiaccio",affinity.ghiaccio,elemGlams)}
-            {@render affinityRender("Oscurità",affinity.oscurità,elemGlams)}
+            {@render affinityRender("Oscurita",affinity.oscurita,elemGlams)}
             {@render affinityRender("Luce",affinity.luce,elemGlams)}
             {@render affinityRender("Veleno",affinity.veleno,elemGlams)}
         </Card.Content>
@@ -145,7 +145,7 @@
 {/snippet}
 
 {#snippet affinityRender(affinity:string,value:any,elemGlams:any)}
-    {@const glam = elemGlams[affinity.toLowerCase()]}    
+    {@const glam = elemGlams[affinity.toLowerCase()]}
     {@const affinityValue = value.weak ? 1	: value.resistant ? 3	: value.absorb ? 4 	: value.immune ? 0 	: 2}
     <div class="flex flex-row gap-2 items-center w-auto justify-center">
         <Fa icon={glam.icon} class={glam.color}/>

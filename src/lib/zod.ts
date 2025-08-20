@@ -173,7 +173,7 @@ export const affinitiesScheme = z.object({
     fuoco:z.object({weak:z.boolean(),resistant:z.boolean(),immune:z.boolean(),absorb:z.boolean()}).default({weak:false,resistant:false,immune:false,absorb:false}),
     ghiaccio:z.object({weak:z.boolean(),resistant:z.boolean(),immune:z.boolean(),absorb:z.boolean()}).default({weak:false,resistant:false,immune:false,absorb:false}),
     luce:z.object({weak:z.boolean(),resistant:z.boolean(),immune:z.boolean(),absorb:z.boolean()}).default({weak:false,resistant:false,immune:false,absorb:false}),
-    oscurità:z.object({weak:z.boolean(),resistant:z.boolean(),immune:z.boolean(),absorb:z.boolean()}).default({weak:false,resistant:false,immune:false,absorb:false}),
+    oscurita:z.object({weak:z.boolean(),resistant:z.boolean(),immune:z.boolean(),absorb:z.boolean()}).default({weak:false,resistant:false,immune:false,absorb:false}),
     terra:z.object({weak:z.boolean(),resistant:z.boolean(),immune:z.boolean(),absorb:z.boolean()}).default({weak:false,resistant:false,immune:false,absorb:false}),
     veleno:z.object({weak:z.boolean(),resistant:z.boolean(),immune:z.boolean(),absorb:z.boolean()}).default({weak:false,resistant:false,immune:false,absorb:false}),
 })

@@ -154,7 +154,7 @@
 
         //Callback per Affinità Elementali
         affinity:{
-            update:(affinity:"fisico"|"aria"|"fulmine"|"fuoco"|"ghiaccio"|"luce"|"oscurità"|"terra"|"veleno",value:any)=>{
+            update:(affinity:"fisico"|"aria"|"fulmine"|"fuoco"|"ghiaccio"|"luce"|"oscurita"|"terra"|"veleno",value:any)=>{
                 
                 let affinityType = value === 0 ? "immune" : value === 1 ? "weak" : value === 3 ? "resistant" : value === 4 ? "absorb" : "";
                 console.log(affinity," :field\t",value," :value\t",affinityType,"\t affinityType")
@@ -537,5 +537,13 @@
         {/each}
 
 	</Tabs.Root>
-    
+    {#if hasBeenChanged}
+    <button 
+        onclick={characterCallbacks.save}
+        class="fixed bottom-6 right-6 bg-green-600 hover:bg-green-700 text-white p-4 rounded-full shadow-lg transition-all duration-300 ease-in-out hover:scale-110 focus:outline-none focus:ring-4 focus:ring-green-300"
+        aria-label="Salva modifiche"
+    >
+        <i class="fas fa-save text-xl"></i>
+    </button>
+{/if}
 </div>

@@ -46,6 +46,7 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 
         if (!result.success) {
             console.error(`Dati corrotti per il personaggio ${characterId}:`, result.error.flatten());
+            console.log(docSnap.data());
             throw error(500, 'I dati di questo personaggio sono corrotti o illeggibili.');
         }
 

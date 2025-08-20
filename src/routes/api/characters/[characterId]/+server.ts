@@ -78,15 +78,9 @@ export const PUT: RequestHandler = async ({ params, locals, request }) => {
     if (!doc.exists) {
       throw error(404, 'Personaggio non trovato o non ti appartiene');
     }
-
-    // Aggiungi timestamp di aggiornamento
-    const updateData = {
-      ...characterData,
-      updatedAt: new Date().toISOString()
-    };
-
+    console.log(characterData);
     // Esegui l'aggiornamento
-    await characterRef.update(updateData);
+    await characterRef.update(characterData);
 
     console.log(`Utente ${userId} ha aggiornato il personaggio ${characterId}`);
 

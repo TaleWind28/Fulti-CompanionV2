@@ -65,7 +65,7 @@ export let elemGlams = {
     icon: faSun,
     color: 'text-yellow-300',
   },
-  oscurità: {
+  oscurita: {
     icon: faMoon,
     color: 'text-indigo-500',
   },
