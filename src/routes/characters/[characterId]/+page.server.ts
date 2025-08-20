@@ -1,6 +1,6 @@
 // src/routes/characters/[characterId]/+page.server.ts
 import { adminDB } from '$lib/firebase_admin';
-import { error, redirect } from '@sveltejs/kit';
+import { error, redirect, type RequestHandler } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { FabulaUltimaCharacterScheme, type FabulaUltimaCharacter } from '$lib/zod.js';
 
@@ -69,4 +69,5 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
         throw err;
     }
 };
+
 

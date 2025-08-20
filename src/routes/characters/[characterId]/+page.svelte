@@ -1,69 +1,19 @@
 <script lang="ts">
     import { invalidateAll } from '$app/navigation';
-    import type { Attributes, StatsSheetProps } from '$lib';
+    import type { StatsSheetProps } from '$lib';
     import CharacterCard from '$lib/components/characterCard.svelte';
-  import CharacterClasses from '$lib/components/characterClasses.svelte';
+    import CharacterClasses from '$lib/components/characterClasses.svelte';
     import InfoSheet from '$lib/components/infoSheet.svelte';
     import StatSheet from '$lib/components/statSheet.svelte';
     import Separator from '$lib/components/ui/separator/separator.svelte';
     import * as Tabs from '$lib/components/ui/tabs/index.js';
-    import { bondScheme, characterClassScheme, infoScheme, type Affinity, type Status } from '$lib/zod.js';
-  import { setContext } from 'svelte';
+    import {  infoScheme} from '$lib/zod.js';
+    import { setContext } from 'svelte';
     import { toast } from 'svelte-sonner';
-    import { message } from 'sveltekit-superforms';
 
 	let { data } = $props();
 
-	let character = $state(data.character);
-
-	 // Callback per aggiornare il personaggio
-    function updateCharacter(field: string, value: any) {
-        character = {
-            ...character,
-            [field]: value
-        };
-        
-        // Opzionale: salva automaticamente nel database
-        // saveCharacterToDatabase();
-    }
-
-	    // Callback specifica per aggiornare campi nested in traits
-    function updateTraits(traitField: string, value: any) {
-        character = {
-            ...character,
-            traits: {
-                ...character.traits,
-                [traitField]: value
-            }
-        };
-    }
-
-    // Callback specifica per aggiornare campi nested in info
-    function updateInfo(infoField: string, value: any) {
-        character = {
-            ...character,
-            info: {
-                ...character.info,
-                [infoField]: value
-            }
-        };
-    }
-
-    // Callback specifica per bonds
-    function updateBonds(bondIndex: number, field: string, value: any) {
-        const newBonds = [...character.bonds];
-        newBonds[bondIndex] = {
-            ...newBonds[bondIndex],
-            [field]: value
-        };
-        
-        character = {
-            ...character,
-            bonds: newBonds
-        };
-    }
-
-
+	let character = $state.raw(data.character);
 
 	const characterCallbacks = {
         // Callback per campi semplici
@@ -256,9 +206,7 @@
                 const response = await  fetch(`/api/characters?classNames=${JSON.stringify([className])}`);
                 const result = await response.json();
                 if(result.success){
-                    console.log("provo con: ",className)
                     const newClass = result.characterClasses[0];
-                    console.log("ci sono",newClass);
                     if(character.classes.some(classe => classe.name === newClass.name)){
                         toast.error('Classe già presente',{
                             action:{
@@ -295,6 +243,13 @@
                 
                 if (response.ok) {
                     console.log('Personaggio salvato!');
+                    toast.success('Personaggio salvato con successo!',{
+                        action:{
+                            label:"OK",
+                            onClick:()=>console.info("Undo")
+                        }
+                    })
+                    await invalidateAll();
                 } else {
                     console.error('Errore nel salvataggio');
                 }
@@ -306,6 +261,9 @@
 
 
     type SkillUp = (skillName:string,up:boolean,className:string)=> boolean;
+    type Heroic =(className:string,heroicName:string,heroicDescription:string)=> boolean;
+    type ClassUp = (className:string,up:boolean)=> boolean;
+
     function levelSkill(skillName: string,up:boolean,className:string): boolean {
 
         // Trova la classe e la skill
@@ -359,10 +317,7 @@
         }
     }
 
-    type Heroic =(className:string,heroicName:string,heroicDescription:string)=> boolean;
-    
-    type ClassUp = (className:string,up:boolean)=> boolean;
-
+   
     function levelClass(className:string,up:boolean):boolean{
         const desiredClass = character.classes.find(c => c.name === className);
         if(!desiredClass){
@@ -546,12 +501,17 @@
 	)
 
 );
-
+    let hasBeenChanged = $state(false);
 	let tabValue = $state("sheet");
-	/* IMPORTANTE PER CASTARE NON CANCELLARE    */
+	/* IMPORTANTE PER CASTARE NON CANCELLARE */
 	$inspect(tabValue,"tab",character,"personaggio",(tabSelector.contents[0].props as CharacterCardProps).character);
 	//consenter aggiornamento di character dopo la chiamata alla load a causa dell'invalidateAll
-	$effect(()=>{character = data.character});
+	$effect(()=>{
+        if(character !== data.character){
+            hasBeenChanged = true;
+            console.log("cambiato");    
+        }
+        });
 </script>
 
 
@@ -577,4 +537,5 @@
         {/each}
 
 	</Tabs.Root>
+    
 </div>
