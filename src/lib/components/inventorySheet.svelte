@@ -21,6 +21,28 @@
     let viewAccessories = $state(false);
 
     let btnStyle = "bg-cafe_noir-600 hover:bg-cafe_noir-500 flex flex-row items-center";
+
+
+    function saveWeapon(weapon:Weapon){
+        weapons.push(weapon);
+        openWeaponCreator = false;
+    }
+
+    function saveAccessory(accessory:Accessory){
+        accessories.push(accessory);
+        openAccessoryCreator = false;
+    }
+
+    function saveArmor(armatura:Armor){
+        armor.push(armatura);
+        openArmorCreator = false;
+    }
+
+    function saveShield(shield:Shield){
+        shields.push(shield);
+        openShieldCreator = false;
+    }
+
 </script>
 
 <div class="flex flex-col gap-5 justify-center">
@@ -46,12 +68,36 @@
     </div>
 </div>
 
+<!-- Creazione Arma -->
 <Dialog.Root open={openWeaponCreator} onOpenChange={(v)=> openWeaponCreator=v}>
     <Dialog.Content class="flex items-center justify-center w-700">
-        <WeaponGenerator showImageProcessor={false} dim={"w-120"}></WeaponGenerator>
+        <WeaponGenerator showImageProcessor={false} dim={"w-120"} onSave={saveWeapon}></WeaponGenerator>
     </Dialog.Content>
 </Dialog.Root>
 
+<!-- Creazione Armatura -->
+<Dialog.Root open={openArmorCreator} onOpenChange={(v)=> openArmorCreator=v}>
+    <Dialog.Content class="flex items-center justify-center w-700">
+        <!-- <WeaponGenerator showImageProcessor={false} dim={"w-120"} onSave={saveWeapon}></WeaponGenerator> -->
+        pino
+    </Dialog.Content>
+</Dialog.Root>
+
+<!-- Creazione Scudo -->
+<Dialog.Root open={openShieldCreator} onOpenChange={(v)=> openShieldCreator=v}>
+    <Dialog.Content class="flex items-center justify-center w-700">
+        <!--<WeaponGenerator showImageProcessor={false} dim={"w-120"} onSave={saveWeapon}></WeaponGenerator> -->
+        pino
+    </Dialog.Content>
+</Dialog.Root>
+
+<!-- Creazione Accessorio -->
+<Dialog.Root open={openAccessoryCreator} onOpenChange={(v)=> openAccessoryCreator=v}>
+    <Dialog.Content class="flex items-center justify-center w-700">
+        pino
+        <!-- <WeaponGenerator showImageProcessor={false} dim={"w-120"} onSave={saveWeapon}></WeaponGenerator> -->
+    </Dialog.Content>
+</Dialog.Root>
 
 {#snippet inventoryPiece(name: string, inventory: Array<Weapon|Armor|Shield|Accessory>, showContent: boolean, toggleFn: () => void)}
     <Card.Root class="bg-cafe_noir-600 border-0"> 

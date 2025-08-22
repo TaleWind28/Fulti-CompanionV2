@@ -15,7 +15,7 @@
     import { WeaponScheme } from "$lib/zod";
     import { toast } from "svelte-sonner";
     
-    let {showImageProcessor = true, dim ="w-150"} = $props();
+    let {showImageProcessor = true, dim ="w-150", onSave = null} = $props();
     // Fetch dei dati iniziali
     onMount(async () => {
         try {
@@ -115,7 +115,7 @@
         calculateParams();
     })
 
-    async function handleExport() {
+    async function createWeaponObj(){
         if( weaponImageUrl !== undefined)weaponImageUrl = await blobUrlToBase64(weaponImageUrl) as string
         else weaponImageUrl = undefined;
         const propWeapon = {
@@ -134,10 +134,27 @@
             isMartial:isMartial,
             code:0
         }
-        const downloadableWeapon = JSON.stringify(propWeapon, null, 2);
-
-        downloadFile(downloadableWeapon,`${weaponName.replace(/\s+/g, '') || 'arma'}.json`,'application/json')
+        return propWeapon;
     }
+
+    async function handleExport() {
+        const propWeapon = await createWeaponObj();
+        if(!onSave){
+            const downloadableWeapon = JSON.stringify(propWeapon, null, 2);
+            downloadFile(downloadableWeapon,`${weaponName.replace(/\s+/g, '') || 'arma'}.json`,'application/json');
+        }
+        else{
+            // Modalità save: salva nell'inventario
+            if (!weaponName.trim()) {
+                toast.error("Inserisci un nome per l'arma!");
+                return;
+            }
+            onSave(propWeapon);
+            toast.success(`Arma "${weaponName}" aggiunta all'inventario!`);
+            clearFields(); // Opzionale: pulisci i campi dopo il salvataggio
+        }
+    }
+
 
 
     async function calculateParams() {
@@ -428,6 +445,11 @@
             <Button class="bg-cafe_noir-400 w-30" onclick={clearFields}>
                 Pulisci i Campi
             </Button>
+            {#if onSave}
+                <Button class="bg-cafe_noir-400 w-30" onclick={handleExport}>
+                    Salva Arma
+                </Button>
+            {/if}
         </Card.Footer>
     </Card.Root>
 
