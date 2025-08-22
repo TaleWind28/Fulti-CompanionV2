@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { faArrowDown, faArrowUp, faGem, faKhanda, faShield, faShieldAlt, faShieldHalved, faUserShield,type IconDefinition } from "@fortawesome/free-solid-svg-icons";
+    import { faArrowDown, faArrowUp, faCode, faGem, faKhanda, faShield, faShieldAlt, faShieldHalved, faUserShield,type IconDefinition } from "@fortawesome/free-solid-svg-icons";
     import Button from "./ui/button/button.svelte";
     import * as Card from "./ui/card/index";
     import * as Dialog from "./ui/dialog/index";
@@ -8,6 +8,12 @@
     import WeaponGenerator from "./weaponGenerator.svelte";
     import { Header } from "./ui/table";
   import ShieldGenerator from "./shieldGenerator.svelte";
+  import AccessoryGenerator from "./accessoryGenerator.svelte";
+  import { EquipScheme, type Equipment } from "$lib/zod";
+  import WeaponProcessor from "./imageProcessors/weaponProcessor.svelte";
+  import { Description } from "formsnap";
+  import AccessoryProcessor from "./imageProcessors/accessoryProcessor.svelte";
+  import EquipProcessor from "./imageProcessors/equipProcessor.svelte";
     //props
     let {weapons, shields, armor, accessories}: {weapons:Weapon[],armor:Armor[],shields:Shield[],accessories:Accessory[]} = $props();
     //dialogVariable
@@ -34,15 +40,16 @@
         openAccessoryCreator = false;
     }
 
-    function saveArmor(armatura:Armor){
-        armor.push(armatura);
-        openArmorCreator = false;
+    function saveEquipment(equip:Equipment){
+        if(equip.code == 1){
+            shields.push(equip as Shield);
+        }
+        if(equip.code ==2){
+            armor.push(equip as Armor);
+        }
     }
 
-    function saveShield(shield:Shield){
-        shields.push(shield);
-        openShieldCreator = false;
-    }
+    $inspect(accessories,"armi");
 
 </script>
 
@@ -54,76 +61,181 @@
         </Card.Header>
         <Card.Content class="flex flex-row items-center justify-center gap-5">
             {@render actionButton(btnStyle,()=>openWeaponCreator=true,faKhanda,"Nuova Arma")}
-            {@render actionButton(btnStyle,()=>openArmorCreator=true,faUserShield,"Nuova Armatura")}
-            {@render actionButton(btnStyle,()=>openShieldCreator=true,faShieldHalved,"Nuovo Scudo")}
+            {@render actionButton(btnStyle,()=>openArmorCreator=true,faUserShield,"Nuova Armatura/Scudo")}
             {@render actionButton(btnStyle,()=>openAccessoryCreator=true,faGem,"Nuovo Accessorio")}            
         </Card.Content>
     </Card.Root>
 
     <!-- Container per le visualizzazioni dell'inventario -->
     <div class="flex flex-col gap-5">
-        {@render inventoryPiece("Armi", weapons, viewWeapons, () => viewWeapons = !viewWeapons)}
-        {@render inventoryPiece("Armature", armor, viewArmor, () => viewArmor = !viewArmor)}
+        {@render weaponsDisplay(weapons)}
+        
+        {@render displayArmor(armor)}
+
+        {@render displayShields(shields)}
+        
+        {@render displayAccessory(accessories)}
+
+        <!-- {@render inventoryPiece("Armature", armor, viewArmor, () => viewArmor = !viewArmor)}
         {@render inventoryPiece("Scudi", shields, viewShields, () => viewShields = !viewShields)}
-        {@render inventoryPiece("Accessori", accessories, viewAccessories, () => viewAccessories = !viewAccessories)}
+        {@render inventoryPiece("Accessori", accessories, viewAccessories, () => viewAccessories = !viewAccessories)} -->
     </div>
 </div>
 
 <!-- Creazione Arma -->
 <Dialog.Root open={openWeaponCreator} onOpenChange={(v)=> openWeaponCreator=v}>
     <Dialog.Content class="flex items-center justify-center w-700">
-        <WeaponGenerator showImageProcessor={false} dim={"w-120"} onSave={saveWeapon}></WeaponGenerator>
+        <WeaponGenerator showImageProcessor={false} dim={"w-120"} onSave={saveWeapon}/>
     </Dialog.Content>
 </Dialog.Root>
 
 <!-- Creazione Armatura -->
 <Dialog.Root open={openArmorCreator} onOpenChange={(v)=> openArmorCreator=v}>
     <Dialog.Content class="flex items-center justify-center w-700">
-        <!-- <WeaponGenerator showImageProcessor={false} dim={"w-120"} onSave={saveWeapon}></WeaponGenerator> -->
-        pino
-        <ShieldGenerator showImageProcessor={false} dim={"w-120"} onSave={saveArmor}></ShieldGenerator>
-    </Dialog.Content>
-</Dialog.Root>
-
-<!-- Creazione Scudo -->
-<Dialog.Root open={openShieldCreator} onOpenChange={(v)=> openShieldCreator=v}>
-    <Dialog.Content class="flex items-center justify-center w-700">
-        <!--<WeaponGenerator showImageProcessor={false} dim={"w-120"} onSave={saveWeapon}></WeaponGenerator> -->
-        <ShieldGenerator showImageProcessor={false} dim={"w-120"} onSave={saveShield}></ShieldGenerator>
+        <ShieldGenerator showImageProcessor={false} dim={"w-120"} onSave={saveEquipment}/>
     </Dialog.Content>
 </Dialog.Root>
 
 <!-- Creazione Accessorio -->
 <Dialog.Root open={openAccessoryCreator} onOpenChange={(v)=> openAccessoryCreator=v}>
     <Dialog.Content class="flex items-center justify-center w-700">
-        pino
-        <!-- <WeaponGenerator showImageProcessor={false} dim={"w-120"} onSave={saveWeapon}></WeaponGenerator> -->
+        <AccessoryGenerator showImageProcessor={false} dim="w-150" onSave={saveAccessory}/>
     </Dialog.Content>
 </Dialog.Root>
 
-{#snippet inventoryPiece(name: string, inventory: Array<Weapon|Armor|Shield|Accessory>, showContent: boolean, toggleFn: () => void)}
+{#snippet displayAccessory(accessory: Accessory[])}
     <Card.Root class="bg-cafe_noir-600 border-0"> 
         <Card.Header class="flex flex-row justify-between items-center"> 
-            <p class="text-white">{name.toUpperCase()}</p>
-            <button onclick={toggleFn}> 
-                {#if !showContent}
+            <p class="text-white">ACCESSORI</p>
+            <button onclick={()=>viewAccessories=!viewAccessories}> 
+                {#if !viewAccessories}
                     <Fa icon={faArrowDown}/>
                 {:else}
                     <Fa icon={faArrowUp}/>
                 {/if}
             </button>
         </Card.Header>
-        {#if showContent}
+        {#if viewAccessories}
             <Card.Content class="bg-white">
-                {#each inventory as item}
-                    <p>{item.name}</p>
+                {#each accessory as item}
+                    <AccessoryProcessor
+                        requestedData={
+                            {
+                                accessoryName:item.name,
+                                price:item.price,
+                                quality:item.quality,
+
+                            }
+                        }
+                        accessoryImageUrl={item.pic}
+                    />
                 {/each}
-                {#if inventory.length === 0}
+                {#if accessories.length === 0}
                     <p class="text-gray-500 p-4">Nessun elemento presente</p>
                 {/if}
             </Card.Content>
         {/if}
     </Card.Root>
+{/snippet}
+
+{#snippet displayShields(shields:Shield[])}
+<Card.Root class="bg-cafe_noir-600 border-0"> 
+        <Card.Header class="flex flex-row justify-between items-center"> 
+            <p class="text-white">SCUDI</p>
+            <button onclick={()=> viewShields=!viewShields}> 
+                {#if !viewShields}
+                    <Fa icon={faArrowDown}/>
+                {:else}
+                    <Fa icon={faArrowUp}/>
+                {/if}
+            </button>
+        </Card.Header>
+        {#if viewShields}
+            <Card.Content>
+                {#each shields as item}
+                    {item.name}
+                    
+                {/each}
+            </Card.Content>
+        {/if}
+    </Card.Root>
+    
+{/snippet}
+
+{#snippet displayArmor(armor:Armor[])}
+    <Card.Root class="bg-cafe_noir-600 border-0"> 
+        <Card.Header class="flex flex-row justify-between items-center"> 
+            <p class="text-white">ARMATURE</p>
+            <button onclick={()=>viewArmor = !viewArmor}> 
+                {#if !viewArmor}
+                    <Fa icon={faArrowDown}/>
+                {:else}
+                    <Fa icon={faArrowUp}/>
+                {/if}
+            </button>
+        </Card.Header>
+        {#if viewArmor}
+            <Card.Content>
+                {#each armor as item}
+                    {item.name}
+                {/each}
+            </Card.Content>
+        {/if}
+    </Card.Root>
+{/snippet}
+
+{#snippet weaponsDisplay(weapon:Weapon[])}
+<Card.Root class="bg-cafe_noir-600 border-0"> 
+        <Card.Header class="flex flex-row justify-between items-center"> 
+            <p class="text-white">ARMI</p>
+            <button onclick={()=> viewWeapons = !viewWeapons}> 
+                {#if !viewWeapons}
+                    <Fa icon={faArrowDown}/>
+                {:else}
+                    <Fa icon={faArrowUp}/>
+                {/if}
+            </button>
+        </Card.Header>
+        {#if viewWeapons}
+            <Card.Content class="bg-white">
+                {#each weapon as item}
+                    <WeaponProcessor 
+                        weaponName={item.name}
+                        weaponImageUrl={item.pic} 
+                        quality={item.quality}
+                        isMartial = {item.isMartial}
+                        calculatedResults={
+                            {
+                                cost:item.cost,
+                                damage:item.damage,
+                                accuracy:"non viene usato",
+                                formulaRow:[
+                                    `[${item.attr1} + ${item.attr2}]`,
+                                    `[ TM+${item.damage}]${item.type}`,
+                                    `${item.cost}z`
+                                ],
+                                thirdRowElement:[ 
+                                    item.category,
+                                    "*",
+                                    item.hands,
+                                    "*",
+                                    item.range
+                                ],
+                                category:item.category,
+                                weaponData:item
+                            }
+                        }
+                        handleExport={()=>console.log()}
+                    />
+
+                {/each}
+                {#if weapon.length === 0}
+                    <p class="text-gray-500 p-4">Nessun elemento presente</p>
+                {/if}
+            </Card.Content>
+        {/if}
+    </Card.Root>
+    
 {/snippet}
 
 {#snippet actionButton(styleClass:string,clickFun: ()=>void,icon:IconDefinition, description:string)} 

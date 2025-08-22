@@ -469,7 +469,7 @@
         weapons:Weapon[],
         shields:Shield[],
         armor:Armor[],
-        accssories:Accessory[]
+        accessories:Accessory[]
     }
 
 	type TabContentProps = CharacterCardProps | InfoSheetProps | StatsSheetProps | CharacterClassesProps | InventorySheetProps;
@@ -557,7 +557,7 @@
                         weapons:character.inventory.weapons,
                         shields:character.inventory.shields,
                         armor:character.inventory.armor,
-                        accssories:character.inventory.accessories
+                        accessories:character.inventory.accessories
                     },
 					
 				},

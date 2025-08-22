@@ -90,14 +90,17 @@
 
             downloadFile(downloadableEquipment,`${equipName.replace(/\s+/g, '') || 'equipaggiamento'}.json`,'application/json')
         }else{
-            if (!equipName.trim()) {
-                toast.error("Inserisci un nome per l'arma!");
+            if (!equipName.trim() && propEquipment.code === 2) {
+                toast.error("Inserisci un nome per l'armatura!");
+                return;
+            }
+            if (!equipName.trim() && propEquipment.code === 1) {
+                toast.error("Inserisci un nome per lo scudo!");
                 return;
             }
             onSave(propEquipment);
-            toast.success(`Arma "${equipName}" aggiunta all'inventario!`);
-            clearFields(); // Opzionale: pulisci i campi dopo il salvataggio
-            onSave(propEquipment);
+            toast.success(` "${equipName}" aggiunto all'inventario!`);
+            clearFields();
         }
         return;
     }
@@ -270,6 +273,11 @@
             <Button class="bg-cafe_noir-400 w-30" onclick={clearFields}>
                 Pulisci i Campi
             </Button>
+            {#if onSave}
+                <Button class="bg-cafe_noir-400 w-30" onclick={handleExport}>
+                    Salva Equipaggiamento
+                </Button>
+            {/if}
             </Card.Footer>
         </Card.Root>
     </div>
@@ -277,7 +285,7 @@
     <!--ImageProcessor -->
     <div>
         {#if showImageProcessor}
-
+        
             <div id="equipaggiamento" class="bg-white border-black h-auto">
                 <!-- intestazione tabella -->
                 <div class="bg-cafe_noir-700 grid grid-cols-6">

@@ -58,6 +58,8 @@ export type ShieldScheme = z.infer<typeof ShieldScheme>
 
 export const EquipScheme = z.union([ArmorScheme, ShieldScheme]);
 
+export type Equipment = z.infer<typeof EquipScheme>
+
 export const AccessoryScheme = z.object({
     name:z.string(),
     quality:z.string(), 

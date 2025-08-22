@@ -14,6 +14,7 @@
     import Button from "./ui/button/button.svelte";
     import { WeaponScheme } from "$lib/zod";
     import { toast } from "svelte-sonner";
+  import WeaponProcessor from "./imageProcessors/weaponProcessor.svelte";
     
     let {showImageProcessor = true, dim ="w-150", onSave = null} = $props();
     // Fetch dei dati iniziali
@@ -455,9 +456,22 @@
 
     <!-- ImageProcesor -->
     {#if showImageProcessor}
-        <div>
+        <WeaponProcessor 
+            weaponName={weaponName} 
+            weaponImageUrl={weaponImageUrl} 
+            calculatedResults={calculatedResults} 
+            quality={quality} 
+            handleExport={handleExport} 
+            isMartial={isMartial}
+        />
+    {/if}
+</div>
+
+<!-- 
+
+<div>
             <div  id={"arma"} class="bg-white border-black h-auto ">
-                <!-- Intestazione tabella -->
+                
                 <div class="bg-cafe_noir-700 grid grid-cols-6">
                     <p class="col-span-1 px-2">
                         {weaponName}
@@ -511,7 +525,7 @@
                 
             </span>
         </div>
-    {/if}
-</div>
+
+-->
 
 

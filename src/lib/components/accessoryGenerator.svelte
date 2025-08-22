@@ -13,6 +13,9 @@
     import { onMount } from "svelte";
     import { AccessoryScheme } from "$lib/zod";
     import { toast } from "svelte-sonner";
+  import AccessoryProcessor from "./imageProcessors/accessoryProcessor.svelte";
+
+    let {showImageProcessor = true,dim = "w-150",onSave=null} = $props();
 
 
     let accessoryName = $state("");
@@ -37,21 +40,35 @@
         baseQualities.find((q)=> q.name === baseQuality)?.name ?? "Scegli una qualità"
     );
 
-    async function handleExport(){
+    async function createAccessoryObject(){
         if (accessoryImageUrl !== undefined)accessoryImageUrl = await blobUrlToBase64(accessoryImageUrl) as string
         else accessoryImageUrl = undefined;
         
-        const propEquipment = {
+        const propAccessory = {
             name:accessoryName,
             price:requestedData.price,
             quality:requestedData.quality,
             pic:accessoryImageUrl,
             code:3
         }
-        
-        const downloadableEquipment = JSON.stringify(propEquipment, null, 2);
+        return propAccessory;
+    }
+    async function handleExport(){
 
-        downloadFile(downloadableEquipment,`${accessoryName.replace(/\s+/g, '') || 'accessorio'}.json`,'application/json')
+        const propAccessory = createAccessoryObject();
+        if (!onSave){
+            const downloadableAccessory = JSON.stringify(propAccessory, null, 2);
+            downloadFile(downloadableAccessory,`${accessoryName.replace(/\s+/g, '') || 'accessorio'}.json`,'application/json')
+        }else{
+
+            if (!accessoryName.trim()) {
+                toast.error("Inserisci un nome per l'accessorio!");
+                return;
+            }
+            onSave(propAccessory);
+            toast.success(`Accessorio "${accessoryName}" aggiunto all'inventario!`);
+            clearFields();
+        }
         return;
     }
     
@@ -203,59 +220,22 @@
                 <Button class="bg-cafe_noir-400 w-30" onclick={clearFields}>
                     Pulisci i Campi
                 </Button>
+                {#if onSave}
+                    <Button class="bg-cafe_noir-400 w-30" onclick={handleExport}>
+                        Salva Accessorio                    </Button>
+                {/if}
             </Card.Footer>
         </Card.Root>
     </div>
 
     <!-- ImageProcessor -->
-    <div>
-        <div id="accessorio" class="bg-white border-black h-auto">
-            <!-- Intestazione Tabella -->
-            <div class="bg-cafe_noir-700 grid grid-cols-5">
-                <p class="col-span-4 px-2">
-                    {requestedData.accessoryName}
-                </p>
-                <span class="flex justify-end px-4 gap-30 ">
-                    {#each ["COSTO"] as header}
-                        <p> {header} </p>
-                    {/each}
-                </span>
-        </div>
-
-            <!-- Corpo Tabella -->
-        <div class="flex">
-                <div class="flex-shrink-0">
-                    <ImageUploader2 padre="accessoryGenerator" dimensions={"w-20 h-20 border-r"} fill={true} bind:imageUrl = {accessoryImageUrl}/>
-                </div>
-                <div class="flex-1">
-                    <div class="items-center justify-end  px-5  bg-cafe_noir-800 flex">
-                        <p> {requestedData.price+"z"} </p>
-                    </div>
-                    <hr>
-                    <div class="px-2">
-                        {requestedData.quality}
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <span class="flex flex-row">
-            <span>
-                <button onclick={()=>exportHtmlToImage('accessorio')}>
-                    <Fa icon={faDownload} class="cursor-pointer px-2 w-auto"/>
-                </button>
-            </span>
-            
-            <span>
-                <button onclick={handleExport}>
-                    <Fa icon={faFileExport} class="cursor-pointer px-2 w-auto"></Fa>
-                </button>
-            </span>
-        </span>
-    </div>
+    {#if showImageProcessor}
+        
+        <AccessoryProcessor
+            requestedData = {requestedData}
+            accessoryImageUrl={accessoryImageUrl}
+            handleExport={handleExport}
+        />
+    {/if}
     
 </div>
-
-<!-- <Popover.Root bind:open={errorOccurred}>
-  <Popover.Content>Place content for the popover here.</Popover.Content>
-</Popover.Root> -->
