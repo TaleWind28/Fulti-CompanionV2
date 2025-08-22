@@ -14,14 +14,6 @@
     let viewArmor = $state(false);
     let viewShields = $state(false);
     let viewAccessories = $state(false);
-
-    function handleSnippet(visibility:boolean){
-        console.log(visibility)
-        visibility = !visibility;
-        console.log(visibility)
-    }
-
-    $inspect(viewAccessories,viewArmor,viewShields,viewWeapons);
 </script>
 
 <div class="flex flex-col gap-5 justify-center">
@@ -52,35 +44,37 @@
 
     <!-- Container per le visualizzazioni dell'inventario -->
     <div class="flex flex-col gap-5">
-        {@render inventoryPiece("Armi",weapons,viewWeapons)}
-        {@render inventoryPiece("Armature",armor,viewArmor)}
-        {@render inventoryPiece("Scudi",shields,viewShields)}
-        {@render inventoryPiece("Accessori",accessories,viewAccessories)}
+        {@render inventoryPiece("Armi", weapons, viewWeapons, () => viewWeapons = !viewWeapons)}
+        {@render inventoryPiece("Armature", armor, viewArmor, () => viewArmor = !viewArmor)}
+        {@render inventoryPiece("Scudi", shields, viewShields, () => viewShields = !viewShields)}
+        {@render inventoryPiece("Accessori", accessories, viewAccessories, () => viewAccessories = !viewAccessories)}
     </div>
 </div>
 
 
-{#snippet inventoryPiece(name:string,inventory:Array<Weapon|Armor|Shield|Accessory>,showContent:boolean = $bindable(false))}
+{#snippet inventoryPiece(name: string, inventory: Array<Weapon|Armor|Shield|Accessory>, showContent: boolean, toggleFn: () => void)}
     <Card.Root class="bg-cafe_noir-600 border-0"> 
         <Card.Header class="flex flex-row justify-between items-center"> 
-            <p class="text-white ">{name.toUpperCase()}</p>
-            {#if !showContent}
-                <button onclick={()=>showContent = !showContent}> 
+            <p class="text-white">{name.toUpperCase()}</p>
+            <button onclick={toggleFn}> 
+                {#if !showContent}
                     <Fa icon={faArrowDown}/>
-                </button>
-                
-            {:else}
-                <button onclick={()=>handleSnippet(showContent)}>
-                    <Fa icon={faArrowUp}></Fa>
-                </button>    
-            {/if}
+                {:else}
+                    <Fa icon={faArrowUp}/>
+                {/if}
+            </button>
         </Card.Header>
         {#if showContent}
             <Card.Content class="bg-white">
-                pino
                 {#each inventory as item}
-                    pino
+                    <div class="p-2 border-b">
+                        <!-- Qui puoi aggiungere la visualizzazione dell'item -->
+                        {JSON.stringify(item)}
+                    </div>
                 {/each}
+                {#if inventory.length === 0}
+                    <p class="text-gray-500 p-4">Nessun elemento presente</p>
+                {/if}
             </Card.Content>
         {/if}
     </Card.Root>
