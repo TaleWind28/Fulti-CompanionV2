@@ -541,7 +541,7 @@
                 //spellSheet
 				{
 					value:"spells",
-					text:"Incantesimi",
+					text:"Libro degli Incantesimi",
 					component:CharacterCard,
 					props:{
 						character:character,
