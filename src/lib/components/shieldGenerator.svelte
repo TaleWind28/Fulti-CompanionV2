@@ -11,9 +11,10 @@
     import Input from "./ui/input/input.svelte";
     import Textarea from "./ui/textarea/textarea.svelte";
     import { onMount } from "svelte";
-    import Menubar from "./ui/menubar/menubar.svelte";
     import { EquipScheme } from "$lib/zod";
     import { toast } from "svelte-sonner";
+
+    let {showImageProcessor = true, dim="w-150", onSave=null} = $props();
 
     let equipName = $state("");
     let equipImageUrl = $state();
@@ -49,11 +50,9 @@
 
     onMount(async () => {
         try {
-            console.log("initialFetch");
             //recupero i dati dal db
             const response = await fetch('/api/shieldGenerator');
             const data = await response.json();
-            console.log(data);
             //array di dati per personalizzare l'arma
             baseQualities = data.qualities;
             baseEquipment = data.equipment;
@@ -64,8 +63,7 @@
         }
     });
 
-    async function handleExport(){
-
+    async function createEquipmentObject(){
         if( equipImageUrl !== undefined)equipImageUrl = await blobUrlToBase64(equipImageUrl) as string
         else equipImageUrl = undefined;
         
@@ -81,10 +79,26 @@
             isMartial:isMartial,
             code:triggerEquipment.toLowerCase().includes("scudo") ?  1 : 2 
         }
-        
-        const downloadableEquipment = JSON.stringify(propEquipment, null, 2);
+        return propEquipment;
+    }
 
-        downloadFile(downloadableEquipment,`${equipName.replace(/\s+/g, '') || 'equipaggiamento'}.json`,'application/json')
+    async function handleExport(){
+
+        const propEquipment = await createEquipmentObject();
+        if(!onSave){
+            const downloadableEquipment = JSON.stringify(propEquipment, null, 2);
+
+            downloadFile(downloadableEquipment,`${equipName.replace(/\s+/g, '') || 'equipaggiamento'}.json`,'application/json')
+        }else{
+            if (!equipName.trim()) {
+                toast.error("Inserisci un nome per l'arma!");
+                return;
+            }
+            onSave(propEquipment);
+            toast.success(`Arma "${equipName}" aggiunta all'inventario!`);
+            clearFields(); // Opzionale: pulisci i campi dopo il salvataggio
+            onSave(propEquipment);
+        }
         return;
     }
     
@@ -93,7 +107,7 @@
             const {name, content} = await uploadFile('.json');
             const parsed = await JSON.parse(content);
             const parsedEquip = EquipScheme.parse(parsed);
-            console.log(parsedEquip);
+            
 
 
             //parametri dell'equipaggiamento.
@@ -104,7 +118,7 @@
             isMartial = parsedEquip.martial;
             isRealCustomQuality = true;
             equipImageUrl = parsedEquip.pic;
-            console.log(equipImageUrl);
+            
             calculateParams();
 
             if (parsedEquip.code === 1 )toast.success("Scudo importato Correttamente!");
@@ -164,7 +178,6 @@
         }
     }
 
-
     $effect(()=>{
         calculateParams();
     })
@@ -173,7 +186,7 @@
 <div class="flex gap-5 justify-evenly">
     <!-- Generatore -->
     <div>
-        <Card.Root  class="w-150 bg-cafe_noir-700 border-0">
+        <Card.Root  class="{dim} bg-cafe_noir-700 border-0">
             <Card.Header>
                 Generatore di Armature e Scudi
             </Card.Header>
@@ -260,57 +273,62 @@
             </Card.Footer>
         </Card.Root>
     </div>
+
     <!--ImageProcessor -->
     <div>
-        <div id="equipaggiamento" class="bg-white border-black h-auto">
-            <!-- intestazione tabella -->
-            <div class="bg-cafe_noir-700 grid grid-cols-6">
-            <p class="col-span-1 px-2 w-25">
-                {requestedData.equipName}
-                {#if isMartial}
-                    <span class="text-red-600 " style="text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;">♦</span>
-                {/if}
-            </p>
-            <span class="grid grid-cols-3  col-span-5 gap-30 px-10">
-                {#each ["DIFESA","DIFESA M.","COSTO"] as header}
-                    <p> {header} </p>
-                {/each}
-            </span>
-        </div>
+        {#if showImageProcessor}
 
-        <!-- Corpo Tabella -->
-        <div class="flex">
-            <div class="flex-shrink-0">
-                <ImageUploader2 padre="shieldGenerator" dimensions={"w-25 h-25 border-r"} fill={true} bind:imageUrl = {equipImageUrl}/>
-            </div>
-            <div class="flex-1">
-                <div class="justify-around bg-cafe_noir-800 flex ">
-                    {#each requestedData.tableRow as formula}
-                        <p> {formula} </p>
+            <div id="equipaggiamento" class="bg-white border-black h-auto">
+                <!-- intestazione tabella -->
+                <div class="bg-cafe_noir-700 grid grid-cols-6">
+                <p class="col-span-1 px-2 w-25">
+                    {requestedData.equipName}
+                    {#if isMartial}
+                        <span class="text-red-600 " style="text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;">♦</span>
+                    {/if}
+                </p>
+                <span class="grid grid-cols-3  col-span-5 gap-30 px-10">
+                    {#each ["DIFESA","DIFESA M.","COSTO"] as header}
+                        <p> {header} </p>
                     {/each}
+                </span>
+            </div>
+
+            <!-- Corpo Tabella -->
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <ImageUploader2 padre="shieldGenerator" dimensions={"w-25 h-25 border-r"} fill={true} bind:imageUrl = {equipImageUrl}/>
                 </div>
-                <hr>
-                <div class="px-2 break-words w-150">
-                    {requestedData.quality}
+                <div class="flex-1">
+                    <div class="justify-around bg-cafe_noir-800 flex ">
+                        {#each requestedData.tableRow as formula}
+                            <p> {formula} </p>
+                        {/each}
+                    </div>
+                    <hr>
+                    <div class="px-2 break-words w-150">
+                        {requestedData.quality}
+                    </div>
                 </div>
             </div>
-        </div>
-        </div>
-        
+            </div>
 
-        <span class="flex flex-row">
-            <span>
-                <button onclick={()=>exportHtmlToImage('equipaggiamento')}>
-                    <Fa icon={faDownload} class="cursor-pointer px-2 w-auto"/>
-                </button>
+            <span class="flex flex-row">
+                <span>
+                    <button onclick={()=>exportHtmlToImage('equipaggiamento')}>
+                        <Fa icon={faDownload} class="cursor-pointer px-2 w-auto"/>
+                    </button>
+                </span>
+                
+                <span>
+                    <button onclick={handleExport}>
+                        <Fa icon={faFileExport} class="cursor-pointer px-2 w-auto"></Fa>
+                    </button>
+                </span>
             </span>
-            
-            <span>
-                <button onclick={handleExport}>
-                    <Fa icon={faFileExport} class="cursor-pointer px-2 w-auto"></Fa>
-                </button>
-            </span>
-        </span>
-    </div>    
+
+        {/if}
+    </div>
+
 </div>
 

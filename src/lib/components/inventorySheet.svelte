@@ -7,6 +7,7 @@
     import type { Weapon, Armor, Shield, Accessory } from "$lib";
     import WeaponGenerator from "./weaponGenerator.svelte";
     import { Header } from "./ui/table";
+  import ShieldGenerator from "./shieldGenerator.svelte";
     //props
     let {weapons, shields, armor, accessories}: {weapons:Weapon[],armor:Armor[],shields:Shield[],accessories:Accessory[]} = $props();
     //dialogVariable
@@ -80,6 +81,7 @@
     <Dialog.Content class="flex items-center justify-center w-700">
         <!-- <WeaponGenerator showImageProcessor={false} dim={"w-120"} onSave={saveWeapon}></WeaponGenerator> -->
         pino
+        <ShieldGenerator showImageProcessor={false} dim={"w-120"} onSave={saveArmor}></ShieldGenerator>
     </Dialog.Content>
 </Dialog.Root>
 
@@ -87,7 +89,7 @@
 <Dialog.Root open={openShieldCreator} onOpenChange={(v)=> openShieldCreator=v}>
     <Dialog.Content class="flex items-center justify-center w-700">
         <!--<WeaponGenerator showImageProcessor={false} dim={"w-120"} onSave={saveWeapon}></WeaponGenerator> -->
-        pino
+        <ShieldGenerator showImageProcessor={false} dim={"w-120"} onSave={saveShield}></ShieldGenerator>
     </Dialog.Content>
 </Dialog.Root>
 
