@@ -1,25 +1,25 @@
 <script lang="ts">
-    import { faArrowDown, faArrowUp, faCode, faGem, faKhanda, faShield, faShieldAlt, faShieldHalved, faUserShield,type IconDefinition } from "@fortawesome/free-solid-svg-icons";
+
+    import { faArrowDown, faArrowUp, faGem, faKhanda, faUserShield,type IconDefinition } from "@fortawesome/free-solid-svg-icons";
     import Button from "./ui/button/button.svelte";
     import * as Card from "./ui/card/index";
     import * as Dialog from "./ui/dialog/index";
     import Fa from "svelte-fa";
     import type { Weapon, Armor, Shield, Accessory } from "$lib";
     import WeaponGenerator from "./weaponGenerator.svelte";
-    import { Header } from "./ui/table";
-  import ShieldGenerator from "./shieldGenerator.svelte";
-  import AccessoryGenerator from "./accessoryGenerator.svelte";
-  import { EquipScheme, type Equipment } from "$lib/zod";
-  import WeaponProcessor from "./imageProcessors/weaponProcessor.svelte";
-  import { Description } from "formsnap";
-  import AccessoryProcessor from "./imageProcessors/accessoryProcessor.svelte";
-  import EquipProcessor from "./imageProcessors/equipProcessor.svelte";
+    
+    import ShieldGenerator from "./shieldGenerator.svelte";
+    import AccessoryGenerator from "./accessoryGenerator.svelte";
+    import { type Equipment } from "$lib/zod";
+    import WeaponProcessor from "./imageProcessors/weaponProcessor.svelte";  
+    import AccessoryProcessor from "./imageProcessors/accessoryProcessor.svelte";
+    import EquipProcessor from "./imageProcessors/equipProcessor.svelte";
+
     //props
     let {weapons, shields, armor, accessories}: {weapons:Weapon[],armor:Armor[],shields:Shield[],accessories:Accessory[]} = $props();
     //dialogVariable
     let openWeaponCreator = $state(false);
-    let openArmorCreator = $state(false);
-    let openShieldCreator = $state(false);
+    let openEquipCreator = $state(false);
     let openAccessoryCreator = $state(false);
 
     let viewWeapons = $state(false);
@@ -45,9 +45,13 @@
     function saveEquipment(equip:Equipment){
         if(equip.code == 1){
             shields.push(equip as Shield);
+            openEquipCreator = false;
+            return;
         }
-        if(equip.code ==2){
-            armor.push(equip as Armor);
+        if(equip.code == 2){
+            armor.push(equip);
+            openEquipCreator = false;
+            return;
         }
     }
 
@@ -63,7 +67,7 @@
         </Card.Header>
         <Card.Content class="flex flex-row items-center justify-center gap-5">
             {@render actionButton(btnStyle,()=>openWeaponCreator=true,faKhanda,"Nuova Arma")}
-            {@render actionButton(btnStyle,()=>openArmorCreator=true,faUserShield,"Nuova Armatura/Scudo")}
+            {@render actionButton(btnStyle,()=>openEquipCreator=true,faUserShield,"Nuova Armatura/Scudo")}
             {@render actionButton(btnStyle,()=>openAccessoryCreator=true,faGem,"Nuovo Accessorio")}            
         </Card.Content>
     </Card.Root>
@@ -92,7 +96,7 @@
 </Dialog.Root>
 
 <!-- Creazione Armatura -->
-<Dialog.Root open={openArmorCreator} onOpenChange={(v)=> openArmorCreator=v}>
+<Dialog.Root open={openEquipCreator} onOpenChange={(v)=> openEquipCreator=v}>
     <Dialog.Content class="flex items-center justify-center w-700">
         <ShieldGenerator showImageProcessor={false} dim={"w-120"} onSave={saveEquipment}/>
     </Dialog.Content>
@@ -155,8 +159,21 @@
         {#if viewShields}
             <Card.Content>
                 {#each shields as item}
-                    {item.name}
-                    
+                    <EquipProcessor
+                     isMartial={item.martial}
+                     equipImageUrl={item.pic}
+                     requestedData={{
+                        equipName:item.name,
+                        tableRow:[
+                            item.def+"",
+                            item.mdef+"",
+                            item.price+"z"
+                        ],
+                        quality:item.quality
+                     }}   
+                    >
+
+                    </EquipProcessor>
                 {/each}
             </Card.Content>
         {/if}
@@ -179,7 +196,21 @@
         {#if viewArmor}
             <Card.Content>
                 {#each armor as item}
-                    {item.name}
+                    <EquipProcessor
+                     isMartial={item.martial}
+                     equipImageUrl={item.pic}
+                     requestedData={{
+                        equipName:item.nickname,
+                        tableRow:[
+                            item.def+"",
+                            item.mdef+"",
+                            item.price+"z"
+                        ],
+                        quality:item.quality
+                     }}   
+                    >
+
+                    </EquipProcessor>
                 {/each}
             </Card.Content>
         {/if}

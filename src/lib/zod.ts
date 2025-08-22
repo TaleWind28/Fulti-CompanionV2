@@ -45,8 +45,8 @@ export type ArmorScheme = z.infer<typeof ArmorScheme>
 export const ShieldScheme = z.object({
     name:z.string(),
     nickname:z.string().optional(),
-    def:z.number(),
-    mdef:z.number(),
+    def:z.string(),
+    mdef:z.string(),
     quality:z.string(),
     martial:z.boolean(),
     price:z.number(),
