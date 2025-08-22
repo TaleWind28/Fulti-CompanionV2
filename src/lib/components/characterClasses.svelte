@@ -1,10 +1,8 @@
 <script lang="ts">
     import * as Select from "$lib/components/ui/select/index";
-  import ClassDescriptor from "./classDescriptor.svelte";
+    import ClassDescriptor from "./classDescriptor.svelte";
     import Button from "./ui/button/button.svelte";
     import * as Card from "./ui/card/index";
-    import SelectContent from "./ui/select/select-content.svelte";
-    import SelectGroup from "./ui/select/select-group.svelte";
 
     let {classNames, classes, callbacks} = $props();
     //logica della select
@@ -29,8 +27,8 @@
                 <Select.Trigger> 
                     {triggerClass}
                 </Select.Trigger>
-                <SelectContent> 
-                    <SelectGroup> 
+                <Select.Content> 
+                    <Select.Group> 
                         {#each classNames as characterClass}
                             <Select.Item 
                                 value={characterClass}
@@ -41,8 +39,8 @@
                             </Select.Item>
                             
                         {/each}
-                    </SelectGroup>
-                </SelectContent>
+                    </Select.Group>
+                </Select.Content>
             </Select.Root>
 
             <Button class="bg-cafe_noir-600 hover:bg-cafe_noir-500" onclick={()=>callbacks.classes.update(selectedClass)}>

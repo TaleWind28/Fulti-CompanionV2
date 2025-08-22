@@ -132,6 +132,7 @@ export const actions: Actions = {
             affinities:{},
             status:{},
             info:{},
+            inventory:{},
             classes:characterClasses,
         });
         

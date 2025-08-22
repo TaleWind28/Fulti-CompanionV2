@@ -26,6 +26,7 @@ export const WeaponScheme = z.object({
     code:z.number()
 });
 
+export type Weapon = z.infer<typeof WeaponScheme>
 
 export const ArmorScheme = z.object({
     name:z.string(),
@@ -39,6 +40,8 @@ export const ArmorScheme = z.object({
     code:z.number()
 })
 
+export type ArmorScheme = z.infer<typeof ArmorScheme>
+
 export const ShieldScheme = z.object({
     name:z.string(),
     nickname:z.string().optional(),
@@ -51,8 +54,9 @@ export const ShieldScheme = z.object({
     code:z.number()
 })
 
-export const EquipScheme = z.union([ArmorScheme, ShieldScheme]);
+export type ShieldScheme = z.infer<typeof ShieldScheme>
 
+export const EquipScheme = z.union([ArmorScheme, ShieldScheme]);
 
 export const AccessoryScheme = z.object({
     name:z.string(),
@@ -62,7 +66,7 @@ export const AccessoryScheme = z.object({
     code:z.number()
 })
 
-
+export type Accessory = z.infer<typeof AccessoryScheme>
 
 export const traitsScheme = z.object({
     identity:z.string().default(""),
@@ -195,6 +199,13 @@ export const statusScheme = z.object({
 
 export type Status = z.infer<typeof statusScheme>
 
+export const inventoryScheme = z.object({
+    weapons:z.array(WeaponScheme).default([]),
+    accessories:z.array(AccessoryScheme).default([]),
+    shields:z.array(ShieldScheme).default([]),
+    armor:z.array(ArmorScheme).default([]),
+})
+
 export const FabulaUltimaCharacterScheme = z.object({
     name:z.string(),
     traits:traitsScheme,
@@ -205,16 +216,15 @@ export const FabulaUltimaCharacterScheme = z.object({
     affinities:affinitiesScheme,
     status:statusScheme,
     info:infoScheme,
+    inventory:inventoryScheme,
     pic:z.string().optional(),
     code:z.number().default(4)
 })
-
 
 export type FabulaUltimaCharacter = z.infer<typeof FabulaUltimaCharacterScheme>;
 
 
 //FORM SCHEMES  
-
 export const characterSchema = z.object({
 	name: z.string().min(3, { message: "Il nome deve contenere almeno 3 caratteri." }).default(""),
 	prima_classe: z.string().min(1, { message: "La prima classe è obbligatoria." }).default(""),
@@ -248,7 +258,5 @@ export const characterSchema = z.object({
     }
   }
 }) as ZodValidationSchema;
-
-
 
 export type FormCharacterSchema = typeof characterSchema;

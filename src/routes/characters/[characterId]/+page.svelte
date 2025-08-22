@@ -1,9 +1,10 @@
 <script lang="ts">
     import { invalidateAll } from '$app/navigation';
-    import type { StatsSheetProps } from '$lib';
+    import type { Accessory, Armor, Shield, StatsSheetProps, Weapon } from '$lib';
     import CharacterCard from '$lib/components/characterCard.svelte';
     import CharacterClasses from '$lib/components/characterClasses.svelte';
     import InfoSheet from '$lib/components/infoSheet.svelte';
+  import InventorySheet from '$lib/components/inventorySheet.svelte';
     import StatSheet from '$lib/components/statSheet.svelte';
     import Separator from '$lib/components/ui/separator/separator.svelte';
     import * as Tabs from '$lib/components/ui/tabs/index.js';
@@ -283,7 +284,7 @@
         }
     };
 
-
+    //tipi per le funzioni da passare tramite context
     type SkillUp = (skillName:string,up:boolean,className:string)=> boolean;
     type Heroic =(className:string,heroicName:string,heroicDescription:string)=> boolean;
     type ClassUp = (className:string,up:boolean)=> boolean;
@@ -464,7 +465,14 @@
         callbacks:any;
     };
 
-	type TabContentProps = CharacterCardProps | InfoSheetProps | StatsSheetProps | CharacterClassesProps;
+    type InventorySheetProps = {
+        weapons:Weapon[],
+        shields:Shield[],
+        armor:Armor[],
+        accssories:Accessory[]
+    }
+
+	type TabContentProps = CharacterCardProps | InfoSheetProps | StatsSheetProps | CharacterClassesProps | InventorySheetProps;
 
 	 type TabContent = {
         value: string;
@@ -542,12 +550,15 @@
 				},
                 //equipmentSheet
 				{
-					value:"equipment",
-					text:"Equipaggiamento",
-					component:CharacterCard,
+					value:"inventory",
+					text:"Inventario",
+					component:InventorySheet,
 					props:{
-						character:character,
-						},
+                        weapons:character.inventory.weapons,
+                        shields:character.inventory.shields,
+                        armor:character.inventory.armor,
+                        accssories:character.inventory.accessories
+                    },
 					
 				},
                 //notes
