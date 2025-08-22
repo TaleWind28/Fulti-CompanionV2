@@ -55,7 +55,8 @@
     }
     async function handleExport(){
 
-        const propAccessory = createAccessoryObject();
+        const propAccessory = await createAccessoryObject();
+        console.log(propAccessory)
         if (!onSave){
             const downloadableAccessory = JSON.stringify(propAccessory, null, 2);
             downloadFile(downloadableAccessory,`${accessoryName.replace(/\s+/g, '') || 'accessorio'}.json`,'application/json')
