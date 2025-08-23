@@ -201,6 +201,19 @@ export const statusScheme = z.object({
 
 export type Status = z.infer<typeof statusScheme>
 
+export const spellScheme = z.object({
+    name:z.string(),
+    description:z.string(),
+    targets:{max:z.number(),description:z.string()},
+    cost:z.number(),
+    duration:z.string(),
+    special:z.string(),
+    offensive:z.boolean(),
+    accuracyCheck:z.string()
+})
+
+export type Spell = z.infer<typeof spellScheme>;
+
 export const inventoryScheme = z.object({
     weapons:z.array(WeaponScheme).default([]),
     accessories:z.array(AccessoryScheme).default([]),
