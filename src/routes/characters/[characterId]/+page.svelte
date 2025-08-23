@@ -583,7 +583,7 @@
 					component:CharacterCard,
 					props:{
 						character:character,
-						},
+					},
 					
 				},
                 //inventorySheet
@@ -618,15 +618,13 @@
 );
     let hasBeenChanged = $state(false);
 	let tabValue = $state("sheet");
-	/* IMPORTANTE PER CASTARE NON CANCELLARE */
-	$inspect(tabValue,"tab",character,"personaggio",(tabSelector.contents[0].props as CharacterCardProps).character);
-	//consenter aggiornamento di character dopo la chiamata alla load a causa dell'invalidateAll
+
+	//consentire all'utente di salvare le modifiche  di character dopo la chiamata alla load a causa dell'invalidateAll
 	$effect(()=>{
         if(JSON.stringify($state.snapshot(character)) !== JSON.stringify(data.character)){
             hasBeenChanged = true;
-            console.log("cambiato");    
+            console.info("cambiato");    
         }
-        
         });
 </script>
 
