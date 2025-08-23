@@ -157,7 +157,7 @@
 <div class=" flex gap-5 justify-evenly">
     <!-- Generatore -->
     <div>
-        <Card.Root class="w-150 bg-cafe_noir-700 border-0"> 
+        <Card.Root class="{dim} bg-cafe_noir-700 border-0"> 
             <Card.Header> 
                 Generatore di Accessori
             </Card.Header>

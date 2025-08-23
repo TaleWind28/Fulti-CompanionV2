@@ -218,6 +218,14 @@ export const inventoryScheme = z.object({
     armor:z.array(ArmorScheme).default([]),
 })
 
+export const notesScheme = z.object({
+    title:z.string().default(""),
+    description:z.string().default(""),
+    id:z.number()
+})
+
+export type Notes = z.infer<typeof notesScheme>
+
 export const FabulaUltimaCharacterScheme = z.object({
     name:z.string(),
     traits:traitsScheme,
@@ -230,6 +238,7 @@ export const FabulaUltimaCharacterScheme = z.object({
     info:infoScheme,
     inventory:inventoryScheme,
     pic:z.string().optional(),
+    notes:z.array(notesScheme).default([]),
     code:z.number().default(4)
 })
 

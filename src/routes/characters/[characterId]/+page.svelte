@@ -5,6 +5,7 @@
     import CharacterClasses from '$lib/components/sheets/characterClasses.svelte';
     import InfoSheet from '$lib/components/sheets/infoSheet.svelte';
     import InventorySheet from '$lib/components/sheets/inventorySheet.svelte';
+    import NotesSheet from '$lib/components/sheets/notesSheet.svelte';
     import StatSheet from '$lib/components/sheets/statSheet.svelte';
     import Separator from '$lib/components/ui/separator/separator.svelte';
     import * as Tabs from '$lib/components/ui/tabs/index.js';
@@ -445,6 +446,7 @@
     setContext<Heroic>('editHeroic',editHeroic);
     setContext<SkillUp>('skillUp',levelSkill);
     setContext<DeleteClass>('delete',deleteClass)
+    
     type CharacterClassesProps ={
         classes: typeof character.classes,
         classNames:string[],
@@ -472,7 +474,11 @@
         accessories:Accessory[]
     }
 
-	type TabContentProps = CharacterCardProps | InfoSheetProps | StatsSheetProps | CharacterClassesProps | InventorySheetProps;
+    type NotesProps = {
+        notes:Array<{title:string,description:string,id:number}>
+    }
+
+	type TabContentProps = CharacterCardProps | InfoSheetProps | StatsSheetProps | CharacterClassesProps | InventorySheetProps | NotesProps;
 
 	 type TabContent = {
         value: string;
@@ -565,9 +571,9 @@
 				{
 					value:"notes",
 					text:"Note",
-					component:CharacterCard,
+					component:NotesSheet,
 					props:{
-						character:character,
+                            notes:character.notes
 						},
 					
 				}

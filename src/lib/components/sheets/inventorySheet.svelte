@@ -101,7 +101,7 @@
 <!-- Creazione Accessorio -->
 <Dialog.Root open={openAccessoryCreator} onOpenChange={(v)=> openAccessoryCreator=v}>
     <Dialog.Content class="flex items-center justify-center w-700">
-        <AccessoryGenerator showImageProcessor={false} dim="w-100" onSave={saveAccessory}/>
+        <AccessoryGenerator showImageProcessor={false} dim="w-120" onSave={saveAccessory}/>
     </Dialog.Content>
 </Dialog.Root>
 
