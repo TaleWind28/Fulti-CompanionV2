@@ -11,7 +11,7 @@
     import Label from "../ui/label/label.svelte";
     import type { Notes } from "$lib/zod";
     
-    let { notes }:{notes:Notes[]} = $props();
+    let { notes }:{notes:Notes[], callback:any} = $props();
     
     let openCreateNote = $state(false);
     let noteDescription = $state("");
@@ -39,28 +39,10 @@
         }
 
         notes.push({title:noteTitle,description:noteDescription,id:notes.length});
-        
+        noteTitle = "";
+        noteDescription = "";
         openCreateNote = false;
     }
-
-    function handleDelete(id:number){
-        let removeIndex  = notes.findIndex((n:any)=>n.id === id)
-        notes.splice(removeIndex,1);
-        console.log("fatto");
-        return;
-    }
-
-    function updateDescription(description:string, id:number){
-        notes[id].description = description;
-        notes = [...notes];
-    }
-
-    function updateTitle(title:string, id:number){
-        notes[id].title = title;
-        notes = [...notes];
-    }
-
-    $inspect(notes,"note");
 </script>
 
 <div>
@@ -74,7 +56,7 @@
         </Card.Header>
         <Card.Content class="flex flex-col gap-5 bg-white"> 
             {#each notes as note }
-                <Note note={note} modifyDesription={updateDescription} modifyTitle={updateTitle} onDelete={handleDelete}/>
+                <Note note={note}/>
                 <hr>
             {/each}
         </Card.Content>    

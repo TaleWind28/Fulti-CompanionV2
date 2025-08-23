@@ -1,34 +1,31 @@
-<script>
+<script lang="ts">
     import { faTrash } from "@fortawesome/free-solid-svg-icons";
     import Input from "./ui/input/input.svelte";
     import Textarea from "./ui/textarea/textarea.svelte";
     import Fa from "svelte-fa";
+    import { getContext } from "svelte";
 
-    let { note, modifyTitle, modifyDesription, onDelete } = $props()
+    let { note } = $props()
 
-    let {title,description, id} = note;
+    let title = $state(note.title)
+    let description = $state(note.description);
+    let id = $state(note.id);
 
-    function handleTitleChange(){
-        modifyTitle(title,id);
-    }
+    type DeleteNote = (noteId:number)=>boolean;
+    type UpdateNote = (noteId:number,field:"description" | "title",value:string)=>boolean;
 
-    function handleDescriptionChange(){
-        modifyDesription(description,id);
-    }
-
-    function handleDelete(){
-        onDelete(id);
-    }
+    const deleteNote = getContext<DeleteNote>('deleteNote');
+    const updateNote = getContext<UpdateNote>('updateNote');
 
 </script>
 
 <div class="flex flex-col gap-2">
-    <span class="flex flex-row items-center justify-between">
-        <Input value={title} class="w-30" oninput={handleTitleChange}/>
-        <button onclick={handleDelete}>
+    <span class="flex flex-row items-center justify-between py-2">
+        <Input bind:value={title} class="w-30" oninput={()=>updateNote(id,"title",title)}/>
+        <button onclick={()=>deleteNote(id)}>
             <Fa icon={faTrash}/>
         </button>
     </span>
-    <Textarea value={description} oninput={handleDescriptionChange}/>
+    <Textarea bind:value={description} oninput={()=>updateNote(id,"description",description)}/>
 </div>
 

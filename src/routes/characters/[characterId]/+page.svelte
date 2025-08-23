@@ -236,6 +236,18 @@
             }
         },
 
+        notes:{
+            update:(field:"title"|"description",value:string,id:number)=>{
+                
+                character.notes[id][field] = value;
+                
+                character = {
+                    ...character,
+                    notes:[...character.notes]
+                }
+            }            
+        },
+
         // Utility callback con salvataggio su firestore
         save: async () => {
             try {
@@ -446,7 +458,27 @@
     setContext<Heroic>('editHeroic',editHeroic);
     setContext<SkillUp>('skillUp',levelSkill);
     setContext<DeleteClass>('delete',deleteClass)
+
+    type DeleteNote = (noteId:number)=>boolean;
+    type UpdateNote = (noteId:number,field:"description" | "title",value:string)=>boolean;
+
+    function deleteNote(noteId:number){
+        let deleteIndex = character.notes.findIndex((n)=>n.id === noteId);
+        character.notes.splice(deleteIndex,1);
+        return true;
+    }
+
+    function updateNote(noteId:number,field:"description" | "title" ,value:string){
+        character.notes[noteId][field] = value;
+        character = {
+            ...character,
+            notes:[...character.notes]
+        }
+        return true;
+    }
     
+    setContext<DeleteNote>('deleteNote',deleteNote);
+    setContext<UpdateNote>('updateNote',updateNote);
     type CharacterClassesProps ={
         classes: typeof character.classes,
         classNames:string[],
