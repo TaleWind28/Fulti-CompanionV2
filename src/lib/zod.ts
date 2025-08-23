@@ -40,8 +40,6 @@ export const ArmorScheme = z.object({
     code:z.number()
 })
 
-export type ArmorScheme = z.infer<typeof ArmorScheme>
-
 export const ShieldScheme = z.object({
     name:z.string(),
     nickname:z.string().optional(),
@@ -54,11 +52,10 @@ export const ShieldScheme = z.object({
     code:z.number()
 })
 
-export type ShieldScheme = z.infer<typeof ShieldScheme>
 
 export const EquipScheme = z.union([ArmorScheme, ShieldScheme]);
 
-export type Equipment = z.infer<typeof EquipScheme>
+export type Equipment = z.infer<typeof EquipScheme>;
 
 export const AccessoryScheme = z.object({
     name:z.string(),
@@ -68,7 +65,7 @@ export const AccessoryScheme = z.object({
     code:z.number()
 })
 
-export type Accessory = z.infer<typeof AccessoryScheme>
+
 
 export const traitsScheme = z.object({
     identity:z.string().default(""),

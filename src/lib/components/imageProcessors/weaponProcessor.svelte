@@ -1,15 +1,20 @@
 <script>
   import { exportHtmlToImage } from "$lib/utils";
-  import { faDownload, faFileExport } from "@fortawesome/free-solid-svg-icons";
+  import { faDownload, faFileExport, faTrash } from "@fortawesome/free-solid-svg-icons";
   import Fa from "svelte-fa";
   import ImageUploader2 from "../imageUploader2.svelte";
 
-    let {weaponName,isMartial,weaponImageUrl,calculatedResults,quality,handleExport} = $props();
+    let {weaponName,isMartial,weaponImageUrl,calculatedResults,quality,handleExport=null, onDelete=null} = $props();
+    function handleDelete(){
+        onDelete(weaponName);
+        return;
+    }
+    let downloadId = "arma:"+weaponName;
 </script>
 
 
 <div>
-    <div  id={"arma"} class="bg-white border-black h-auto ">
+    <div  id={downloadId} class="bg-white border-black h-auto ">
         <!-- Intestazione tabella -->
         <div class="bg-cafe_noir-700 grid grid-cols-6">
             <p class="col-span-1 px-2">
@@ -26,7 +31,7 @@
         </div>
         <div class="flex">
             <div class="flex-shrink-0">
-                <ImageUploader2 padre="weaponGenerator" dimensions={"w-25 h-25 border-r"} fill={true} bind:imageUrl = {weaponImageUrl}/>
+                <ImageUploader2 padre={downloadId} dimensions={"w-25 h-25 border-r"} fill={true} bind:imageUrl = {weaponImageUrl}/>
             </div>
             <div class="flex-1">
                 <div class="justify-around bg-cafe_noir-800 flex ">
@@ -51,16 +56,24 @@
     </div>
     <span class="flex flex-row">
         <span>
-            <button onclick={()=>exportHtmlToImage('arma')}>
+            <button onclick={()=>exportHtmlToImage(downloadId)}>
                 <Fa icon={faDownload} class="cursor-pointer px-2 w-auto"/>
             </button>
         </span>
-        
-        <span>
-            <button onclick={handleExport}>
-                <Fa icon={faFileExport} class="cursor-pointer px-2 w-auto"></Fa>
-            </button>
-        </span>
+        {#if handleExport}
+            <span>
+                <button onclick={handleExport}>
+                    <Fa icon={faFileExport} class="cursor-pointer px-2 w-auto"></Fa>
+                </button>
+            </span>
+        {/if}
+        {#if onDelete}
+            <span>
+                <button onclick={handleDelete}>
+                    <Fa icon={faTrash} class="cursor-pointer px-2 w-auto"></Fa>
+                </button>
+            </span>
+        {/if}
         
     </span>
 </div>
