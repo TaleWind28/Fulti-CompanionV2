@@ -14,7 +14,7 @@
 
 
 <div>
-    <div  id={downloadId} class="bg-white border-black h-auto ">
+    <div  id={downloadId} class="bg-white border border-gray-500  h-auto ">
         <!-- Intestazione tabella -->
         <div class="bg-cafe_noir-700 grid grid-cols-6">
             <p class="col-span-1 px-2">

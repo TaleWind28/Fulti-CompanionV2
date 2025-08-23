@@ -118,23 +118,25 @@
             </button>
         </Card.Header>
         {#if viewAccessories}
-            <Card.Content class="bg-white">
+            <Card.Content class="bg-white flex flex-col gap-5 py-5">
                 {#each accessory as item}
-                    <AccessoryProcessor
-                        requestedData={
-                            {
-                                accessoryName:item.name,
-                                price:item.price,
-                                quality:item.quality,
+                    <div>
+                        <AccessoryProcessor
+                            requestedData={
+                                {
+                                    accessoryName:item.name,
+                                    price:item.price,
+                                    quality:item.quality,
 
+                                }
                             }
-                        }
-                        accessoryImageUrl={item.pic}
-                        onDelete={(accessoryName:string)=>{
-                            let removeIndex = accessories.findIndex((a)=>a.name === accessoryName);
-                            accessories.splice(removeIndex,1);
-                        }}
-                    />
+                            accessoryImageUrl={item.pic}
+                            onDelete={(accessoryName:string)=>{
+                                let removeIndex = accessories.findIndex((a)=>a.name === accessoryName);
+                                accessories.splice(removeIndex,1);
+                            }}
+                        />
+                    </div>
                 {/each}
                 {#if accessories.length === 0}
                     <p class="text-gray-500 p-4">Nessun elemento presente</p>
@@ -157,9 +159,10 @@
             </button>
         </Card.Header>
         {#if viewShields}
-            <Card.Content class="bg-white">
+            <Card.Content class="bg-white flex flex-col gap-5 py-5">
                 {#each shields as item}
-                    <EquipProcessor
+                    <div>   
+                        <EquipProcessor
                      isMartial={item.martial}
                      equipImageUrl={item.pic}
                      requestedData={{
@@ -176,9 +179,8 @@
                                 shields.splice(removeIndex,1);
                             }
                         }
-                    >
-
-                    </EquipProcessor>
+                    />
+                    </div>
                 {/each}
                  {#if shields.length === 0}
                     <p class="text-gray-500 p-4">Nessun elemento presente</p>
@@ -203,29 +205,30 @@
             </button>
         </Card.Header>
         {#if viewArmor}
-            <Card.Content class="bg-white">
+            <Card.Content class="bg-white flex flex-col gap-5 py-5">
                 {#each armor as item}
-                    <EquipProcessor
-                        isMartial={item.martial}
-                        equipImageUrl={item.pic}
-                        requestedData={{
-                            equipName:item.nickname || item.name,
-                            tableRow:[
-                                item.def+"",
-                                item.mdef+"",
-                                item.price+"z"
-                            ],
-                            quality:item.quality
-                        }}
-                        onDelete={(armorName:string)=>
-                            {
-                                let removeIndex = armor.findIndex((ar)=>ar.name === armorName);
-                                armor.splice(removeIndex,1)
-                            }
-                        }     
-                    >
-
-                    </EquipProcessor>
+                    <div>
+                        <EquipProcessor
+                            isMartial={item.martial}
+                            equipImageUrl={item.pic}
+                            requestedData={{
+                                equipName:item.nickname || item.name,
+                                tableRow:[
+                                    item.def+"",
+                                    item.mdef+"",
+                                    item.price+"z"
+                                ],
+                                quality:item.quality
+                            }}
+                            onDelete={(armorName:string)=>
+                                {
+                                    let removeIndex = armor.findIndex((ar)=>ar.name === armorName);
+                                    armor.splice(removeIndex,1)
+                                }
+                            }     
+                        />
+                    </div>
+                    
                 {/each}
                 {#if armor.length === 0}
                     <p class="text-gray-500 p-4">Nessun elemento presente</p>
@@ -248,41 +251,44 @@
             </button>
         </Card.Header>
         {#if viewWeapons}
-            <Card.Content class="bg-white">
+            <Card.Content class="bg-white flex flex-col gap-5 py-5">
                 {#each weapon as item}
-                    <WeaponProcessor 
-                        weaponName={item.name}
-                        weaponImageUrl={item.pic} 
-                        quality={item.quality}
-                        isMartial = {item.isMartial}
-                        calculatedResults={
-                            {
-                                cost:item.cost,
-                                damage:item.damage,
-                                accuracy:"non viene usato",
-                                formulaRow:[
-                                    `[${item.attr1} + ${item.attr2}]`,
-                                    `[ TM+${item.damage}]${item.type}`,
-                                    `${item.cost}z`
-                                ],
-                                thirdRowElement:[ 
-                                    item.category,
-                                    "*",
-                                    item.hands,
-                                    "*",
-                                    item.range
-                                ],
-                                category:item.category,
-                                weaponData:item
+                    <div> 
+                        <WeaponProcessor 
+                            weaponName={item.nickname || item.name}
+                            weaponImageUrl={item.pic} 
+                            quality={item.quality}
+                            isMartial = {item.isMartial}
+                            calculatedResults={
+                                {
+                                    cost:item.cost,
+                                    damage:item.damage,
+                                    accuracy:"non viene usato",
+                                    formulaRow:[
+                                        `[${item.attr1} + ${item.attr2}]`,
+                                        `[ TM+${item.damage}]${item.type}`,
+                                        `${item.cost}z`
+                                    ],
+                                    thirdRowElement:[ 
+                                        item.category,
+                                        "*",
+                                        item.hands,
+                                        "*",
+                                        item.range
+                                    ],
+                                    category:item.category,
+                                    weaponData:item
+                                }
                             }
-                        }
-                        onDelete={(weaponName:string)=>
-                            {
-                                let removeIndex = weapons.findIndex((w)=>w.name === weaponName);
-                                weapons.splice(removeIndex,1)
-                            }
-                        } 
-                    />
+                            onDelete={(weaponName:string)=>
+                                {
+                                    let removeIndex = weapons.findIndex((w)=>w.name === weaponName);
+                                    weapons.splice(removeIndex,1)
+                                }
+                            } 
+                        />
+                    </div>
+                    
 
                 {/each}
                 {#if weapon.length === 0}
