@@ -1,15 +1,15 @@
 <script lang="ts">
     import * as Card from "$lib/components/ui/card/index.js";
-    import Input from "./ui/input/input.svelte";
-    import Textarea from "./ui/textarea/textarea.svelte";
-    import { Button } from "./ui/button";
-    import Label from "./ui/label/label.svelte";
-    import Checkbox from "./ui/checkbox/checkbox.svelte";
+    import Input from "../ui/input/input.svelte";
+    import Textarea from "../ui/textarea/textarea.svelte";
+    import { Button } from "../ui/button";
+    import Label from "../ui/label/label.svelte";
+    import Checkbox from "../ui/checkbox/checkbox.svelte";
     import Fa from "svelte-fa";
     import { faDownload, faFileExport } from "@fortawesome/free-solid-svg-icons";
     import { exportHtmlToImage } from "$lib/utils";
-    import ImageUploader2 from "./imageUploader3.svelte";
-  import { onMount } from "svelte";
+    import ImageUploader2 from "../imageUploader3.svelte";
+    import { onMount } from "svelte";
 
     //Arcana markdown Variables
     let arcanaName = $state("");

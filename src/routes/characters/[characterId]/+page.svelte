@@ -2,10 +2,10 @@
     import { invalidateAll } from '$app/navigation';
     import type { Accessory, Armor, Shield, StatsSheetProps, Weapon } from '$lib';
     import CharacterCard from '$lib/components/characterCard.svelte';
-    import CharacterClasses from '$lib/components/characterClasses.svelte';
-    import InfoSheet from '$lib/components/infoSheet.svelte';
-  import InventorySheet from '$lib/components/inventorySheet.svelte';
-    import StatSheet from '$lib/components/statSheet.svelte';
+    import CharacterClasses from '$lib/components/sheets/characterClasses.svelte';
+    import InfoSheet from '$lib/components/sheets/infoSheet.svelte';
+    import InventorySheet from '$lib/components/sheets/inventorySheet.svelte';
+    import StatSheet from '$lib/components/sheets/statSheet.svelte';
     import Separator from '$lib/components/ui/separator/separator.svelte';
     import * as Tabs from '$lib/components/ui/tabs/index.js';
     import {  infoScheme} from '$lib/zod.js';
@@ -309,7 +309,7 @@
         
         //controllo che il livello della classe possa aumentare se l'operazione è di aumento
         if(skillLevels >= desiredClass.level && up){
-            toast.error('La classe ha raggiunto il livello massimo',{
+            toast.error('Hai usato tutti i punti abilità a disposizione, aumenta il livello della classe per ottenerne altri',{
             action:{
                 label:"OK",
                 onClick: () =>{console.info("undo")}
@@ -548,7 +548,7 @@
 						},
 					
 				},
-                //equipmentSheet
+                //inventorySheet
 				{
 					value:"inventory",
 					text:"Inventario",

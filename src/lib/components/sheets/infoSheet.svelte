@@ -2,15 +2,15 @@
     import * as Card from "$lib/components/ui/card/index.js";
     import * as Dialog from "$lib/components/ui/dialog/index";
     import Fa from "svelte-fa";
-    import Button from "./ui/button/button.svelte";
-    import Input from "./ui/input/input.svelte";
-    import Label from "./ui/label/label.svelte";
-    import Textarea from "./ui/textarea/textarea.svelte";
+    import Button from "../ui/button/button.svelte";
+    import Input from "../ui/input/input.svelte";
+    import Label from "../ui/label/label.svelte";
+    import Textarea from "../ui/textarea/textarea.svelte";
     import { faAward, faCoins, faFeather, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
-    import Checkbox from "./ui/checkbox/checkbox.svelte";
+    import Checkbox from "../ui/checkbox/checkbox.svelte";
     import { toast } from "svelte-sonner";
-    import Bond from "./bond.svelte";
-    import ImageUploader2 from "./imageUploader2.svelte";
+    import Bond from "../bond.svelte";
+    import ImageUploader2 from "../imageUploader2.svelte";
 
 
     let {

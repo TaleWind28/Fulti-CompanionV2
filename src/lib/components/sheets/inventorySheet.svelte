@@ -1,19 +1,19 @@
 <script lang="ts">
 
     import { faArrowDown, faArrowUp, faGem, faKhanda, faUserShield,type IconDefinition } from "@fortawesome/free-solid-svg-icons";
-    import Button from "./ui/button/button.svelte";
-    import * as Card from "./ui/card/index";
-    import * as Dialog from "./ui/dialog/index";
+    import Button from "../ui/button/button.svelte";
+    import * as Card from "../ui/card/index";
+    import * as Dialog from "../ui/dialog/index";
     import Fa from "svelte-fa";
     import type { Weapon, Armor, Shield, Accessory } from "$lib";
-    import WeaponGenerator from "./weaponGenerator.svelte";
+    import WeaponGenerator from "../generators/weaponGenerator.svelte";
     
-    import ShieldGenerator from "./shieldGenerator.svelte";
-    import AccessoryGenerator from "./accessoryGenerator.svelte";
+    import ShieldGenerator from "../generators/shieldGenerator.svelte";
+    import AccessoryGenerator from "../generators/accessoryGenerator.svelte";
     import { type Equipment } from "$lib/zod";
-    import WeaponProcessor from "./imageProcessors/weaponProcessor.svelte";  
-    import AccessoryProcessor from "./imageProcessors/accessoryProcessor.svelte";
-    import EquipProcessor from "./imageProcessors/equipProcessor.svelte";
+    import WeaponProcessor from "../imageProcessors/weaponProcessor.svelte";  
+    import AccessoryProcessor from "../imageProcessors/accessoryProcessor.svelte";
+    import EquipProcessor from "../imageProcessors/equipProcessor.svelte";
 
     //props
     let {weapons, shields, armor, accessories}: {weapons:Weapon[],armor:Armor[],shields:Shield[],accessories:Accessory[]} = $props();

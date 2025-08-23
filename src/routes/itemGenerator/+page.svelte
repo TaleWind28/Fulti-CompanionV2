@@ -1,8 +1,8 @@
 <script lang="ts">
-    import ShieldGenerator from "$lib/components/shieldGenerator.svelte";
-    import WeaponGenerator from "$lib/components/weaponGenerator.svelte";
-    import AccessoryGenerator from "$lib/components/accessoryGenerator.svelte";
-    import ArcanaGenerator from "$lib/components/arcanaGenerator.svelte";
+    import ShieldGenerator from "$lib/components/generators/shieldGenerator.svelte";
+    import WeaponGenerator from "$lib/components/generators/weaponGenerator.svelte";
+    import AccessoryGenerator from "$lib/components/generators/accessoryGenerator.svelte";
+    import ArcanaGenerator from "$lib/components/generators/arcanaGenerator.svelte";
     import { afterNavigate, beforeNavigate } from "$app/navigation";
     
     afterNavigate(({ to, from }) => {

@@ -3,7 +3,7 @@
     import * as Card from "$lib/components/ui/card/index"
     import { Slider } from "bits-ui"
     import Fa from "svelte-fa";
-    import Checkbox from "./ui/checkbox/checkbox.svelte";
+    import Checkbox from "../ui/checkbox/checkbox.svelte";
 
     let {
         attributes,

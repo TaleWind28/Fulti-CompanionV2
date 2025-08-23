@@ -1,8 +1,8 @@
 <script lang="ts">
     import * as Select from "$lib/components/ui/select/index";
-    import ClassDescriptor from "./classDescriptor.svelte";
-    import Button from "./ui/button/button.svelte";
-    import * as Card from "./ui/card/index";
+    import ClassDescriptor from "../classDescriptor.svelte";
+    import Button from "../ui/button/button.svelte";
+    import * as Card from "../ui/card/index";
 
     let {classNames, classes, callbacks} = $props();
     //logica della select

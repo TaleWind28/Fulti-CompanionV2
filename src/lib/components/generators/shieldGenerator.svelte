@@ -1,15 +1,15 @@
 <script lang="ts">
     import * as Select from "$lib/components/ui/select/index.js";
     import * as Card from "$lib/components/ui/card/index.js"     
-    import ImageUploader2 from "./imageUploader2.svelte";
+    import ImageUploader2 from "../imageUploader2.svelte";
     import { blobUrlToBase64, downloadFile, exportHtmlToImage, uploadFile } from "$lib/utils";
     import Fa from "svelte-fa";
     import { faDownload, faFileExport } from "@fortawesome/free-solid-svg-icons";
-    import { Button } from "./ui/button";
-    import { Label } from "./ui/label";
+    import { Button } from "../ui/button";
+    import { Label } from "../ui/label";
     import type { Armor, Quality, Shield } from "$lib";
-    import Input from "./ui/input/input.svelte";
-    import Textarea from "./ui/textarea/textarea.svelte";
+    import Input from "../ui/input/input.svelte";
+    import Textarea from "../ui/textarea/textarea.svelte";
     import { onMount } from "svelte";
     import { EquipScheme } from "$lib/zod";
     import { toast } from "svelte-sonner";

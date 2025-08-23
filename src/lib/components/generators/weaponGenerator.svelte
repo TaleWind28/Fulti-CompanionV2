@@ -1,20 +1,18 @@
 <script lang="ts">
     import * as Select from "$lib/components/ui/select/index.js";
     import * as Card from "$lib/components/ui/card/index.js"        
-    import Input from "./ui/input/input.svelte";
-    import Checkbox from "./ui/checkbox/checkbox.svelte";
-    import Label from "./ui/label/label.svelte";
-    import Textarea from "./ui/textarea/textarea.svelte";
-    import ImageUploader2 from "./imageUploader3.svelte";
-    import Fa from "svelte-fa";
-    import { faDownload, faFileExport } from "@fortawesome/free-solid-svg-icons";
+    import Input from "../ui/input/input.svelte"
+    import Checkbox from "../ui/checkbox/checkbox.svelte";
+    import Label from "../ui/label/label.svelte";
+    import Textarea from "../ui/textarea/textarea.svelte";
+    import Button from "../ui/button/button.svelte";
+    import WeaponProcessor from "../imageProcessors/weaponProcessor.svelte";
     import { onMount } from "svelte";
     import type { Quality, SelectionItem, Weapon } from "$lib";
-    import { blobUrlToBase64, downloadFile, exportHtmlToImage, uploadFile } from "$lib/utils";
-    import Button from "./ui/button/button.svelte";
+    import { blobUrlToBase64, downloadFile, uploadFile } from "$lib/utils";
+    
     import { WeaponScheme } from "$lib/zod";
     import { toast } from "svelte-sonner";
-  import WeaponProcessor from "./imageProcessors/weaponProcessor.svelte";
     
     let {showImageProcessor = true, dim ="w-150", onSave = null} = $props();
     // Fetch dei dati iniziali
