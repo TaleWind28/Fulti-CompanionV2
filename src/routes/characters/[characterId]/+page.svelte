@@ -6,10 +6,11 @@
     import InfoSheet from '$lib/components/sheets/infoSheet.svelte';
     import InventorySheet from '$lib/components/sheets/inventorySheet.svelte';
     import NotesSheet from '$lib/components/sheets/notesSheet.svelte';
+    import SpellBook from '$lib/components/sheets/spellBook.svelte';
     import StatSheet from '$lib/components/sheets/statSheet.svelte';
     import Separator from '$lib/components/ui/separator/separator.svelte';
     import * as Tabs from '$lib/components/ui/tabs/index.js';
-    import {  infoScheme} from '$lib/zod.js';
+    import {  infoScheme, type Spellbook} from '$lib/zod.js';
     import { faSave } from '@fortawesome/free-solid-svg-icons';
     import { setContext } from 'svelte';
     import Fa from 'svelte-fa';
@@ -510,7 +511,11 @@
         notes:Array<{title:string,description:string,id:number}>
     }
 
-	type TabContentProps = CharacterCardProps | InfoSheetProps | StatsSheetProps | CharacterClassesProps | InventorySheetProps | NotesProps;
+    type SpeelBookProps = {
+        spellBook:SpellBook,
+    }
+
+	type TabContentProps = CharacterCardProps | InfoSheetProps | StatsSheetProps | CharacterClassesProps | InventorySheetProps | NotesProps | SpeelBookProps;
 
 	 type TabContent = {
         value: string;
@@ -580,9 +585,9 @@
 				{
 					value:"spells",
 					text:"Libro degli Incantesimi",
-					component:CharacterCard,
+					component:SpellBook,
 					props:{
-						character:character,
+						spellBook:character.spellbook,
 					},
 					
 				},

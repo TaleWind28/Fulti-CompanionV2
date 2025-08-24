@@ -65,8 +65,6 @@ export const AccessoryScheme = z.object({
     code:z.number()
 })
 
-
-
 export const traitsScheme = z.object({
     identity:z.string().default(""),
     origin:z.string().default(""),
@@ -211,6 +209,8 @@ export const spellScheme = z.object({
 
 export type Spell = z.infer<typeof spellScheme>;
 
+export type Spellbook = Record<string,Spell[]>
+
 export const inventoryScheme = z.object({
     weapons:z.array(WeaponScheme).default([]),
     accessories:z.array(AccessoryScheme).default([]),
@@ -237,6 +237,7 @@ export const FabulaUltimaCharacterScheme = z.object({
     status:statusScheme,
     info:infoScheme,
     inventory:inventoryScheme,
+    spellbook:z.record(z.string(),z.array(spellScheme)).default({}),
     pic:z.string().optional(),
     notes:z.array(notesScheme).default([]),
     code:z.number().default(4)
