@@ -3,17 +3,18 @@
     import { faBoltLightning } from "@fortawesome/free-solid-svg-icons";
     import Separator from "./ui/separator/separator.svelte";
     import Fa from "svelte-fa";
+    import type { Spell } from "$lib/zod";
 
-    let { name,isOffensive = true ,cost,targets,duration,description, class:className = "" } = $props();
-    let tableRow = [cost + "MP per bersaglio", "⬥" , targets, "⬥", duration]
+   let { spell, class: className = "" } : {spell: Spell, class?: string} = $props();
+    let tableRow = [spell.cost + "MP per bersaglio", "⬥" , spell.targets.description, "⬥", spell.duration]
 </script>
 
 
 <div class="flex flex-col {cn(className)}">
     <h1 class="flex flex-col bg-lion-500 ">
         <span class="flex flex-row items-center gap-2 p-2">
-            <p class="font-bold"> {name} </p>
-            {#if isOffensive}
+            <p class="font-bold"> {spell.name} </p>
+            {#if spell.offensive}
                 <Fa icon={faBoltLightning} class="text-red-600"/>
             {/if}
         </span>
@@ -25,7 +26,7 @@
         </span>
     </h1>
     <Separator orientation="horizontal" class="bg-lion-500"> </Separator>
-    <h2>
-        {description}
+    <h2 class="p-2">
+        {spell.description}
     </h2>   
 </div>

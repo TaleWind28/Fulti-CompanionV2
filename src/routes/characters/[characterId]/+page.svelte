@@ -193,13 +193,16 @@
         },
 
         attributes:{
-            update:(attribute:"DEX"|"MIG"|"INS"|"WLP",value:number)=>{
+        update:(attribute:"DEX"|"MIG"|"INS"|"WLP",value:number,field:"max" | "actual")=>{
                 console.log(attribute,"attribute", value,"value");
                 character = {
                     ...character,
                     attributes:{
                         ...character.attributes,
-                        [attribute]:value
+                        [attribute]:{
+                            ...character.attributes[attribute],
+                            [field]:value
+                        }
                     }
                 }
             }
@@ -255,15 +258,22 @@
                 if(!character.spellbook[value.list]){
                     character.spellbook[value.list]=[]
                 }
+                
+                // controllo duplicati
+                const alreadyExists = character.spellbook[value.list].some(spell => spell === value);
+                if (alreadyExists) return;
+
                 //aggiungi l'incantesimo alla lista
                 character.spellbook[value.list].push(value);
+                console.log(character);
+                console.log("\nLista: ------------------------ \n",character.spellbook);
             }
         },
 
         // Utility callback con salvataggio su firestore
         save: async () => {
             try {
-                // Non so perchè ma firestore vede il livello come un a stringa
+                // Non so perchè ma firestore vede il livello come una stringa
                 const sanitizedCharacter = {
                     ...character,
                     traits:{

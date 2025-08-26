@@ -6,7 +6,8 @@
     import Fa from "svelte-fa";
     import { faFileExport, faKhanda, faMagicWandSparkles, faPencil, faShield, faTrash, type IconDefinition } from "@fortawesome/free-solid-svg-icons";
     import { downloadFile } from "$lib/utils";
-    import { elemGlams, type Attributes, type Traits } from "$lib";
+    import { elemGlams, type Traits } from "$lib";
+    import {  type Attributes} from "$lib/zod";
     import LabeledProgress from "./labeledProgress.svelte";
     let { character, showButtons=false }: { character: FabulaUltimaCharacter & { id: string }, showButtons?:boolean } = $props();
     
@@ -161,19 +162,19 @@
   <div class="grid grid-cols-2 justify-between">
       <div class="flex text-xl font-semi-bold">
           <p>DES</p>:
-          d{stats.DEX}
+          d{stats.DEX.actual}
       </div>
       <div class="flex  text-xl font-semi-bold">
           <p>INT</p>:
-          d{stats.INS}
+          d{stats.INS.actual}
       </div>
       <div class="flex  text-xl font-semi-bold">
         <p>VIG</p>:
-        d{stats.MIG}
+        d{stats.MIG.actual}
     </div>
     <div class="flex text-xl font-semi-bold">
         <p>VOL</p>:
-        d{stats.WLP}
+        d{stats.WLP.actual}
     </div>
   </div>
 {/snippet}

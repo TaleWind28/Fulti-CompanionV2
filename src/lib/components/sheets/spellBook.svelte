@@ -44,19 +44,6 @@
             list:"elementalista"
         });
     let selectedButton = $state();
-
-
-    let incantesimi:any = $state([  {name:"Fulgur",description:"Plasmi l'elettricità in un'onda di energia crepitante. Ciascun bersaglio colpito subisce【TM + 15】 danni da fulmine. Opportunità: ciascun bersaglio colpito subisce lo status confuso.",cost:10,targets:"una creatura",duration:"istantanea"}]);
-    let acquiredSpellClasses = $state(
-    [
-        {name:"Elementalista", spellList:[...incantesimi]}
-    ])
-
-    function handleSpellAdd(){
-        incantesimi.push(selectedSpell);
-        acquiredSpellClasses[0].spellList = incantesimi;
-    }
-
 </script>
 
 <div class="flex flex-col gap-5">
@@ -103,11 +90,7 @@
                         <Separator orientation="vertical"/>
                         <div class="w-190">
                             <SpellDescriptor 
-                                name={selectedSpell.name} 
-                                description={selectedSpell.description} 
-                                targets={selectedSpell.targets} 
-                                duration={selectedSpell.duration} 
-                                cost={selectedSpell.cost}
+                                spell={selectedSpell}
                             />
                         </div>
                     </div>
@@ -143,18 +126,14 @@
 {#snippet spellBookSections(section:string,incantesimi:Spell[])}
     <Card.Root class="bg-cafe_noir-600 border-0">  
         <Card.Header class="text-white font-bold"> 
-            <p>{section}</p>
+            <p>{section.toUpperCase()}</p>
         </Card.Header>
         <Card.Content class="bg-white py-5"> 
             <div class="w-180 flex flex-col gap-5">
                 {#each incantesimi as spell}
                     <SpellDescriptor
                         class="border"
-                        name={spell.name}
-                        description={spell.description}
-                        targets={spell.targets}
-                        duration={spell.duration}
-                        cost={spell.cost}
+                        spell={spell}
                     />
                 {/each}
             </div>

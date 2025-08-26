@@ -23,10 +23,10 @@
         <Card.Content class="flex flex-row gap-30 bg-white py-2"> 
             <!-- Slider per modificare le caratteristiche -->
             <div class="flex flex-col item-center gap-2 w-50">    
-                {@render attributeRender(["DES","DEX"],attributes.DEX)}
-                {@render attributeRender(["INT","INS"],attributes.INS)}
-                {@render attributeRender(["VIG","MIG"],attributes.MIG)}
-                {@render attributeRender(["VOL","WLP"],attributes.WLP)}
+                {@render attributeRender(["DES","DEX"],attributes.DEX.max)}
+                {@render attributeRender(["INT","INS"],attributes.INS.max)}
+                {@render attributeRender(["VIG","MIG"],attributes.MIG.max)}
+                {@render attributeRender(["VOL","WLP"],attributes.WLP.max)}
             </div>
 
             <!-- Spiegazione delle spread -->
@@ -103,7 +103,7 @@
             class="relative flex w-full touch-none select-none items-center" 
             value={value}  
             max={12} min={6} step={2}
-            onValueCommit={(value)=>{callbacks.attributes.update(attribute[1],value)}}
+            onValueCommit={(value)=>{callbacks.attributes.update(attribute[1],value,"max")}}
             >
             {#snippet children({ tickItems, thumbItems })}
                 <!-- Traccia dello slider -->

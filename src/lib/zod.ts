@@ -1,5 +1,6 @@
 import type { ZodValidationSchema } from 'sveltekit-superforms/adapters';
 import {z} from 'zod/v4';
+import SpellBook from './components/sheets/spellBook.svelte';
 
 /* codici per schemi zod
     0 - Arma,
@@ -101,10 +102,10 @@ export const bondScheme = z.object({
 })
 
 export const attributesScheme = z.object({
-    DEX:z.number().default(8),
-    INS:z.number().default(8),
-    MIG:z.number().default(8),
-    WLP:z.number().default(8),
+    DEX:z.object({max:z.number().default(8),actual:z.number().default(8)}),
+    INS:z.object({max:z.number().default(8),actual:z.number().default(8)}),
+    MIG:z.object({max:z.number().default(8),actual:z.number().default(8)}),
+    WLP:z.object({max:z.number().default(8),actual:z.number().default(8)}),
 })
 
 export type Attributes = z.infer<typeof attributesScheme>;
@@ -199,7 +200,7 @@ export type Status = z.infer<typeof statusScheme>
 export const spellScheme = z.object({
     name:z.string(),
     description:z.string(),
-    targets:{max:z.number(),description:z.string()},
+    targets:z.object({max:z.number(),description:z.string()}),
     cost:z.number(),
     duration:z.string(),
     special:z.string(),
@@ -237,9 +238,10 @@ export const FabulaUltimaCharacterScheme = z.object({
     status:statusScheme,
     info:infoScheme,
     inventory:inventoryScheme,
-    spellbook:z.record(z.string(),z.array(spellScheme)).default({}),
+    spellbook:z.record(z.string(),z.array(spellScheme)).default(()=>({})),
     pic:z.string().optional(),
     notes:z.array(notesScheme).default([]),
+    pino:z.record(z.string(),z.array(z.object({pdsa:z.string()}))),
     code:z.number().default(4)
 })
 
