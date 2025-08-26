@@ -266,6 +266,9 @@
                 // Non so perchè ma firestore vede il livello come un a stringa
                 const sanitizedCharacter = {
                     ...character,
+                    traits:{
+                        ...character.traits
+                    },
                     info:{
                         ...character.info,
                         level:Number(character.info.level)
@@ -644,6 +647,8 @@
             console.info("cambiato");    
         }
         });
+
+    $inspect("======================================\n",character,"\n===========================");
 </script>
 
 

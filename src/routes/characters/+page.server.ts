@@ -145,7 +145,6 @@ export const actions: Actions = {
                 .doc(uid)
                 .collection('characters')
                 .add(createdCharacter);
-
             console.log(`Personaggio completo salvato per l'utente ${uid}`);
 
         } catch (err) {

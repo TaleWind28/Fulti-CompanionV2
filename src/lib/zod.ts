@@ -66,9 +66,9 @@ export const AccessoryScheme = z.object({
 })
 
 export const traitsScheme = z.object({
-    identity:z.string().default(""),
-    origin:z.string().default(""),
-    theme:z.string().default("")
+    identity:z.string().default(''),
+    origin:z.string().default(''),
+    theme:z.string().default('')
 })
 
 export const statsScheme = z.object({

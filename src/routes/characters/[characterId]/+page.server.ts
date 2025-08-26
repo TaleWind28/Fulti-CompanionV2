@@ -40,12 +40,13 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
         if (!docSnap.exists) {
             throw error(404, 'Personaggio non trovato'); // Lancia un errore 404
         }
-
+        const dataPorcamadonna = docSnap.data();
+        console.log("provo a parsare",dataPorcamadonna);
         // 4. Valida i dati con Zod, come prima
-        const result = FabulaUltimaCharacterScheme.safeParse(docSnap.data());
+        const result = FabulaUltimaCharacterScheme.safeParse(dataPorcamadonna);
 
         if (!result.success) {
-            console.error(`Dati corrotti per il personaggio ${characterId}:`, result.error.flatten());
+            console.error(`Dati corrotti per il personaggio ${characterId}:`, result.error);
             console.log(docSnap.data());
             throw error(500, 'I dati di questo personaggio sono corrotti o illeggibili.');
         }

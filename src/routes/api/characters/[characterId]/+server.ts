@@ -78,16 +78,20 @@ export const PUT: RequestHandler = async ({ params, locals, request }) => {
     if (!doc.exists) {
       throw error(404, 'Personaggio non trovato o non ti appartiene');
     }
-    console.log(characterData);
-    //console.log(characterData);
-    // Esegui l'aggiornamento
-    await characterRef.update(characterData);
 
+    console.log(characterData);
+    const {id,...characterToUpdate} = characterData;
+
+    // Esegui l'aggiornamento
+    await characterRef.update(characterToUpdate);
+    
     console.log(`Utente ${userId} ha aggiornato il personaggio ${characterId}`);
 
     // Restituisci il personaggio aggiornato
     const updatedDoc = await characterRef.get();
     const updatedCharacter = { id: updatedDoc.id, ...updatedDoc.data() };
+
+    console.log(updatedCharacter,"aggiornato\n");
 
     return json({ 
       success: true, 
