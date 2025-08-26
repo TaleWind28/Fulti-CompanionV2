@@ -133,7 +133,6 @@
     {/each}
      -->
     {#each Object.entries(spellBook) as [sectionName, spellsArray]}
-        pino
         {@render spellBookSections(sectionName, spellsArray)}
     {/each}
 
@@ -141,7 +140,7 @@
     
 </div>
 
-{#snippet spellBookSections(section:string,incantesimi:any)}
+{#snippet spellBookSections(section:string,incantesimi:Spell[])}
     <Card.Root class="bg-cafe_noir-600 border-0">  
         <Card.Header class="text-white font-bold"> 
             <p>{section}</p>
