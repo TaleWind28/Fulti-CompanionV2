@@ -9,7 +9,7 @@
     import SpellDescriptor from "../spellDescriptor.svelte";
 
     /*  PROP  */
-    let {spellBook} : {spellBook:Spellbook} =$props();
+    let {spellBook, callbacks} : {spellBook:Spellbook, callbacks:any} =$props();
     /* FINE PROP */
     
     let selectedSpellClass = $state("");
@@ -19,13 +19,30 @@
     );
     
     /* LO SCRIPT è SOLO PER TESTARE LA PAGINA DOPO VA AGGIORNATO CON I FETCH DAL DB E LE CALLBACK PER AGGIORNARE LA SCHEDA*/
-    let spells = [
-        {name:"Fulgur",description:"Plasmi l'elettricità in un'onda di energia crepitante. Ciascun bersaglio colpito subisce【TM + 15】 danni da fulmine. Opportunità: ciascun bersaglio colpito subisce lo status confuso.",cost:10,targets:"una creatura",duration:"istantanea"},
-        {name:"Ultimagia",description:"Magia Meno Finale",cost:40,targets:"Speciale",duration:"Speciale"},
-        {name:"Cometa",description:"Magia Finale",cost:50,targets:"Speciale",duration:"Speciale"},
+    let spells = 
+    [
+        {
+            name:"Fulgur",
+            description:"Plasmi l'elettricità in un'onda di energia crepitante.\nCiascun bersaglio subisce [TM+15] danni da Fulmine\nOpportunità: Ciascun bersaglio subisce lo status Confuso",
+            targets:{max:3,description:"Fino a tre creature"},
+            cost:10,
+            duration:"Istantanea",
+            special:"None",
+            offensive:true,
+            list:"elementalista"
+        }
     ]
 
-    let selectedSpell = $state({name:"Fulgur",description:"Plasmi l’elettricità in un’onda di energia crepitante. Ciascun bersaglio colpito subisce【TM + 15】 danni da fulmine. Opportunità: ciascun bersaglio colpito subisce lo status confuso.",cost:10,targets:"una creatura",duration:"istantanea"});
+    let selectedSpell:Spell = $state({
+            name:"Fulgur",
+            description:"Plasmi l'elettricità in un'onda di energia crepitante.\nCiascun bersaglio subisce [TM+15] danni da Fulmine\nOpportunità: Ciascun bersaglio subisce lo status Confuso",
+            targets:{max:3,description:"Fino a tre creature"},
+            cost:10,
+            duration:"Istantanea",
+            special:"None",
+            offensive:true,
+            list:"elementalista"
+        });
     let selectedButton = $state();
 
 
@@ -45,9 +62,6 @@
 <div class="flex flex-col gap-5">
     <!-- Action Buttons per selezione classe da incantatore ed aggiunta spell -->
     <Card.Root> 
-        <Card.Header> 
-            Aggiungi un'incantesimo dalle Liste
-        </Card.Header>
         <Card.Content class="flex flex-row gap-5 justify-center">
             <!-- Selezione Liste di Incantesimi -->
             <Select.Root type="single" name="SpellListSelector" bind:value={selectedSpellClass}> 
@@ -103,7 +117,7 @@
                                 
                                 )}
                                 
-                                onclick={()=>handleSpellAdd}
+                                onclick={()=>callbacks.spell.update(selectedSpell)}
                                 > 
                             Aggiungi
                         </Dialog.Close>
@@ -114,10 +128,16 @@
     </Card.Root>
 
     <!-- Render delle spell acquisite dal giocatore -->
-    {#each acquiredSpellClasses as sorceries}
+    <!-- {#each acquiredSpellClasses as sorceries}
         {@render spellBookSections(sorceries.name,sorceries.spellList)}
     {/each}
+     -->
+    {#each Object.entries(spellBook) as [sectionName, spellsArray]}
+        pino
+        {@render spellBookSections(sectionName, spellsArray)}
+    {/each}
 
+    
     
 </div>
 

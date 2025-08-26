@@ -53,8 +53,11 @@ export async function load({url, locals, fetch}) {
 
         const characters = snapshot.docs
             .map(doc => {
+                console.log("provo a parsare");
                 // `safeParse` tenta di validare i dati del documento
                 const result = FabulaUltimaCharacterScheme.safeParse(doc.data());
+                
+                console.log(result.success);
 
                 // Se la validazione ha successo, restituisci l'oggetto validato e tipizzato, aggiungendo l'ID del documento che non fa parte dello schema.
                 if (result.success) {
@@ -68,7 +71,6 @@ export async function load({url, locals, fetch}) {
                     return null; // Restituisci null per i dati non validi
                 }
             })
-            
         validCharacters = characters.filter((character):character is FabulaUltimaCharacter & {id:string} => character !==null)
 
     } catch (err) {

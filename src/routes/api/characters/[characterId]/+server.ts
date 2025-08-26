@@ -78,7 +78,7 @@ export const PUT: RequestHandler = async ({ params, locals, request }) => {
     if (!doc.exists) {
       throw error(404, 'Personaggio non trovato o non ti appartiene');
     }
-    
+    console.log(characterData);
     //console.log(characterData);
     // Esegui l'aggiornamento
     await characterRef.update(characterData);

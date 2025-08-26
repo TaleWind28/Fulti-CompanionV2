@@ -10,7 +10,7 @@
     import StatSheet from '$lib/components/sheets/statSheet.svelte';
     import Separator from '$lib/components/ui/separator/separator.svelte';
     import * as Tabs from '$lib/components/ui/tabs/index.js';
-    import {  infoScheme, type Spellbook} from '$lib/zod.js';
+    import {  infoScheme, type Spell, type Spellbook} from '$lib/zod.js';
     import { faSave } from '@fortawesome/free-solid-svg-icons';
     import { setContext } from 'svelte';
     import Fa from 'svelte-fa';
@@ -247,6 +247,17 @@
                     notes:[...character.notes]
                 }
             }            
+        },
+        spell:{
+            update:(value:Spell)=>{
+                console.log(value.list,"lista");
+                //se non esiste la lista di incantesimi nel libro la creo
+                if(!character.spellbook[value.list]){
+                    character.spellbook[value.list]=[]
+                }
+                //aggiungi l'incantesimo alla lista
+                character.spellbook[value.list].push(value);
+            }
         },
 
         // Utility callback con salvataggio su firestore
@@ -513,6 +524,7 @@
 
     type SpeelBookProps = {
         spellBook:SpellBook,
+        callbacks:any
     }
 
 	type TabContentProps = CharacterCardProps | InfoSheetProps | StatsSheetProps | CharacterClassesProps | InventorySheetProps | NotesProps | SpeelBookProps;
@@ -588,6 +600,7 @@
 					component:SpellBook,
 					props:{
 						spellBook:character.spellbook,
+                        callbacks:characterCallbacks
 					},
 					
 				},

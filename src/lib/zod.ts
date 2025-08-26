@@ -204,7 +204,7 @@ export const spellScheme = z.object({
     duration:z.string(),
     special:z.string(),
     offensive:z.boolean(),
-    accuracyCheck:z.string()
+    list:z.string()
 })
 
 export type Spell = z.infer<typeof spellScheme>;
