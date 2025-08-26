@@ -10,7 +10,7 @@
     import StatSheet from '$lib/components/sheets/statSheet.svelte';
     import Separator from '$lib/components/ui/separator/separator.svelte';
     import * as Tabs from '$lib/components/ui/tabs/index.js';
-    import {  infoScheme, type Spell, type Spellbook} from '$lib/zod.js';
+    import {  infoScheme, type FabulaUltimaCharacter, type Spell, type Spellbook} from '$lib/zod.js';
     import { faSave } from '@fortawesome/free-solid-svg-icons';
     import { setContext } from 'svelte';
     import Fa from 'svelte-fa';
@@ -654,11 +654,18 @@
 	$effect(()=>{
         if(JSON.stringify($state.snapshot(character)) !== JSON.stringify(data.character)){
             hasBeenChanged = true;
-            console.info("cambiato");    
+            console.info("cambiato");
+            characterCheckUp();    
         }
-        });
+    });
 
-    $inspect("======================================\n",character,"\n===========================");
+    function characterCheckUp(){
+        
+        return;
+    }
+
+   
+
 </script>
 
 

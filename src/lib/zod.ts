@@ -1,6 +1,6 @@
 import type { ZodValidationSchema } from 'sveltekit-superforms/adapters';
 import {z} from 'zod/v4';
-import SpellBook from './components/sheets/spellBook.svelte';
+
 
 /* codici per schemi zod
     0 - Arma,
@@ -194,6 +194,9 @@ export const statusScheme = z.object({
     migUp:z.boolean().default(false),
     wlpUp:z.boolean().default(false),
 })
+
+export type ritualKey = "entropism" | "elementalism" | "chimerism" | "arcanism" | "spiritism" | "ritualism";
+export type statusKey = "poisoned" | "dazed" | "shaken" | "enraged" | "slow" | "weak" | "dexUp" | "insUp" | "migUp" |"wlpUp";
 
 export type Status = z.infer<typeof statusScheme>
 
