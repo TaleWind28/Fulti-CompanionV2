@@ -130,7 +130,6 @@ export const actions: Actions = {
             name:form.data.name,
             traits:{},
             stats:{},
-            attributes:{},
             affinities:{},
             status:{},
             info:{},

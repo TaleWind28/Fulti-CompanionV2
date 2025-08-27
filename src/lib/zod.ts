@@ -235,7 +235,7 @@ export const FabulaUltimaCharacterScheme = z.object({
     traits:traitsScheme,
     stats:statsScheme,
     bonds:z.array(bondScheme).default([]),
-    attributes: attributesScheme,
+    attributes: attributesScheme.default({DEX:{max:8,actual:8},INS:{max:8,actual:8},MIG:{max:8,actual:8},WLP:{max:8,actual:8}}),
     classes: z.array(characterClassScheme).default([]),
     affinities:affinitiesScheme,
     status:statusScheme,
@@ -244,7 +244,6 @@ export const FabulaUltimaCharacterScheme = z.object({
     spellbook:z.record(z.string(),z.array(spellScheme)).default(()=>({})),
     pic:z.string().optional(),
     notes:z.array(notesScheme).default([]),
-    pino:z.record(z.string(),z.array(z.object({pdsa:z.string()}))),
     code:z.number().default(4)
 })
 
