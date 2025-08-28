@@ -260,13 +260,42 @@
                 }
                 
                 // controllo duplicati
-                const alreadyExists = character.spellbook[value.list].some(spell => spell === value);
-                if (alreadyExists) return;
+                const alreadyExists = character.spellbook[value.list].includes(value);
+                console.log(alreadyExists,"duplicati");
+                if (alreadyExists){
+                    toast.error("Incantesimo già presente",{
+                        action:{
+                            label:"OK",
+                            onClick:()=>console.info("incantesimo duplicato")
+                        }
+                    })
+                    return;
+                };
 
                 //aggiungi l'incantesimo alla lista
                 character.spellbook[value.list].push(value);
                 console.log(character);
                 console.log("\nLista: ------------------------ \n",character.spellbook);
+            },
+            remove:(value:Spell)=>{
+                let unwantedSpellIndex = character.spellbook[value.list].findIndex((spell)=>spell === value);
+                character.spellbook[value.list].splice(unwantedSpellIndex,1);
+                toast.success("Incantesimo rimosso correttamente",{
+                        action:{
+                            label:"OK",
+                            onClick:()=>console.info("rimozione incantesimo")
+                        }
+                    })
+                if(character.spellbook[value.list].length === 0){
+                    delete character.spellbook[value.list];
+                    toast.info(`Non possiedi più incantesimi da: ${value.list}`,{
+                        action:{
+                            label:"OK",
+                            onClick:()=>console.info("rimozione incantesimo")
+                        }
+                    })
+                }
+                return;
             }
         },
 
@@ -537,7 +566,8 @@
 
     type SpeelBookProps = {
         spellBook:SpellBook,
-        callbacks:any
+        callbacks:any,
+        availableSpells:any
     }
 
 	type TabContentProps = CharacterCardProps | InfoSheetProps | StatsSheetProps | CharacterClassesProps | InventorySheetProps | NotesProps | SpeelBookProps;
@@ -606,14 +636,15 @@
 						},
 					
 				},
-                //spellSheet
+                //spellbook
 				{
 					value:"spells",
 					text:"Libro degli Incantesimi",
 					component:SpellBook,
 					props:{
 						spellBook:character.spellbook,
-                        callbacks:characterCallbacks
+                        callbacks:characterCallbacks,
+                        availableSpells:data.availableSpells
 					},
 					
 				},

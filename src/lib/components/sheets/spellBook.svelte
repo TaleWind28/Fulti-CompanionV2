@@ -7,43 +7,25 @@
     import ScrollArea from "../ui/scroll-area/scroll-area.svelte";
     import Separator from "../ui/separator/separator.svelte";
     import SpellDescriptor from "../spellDescriptor.svelte";
+    import { ca } from "zod/v4/locales";
 
     /*  PROP  */
-    let {spellBook, callbacks} : {spellBook:Spellbook, callbacks:any} =$props();
+    let {spellBook, callbacks, availableSpells } : {spellBook:Spellbook, callbacks:any, availableSpells:any} =$props();
     /* FINE PROP */
+    let lists:string[] = Object.keys(availableSpells);
+ 
+    console.log(availableSpells);
     
-    let selectedSpellClass = $state("");
-    let spellClasses = ["Elementalista","Chimerista","Entropista","Spiritista"];
+    let selectedSpellClass = $state(lists[0]);
     const spellClassTrigger = $derived(
-        spellClasses.find(sp=>sp === selectedSpellClass) || "Nessuna Lista Selezionata"
+        lists.find(sp=>sp === selectedSpellClass) || lists[0]
     );
     
-    /* LO SCRIPT è SOLO PER TESTARE LA PAGINA DOPO VA AGGIORNATO CON I FETCH DAL DB E LE CALLBACK PER AGGIORNARE LA SCHEDA*/
-    let spells = 
-    [
-        {
-            name:"Fulgur",
-            description:"Plasmi l'elettricità in un'onda di energia crepitante.\nCiascun bersaglio subisce [TM+15] danni da Fulmine\nOpportunità: Ciascun bersaglio subisce lo status Confuso",
-            targets:{max:3,description:"Fino a tre creature"},
-            cost:10,
-            duration:"Istantanea",
-            special:"None",
-            offensive:true,
-            list:"elementalista"
-        }
-    ]
-
-    let selectedSpell:Spell = $state({
-            name:"Fulgur",
-            description:"Plasmi l'elettricità in un'onda di energia crepitante.\nCiascun bersaglio subisce [TM+15] danni da Fulmine\nOpportunità: Ciascun bersaglio subisce lo status Confuso",
-            targets:{max:3,description:"Fino a tre creature"},
-            cost:10,
-            duration:"Istantanea",
-            special:"None",
-            offensive:true,
-            list:"elementalista"
-        });
+    let selectedSpell:Spell = $derived(availableSpells[selectedSpellClass].spells[0]);
+    // let selectedSpell:Spell = $state(spells[0]);
     let selectedButton = $state();
+    console.log(lists,"lists")
+    $inspect(selectedSpell,"selected");
 </script>
 
 <div class="flex flex-col gap-5">
@@ -60,7 +42,7 @@
                         <Select.Label> 
                             Liste di incantesimi
                         </Select.Label>
-                        {#each spellClasses as list}
+                        {#each lists as list}
                             <Select.Item
                                 value={list}
                                 label={list}    
@@ -80,7 +62,7 @@
                 <Dialog.Content class="!max-w-none w-250 bg-lion-600"> 
                     <div class="flex flex-row border bg-white">
                         <ScrollArea class="h-80 w-50 rounded-md gap-5"> 
-                            {#each spells as spell,index}
+                            {#each availableSpells[selectedSpellClass].spells as spell,index}
                                 <button onclick={()=>{selectedSpell=spell,selectedButton = index}} 
                                     class="flex flex-col w-full justify-start text-start text-white border {selectedButton === index ? 'bg-lion-300' : 'bg-lion-400'}">
                                     <p>{spell.name}</p>
@@ -109,12 +91,6 @@
             </Dialog.Root>
         </Card.Content>
     </Card.Root>
-
-    <!-- Render delle spell acquisite dal giocatore -->
-    <!-- {#each acquiredSpellClasses as sorceries}
-        {@render spellBookSections(sorceries.name,sorceries.spellList)}
-    {/each}
-     -->
     {#each Object.entries(spellBook) as [sectionName, spellsArray]}
         {@render spellBookSections(sectionName, spellsArray)}
     {/each}
@@ -134,6 +110,7 @@
                     <SpellDescriptor
                         class="border"
                         spell={spell}
+                        onDelete={callbacks.spell.remove}
                     />
                 {/each}
             </div>

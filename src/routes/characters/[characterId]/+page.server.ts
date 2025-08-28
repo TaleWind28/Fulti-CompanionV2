@@ -25,12 +25,11 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
     const result = await response.json();
     if (!result.success) {
         console.error("Errore nel recupero delle classi:", result.message);
-    }
-    else {
+    }else{
         classNames = result.classNames;
     }
-
-
+    
+    
     try {
         // 2. Interroga Firestore per ottenere UN SOLO documento
         const docRef = adminDB.collection('users').doc(uid).collection('characters').doc(characterId);
@@ -40,10 +39,9 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
         if (!docSnap.exists) {
             throw error(404, 'Personaggio non trovato'); // Lancia un errore 404
         }
-        const dataPorcamadonna = docSnap.data();
-        console.log("provo a parsare",dataPorcamadonna);
+        
         // 4. Valida i dati con Zod, come prima
-        const result = FabulaUltimaCharacterScheme.safeParse(dataPorcamadonna);
+        const result = FabulaUltimaCharacterScheme.safeParse(docSnap.data());
 
         if (!result.success) {
             console.error(`Dati corrotti per il personaggio ${characterId}:`, result.error);
@@ -56,9 +54,39 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
             id: docSnap.id,
             ...result.data
         };
+
+        const characterSpellList:string[] = [];
+        characterData.classes.forEach((cl)=>{
+            if(!characterSpellList.includes(cl.spellClass)){
+                characterSpellList.push(cl.spellClass.toLowerCase());
+            }
+        })
+
+        const spellListParams = encodeURIComponent(JSON.stringify(characterSpellList))
+        // Costruisci l'URL con i parametri
+        const url = `/api/spells?spellList=${spellListParams}`;
+        // Crea l'URL con i parametri
+        
+        /*recupero le liste di incantesimi dal db*/
+        const spellResponse = await fetch(url,{
+            method:'GET',
+            headers:{
+                'Content-Type': 'application/json'
+            }
+        })
+
+        const spellResult = await spellResponse.json();
+        let availableSpells;
+        if(!spellResult.success){
+            console.error("Errore nel recupero delle liste di incatesimi");    
+            availableSpells = []
+        }else{
+            availableSpells = spellResult.spells;
+        }
         return {
             character: characterData,
-            classNames: classNames
+            classNames: classNames,
+            availableSpells: availableSpells 
         };
 
     } catch (err:any) {

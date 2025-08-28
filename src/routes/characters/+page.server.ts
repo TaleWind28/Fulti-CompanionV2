@@ -20,12 +20,9 @@ export async function load({url, locals, fetch}) {
         console.log(url.pathname,"pathname")
         throw redirect(302, `/login?redirectTo=${encodeURIComponent(url.pathname)}`);
     }
-    // //recupero i documenti ordinati per nome
-    // const snapshot = await adminDB.collection("character_classes").select("name").orderBy("name", "asc").get();
-    // //recupero i nomi delle classi
-    // const names = snapshot.docs.map(doc => doc.get("name") as string);
-    let classNames: string[] = [];
 
+    /*Recupero le classi dal db */
+    let classNames: string[] = [];
     //fetcho l'api per il recupero delle classi e le memorizzo nella variabile classnames
     const response = await fetch('/api/characters',{
         method:'GET',
@@ -33,6 +30,7 @@ export async function load({url, locals, fetch}) {
             'Content-Type': 'application/json'
         }
     });
+
     const result = await response.json();
     if (!result.success) {
         console.error("Errore nel recupero delle classi:", result.message);
@@ -46,8 +44,7 @@ export async function load({url, locals, fetch}) {
 
     let validCharacters;
 
-    
-    //recupero personaggi per mostrarli nella pagina
+    /*recupero personaggi per mostrarli nella pagina*/
     try {
         const snapshot = await adminDB.collection('users').doc(uid).collection('characters').get();
 
