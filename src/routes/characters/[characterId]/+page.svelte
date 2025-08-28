@@ -276,11 +276,21 @@
                     toast.error("Questa non è una classe magica",{
                         action:{
                             label:"OK",
+                            onClick:()=>console.info("404: Class not found")
+                        }
+                    })
+                    return;
+                }
+                if(skill.level.actual===0){
+                    toast.error(`Per imparare incantesimi della classe ${magicClass.name} devi apprendere l'abilità ${skill.name}`,{
+                        action:{
+                            label:"OK",
                             onClick:()=>console.info("Skill not Acquired")
                         }
                     })
                     return;
                 }
+
                 //se non esiste la lista di incantesimi nel libro la creo
                 if(!character.spellbook[value.list]){
                     character.spellbook[value.list]=[]
@@ -622,7 +632,6 @@
         spellBook:SpellBook,
         callbacks:any,
         availableSpells:any,
-        character:FabulaUltimaCharacter
     }
 
 	type TabContentProps = CharacterCardProps | InfoSheetProps | StatsSheetProps | CharacterClassesProps | InventorySheetProps | NotesProps | SpeelBookProps;
@@ -700,7 +709,6 @@
 						spellBook:character.spellbook,
                         callbacks:characterCallbacks,
                         availableSpells:spellData,
-                        character:character
 					},
 					
 				},
@@ -751,6 +759,11 @@
         return;
     }
 
+    async function handleChanges(){
+        characterCheckUp();
+        await handleFetch();
+    }
+
    async function handleFetch(){
     console.log("fetcho");   
 				const characterSpellList: string[] = retrieveSpellClasses(character);
@@ -780,7 +793,7 @@
 
 
 <div class="bg-cafe_noir-900 flex items-center justify-center p-10">
-	<Tabs.Root bind:value={tabValue} onValueChange={handleFetch}>
+	<Tabs.Root bind:value={tabValue} onValueChange={handleChanges}>
 		<Tabs.List class="bg-cafe_noir-700 gap-2">
 			{#each tabSelector.contents as trigger, i}
 				<Tabs.Trigger value={trigger.value} class="bg-cafe_noir-700  data-[state=active]:bg-cafe_noir text-white "> 
