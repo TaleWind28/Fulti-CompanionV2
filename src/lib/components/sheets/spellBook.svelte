@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { Spell, Spellbook } from "$lib/zod";
+    import type { FabulaUltimaCharacter, Spell, Spellbook } from "$lib/zod";
     import * as Card from "$lib/components/ui/card/index";
     import * as Select from "$lib/components/ui/select/index";
     import * as Dialog from "$lib/components/ui/dialog/index";
@@ -7,16 +7,21 @@
     import ScrollArea from "../ui/scroll-area/scroll-area.svelte";
     import Separator from "../ui/separator/separator.svelte";
     import SpellDescriptor from "../spellDescriptor.svelte";
-    import { ca } from "zod/v4/locales";
+    import { onMount } from "svelte";
+    import { retrieveSpellClasses } from "$lib/utils";
 
     /*  PROP  */
-    let {spellBook, callbacks, availableSpells } : {spellBook:Spellbook, callbacks:any, availableSpells:any} =$props();
+    let {spellBook, callbacks, availableSpells, character } : {spellBook:Spellbook, callbacks:any, availableSpells:any, character:FabulaUltimaCharacter} =$props();
     /* FINE PROP */
-    let lists:string[] = Object.keys(availableSpells);
- 
+
+    // 🔹 unico stato centrale con le spell
+	let spellData = $state(availableSpells);
+
+    let lists:string[] = $derived(Object.keys(spellData));
+    let proxyClasses= $state(character.classes);
     console.log(availableSpells);
     
-    let selectedSpellClass = $state(lists[0]);
+    let selectedSpellClass = $derived(lists[0]);
     const spellClassTrigger = $derived(
         lists.find(sp=>sp === selectedSpellClass) || lists[0]
     );
@@ -24,8 +29,35 @@
     let selectedSpell:Spell = $derived(availableSpells[selectedSpellClass].spells[0]);
     // let selectedSpell:Spell = $state(spells[0]);
     let selectedButton = $state();
-    console.log(lists,"lists")
-    $inspect(selectedSpell,"selected");
+
+    $effect(()=>{
+		if (
+			JSON.stringify($state.snapshot(character.classes)) !==
+			JSON.stringify($state.snapshot(proxyClasses))
+		) {
+			(async () => {
+                console.log("fetcho");   
+				const characterSpellList: string[] = retrieveSpellClasses(character);
+				const spellListParams = encodeURIComponent(JSON.stringify(characterSpellList));
+				const url = `/api/spells?spellList=${spellListParams}`;
+				try {
+					const res = await fetch(url, {
+						method: 'GET',
+						headers: {
+							'Content-Type': 'application/json'
+						}
+					});
+					const data = await res.json();
+                    
+					// 🔹 aggiorno direttamente lo stato
+					spellData = data;
+				} catch (err) {
+					console.error("Errore nel fetch spells:", err);
+				}
+			});
+		}
+	});
+    $inspect(spellData,"spData");
 </script>
 
 <div class="flex flex-col gap-5">
@@ -59,9 +91,9 @@
                 <Dialog.Trigger class={buttonVariants({ variant: "default" })}> 
                     Aggiungi un'incantesimo
                 </Dialog.Trigger>
-                <Dialog.Content class="!max-w-none w-250 bg-lion-600"> 
+                <Dialog.Content class="!max-w-none w-250 bg-lion-600 border-0"> 
                     <div class="flex flex-row border bg-white">
-                        <ScrollArea class="h-80 w-50 rounded-md gap-5"> 
+                        <ScrollArea class="h-80 w-50 rounded-md gap-5 border-0  "> 
                             {#each availableSpells[selectedSpellClass].spells as spell,index}
                                 <button onclick={()=>{selectedSpell=spell,selectedButton = index}} 
                                     class="flex flex-col w-full justify-start text-start text-white border {selectedButton === index ? 'bg-lion-300' : 'bg-lion-400'}">

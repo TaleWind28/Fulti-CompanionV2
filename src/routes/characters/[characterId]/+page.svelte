@@ -620,7 +620,8 @@
     type SpeelBookProps = {
         spellBook:SpellBook,
         callbacks:any,
-        availableSpells:any
+        availableSpells:any,
+        character:FabulaUltimaCharacter
     }
 
 	type TabContentProps = CharacterCardProps | InfoSheetProps | StatsSheetProps | CharacterClassesProps | InventorySheetProps | NotesProps | SpeelBookProps;
@@ -697,7 +698,8 @@
 					props:{
 						spellBook:character.spellbook,
                         callbacks:characterCallbacks,
-                        availableSpells:data.availableSpells
+                        availableSpells:data.availableSpells,
+                        character:character
 					},
 					
 				},

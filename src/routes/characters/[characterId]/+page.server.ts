@@ -3,6 +3,7 @@ import { adminDB } from '$lib/firebase_admin';
 import { error, redirect, type RequestHandler } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { FabulaUltimaCharacterScheme, type FabulaUltimaCharacter } from '$lib/zod.js';
+import { retrieveSpellClasses } from '$lib/utils';
 
 export const load: PageServerLoad = async ({ locals, params, fetch }) => {
     // Guardia di sicurezza: l'utente deve essere loggato
@@ -55,12 +56,8 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
             ...result.data
         };
 
-        const characterSpellList:string[] = [];
-        characterData.classes.forEach((cl)=>{
-            if(!characterSpellList.includes(cl.spellClass)){
-                characterSpellList.push(cl.spellClass.toLowerCase());
-            }
-        })
+        //recupero le lise disponibili
+        const characterSpellList:string[] = retrieveSpellClasses(characterData);
 
         const spellListParams = encodeURIComponent(JSON.stringify(characterSpellList))
         // Costruisci l'URL con i parametri
@@ -83,6 +80,7 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
         }else{
             availableSpells = spellResult.spells;
         }
+
         return {
             character: characterData,
             classNames: classNames,
