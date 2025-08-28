@@ -11,12 +11,12 @@
     import Separator from '$lib/components/ui/separator/separator.svelte';
     import * as Tabs from '$lib/components/ui/tabs/index.js';
     import { retrieveSpellClasses } from '$lib/utils.js';
-    import {  infoScheme, type FabulaUltimaCharacter, type Spell, type Spellbook} from '$lib/zod.js';
+    import {  infoScheme, type Arcanum, type FabulaUltimaCharacter, type Spell, type Spellbook} from '$lib/zod.js';
     import { faSave } from '@fortawesome/free-solid-svg-icons';
     import { setContext } from 'svelte';
     import Fa from 'svelte-fa';
     import { toast } from 'svelte-sonner';
-    import { ca } from 'zod/v4/locales';
+
 
 	let { data } = $props();
 
@@ -230,7 +230,7 @@
                         })
                         return false;
                     }
-                    
+
                     const newClass = result.characterClasses[0];
                     if(character.classes.some(classe => classe.name === newClass.name)){
                         toast.error('Classe già presente',{
@@ -640,7 +640,8 @@
         weapons:Weapon[],
         shields:Shield[],
         armor:Armor[],
-        accessories:Accessory[]
+        accessories:Accessory[],
+        arcanas:Arcanum[]
     }
 
     type NotesProps = {
@@ -740,7 +741,8 @@
                         weapons:character.inventory.weapons,
                         shields:character.inventory.shields,
                         armor:character.inventory.armor,
-                        accessories:character.inventory.accessories
+                        accessories:character.inventory.accessories,
+                        arcanas:character.inventory.arcanas
                     },
 					
 				},

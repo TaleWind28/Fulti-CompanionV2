@@ -1,21 +1,24 @@
 <script lang="ts">
     import { exportHtmlToImage } from "$lib/utils";
-    import { faDownload, faFileExport } from "@fortawesome/free-solid-svg-icons";
+    import { faDownload, faFileExport, faTrash } from "@fortawesome/free-solid-svg-icons";
     import ImageUploader2 from "../imageUploader2.svelte";
     import Fa from "svelte-fa";
 
-    let {requestedData, arcanaImageUrl, rework} = $props();
+    let {requestedData, arcanaImageUrl, rework ,handleExport = null, onDelete = null} = $props();
 
 
-    function handleExport(event: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement; }) {
-        throw new Error("Function not implemented.");
+    let downloadId = "arcana: "+requestedData.arcanaName;
+
+    function handleDelete(){
+        onDelete(requestedData.arcanaName);
+        return;
     }
 </script>
 
     <!-- ImageProcessor -->
     <div>
         <!-- Immagine Scaricabile-->
-        <div id="arcanum" class="bg-white border-black h-auto">
+        <div id={downloadId} class="bg-white border border-gray-500 h-auto">
 
             <div class="flex">
                 <div class="flex-shrink-0">
@@ -88,16 +91,24 @@
         <!-- Pulsanti Azione -->
         <span class="flex flex-row">
             <span>
-                <button onclick={()=>exportHtmlToImage('arcanum')}>
+                <button onclick={()=>exportHtmlToImage(downloadId)}>
                     <Fa icon={faDownload} class="cursor-pointer px-2 w-auto"/>
                 </button>
             </span>
-            
-            <span>
-                <button onclick={handleExport}>
-                    <Fa icon={faFileExport} class="cursor-pointer px-2 w-auto"></Fa>
-                </button>
-            </span>
+            {#if handleExport}
+                <span>
+                    <button onclick={handleExport}>
+                        <Fa icon={faFileExport} class="cursor-pointer px-2 w-auto"></Fa>
+                    </button>
+                </span>
+            {/if}
+            {#if onDelete}
+                <span>
+                    <button onclick={handleDelete}>
+                        <Fa icon={faTrash} class="cursor-pointer px-2 w-auto"></Fa>
+                    </button>
+                </span>
+            {/if}
         </span>
    
     </div>

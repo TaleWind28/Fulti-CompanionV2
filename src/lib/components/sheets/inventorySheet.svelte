@@ -10,19 +10,20 @@
     
     import ShieldGenerator from "../generators/shieldGenerator.svelte";
     import AccessoryGenerator from "../generators/accessoryGenerator.svelte";
-    import { type Equipment } from "$lib/zod";
+    import { type Arcanum, type Equipment } from "$lib/zod";
     import WeaponProcessor from "../imageProcessors/weaponProcessor.svelte";  
     import AccessoryProcessor from "../imageProcessors/accessoryProcessor.svelte";
     import EquipProcessor from "../imageProcessors/equipProcessor.svelte";
     import ArcanaGenerator from "../generators/arcanaGenerator.svelte";
+    import ArcanaProcessor from "../imageProcessors/arcanaProcessor.svelte";
 
     //props
-    let {weapons, shields, armor, accessories}: {weapons:Weapon[],armor:Armor[],shields:Shield[],accessories:Accessory[]} = $props();
+    let {weapons, shields, armor, accessories, arcanas}: {weapons:Weapon[],armor:Armor[],shields:Shield[],accessories:Accessory[], arcanas:Arcanum[]} = $props();
     //dialogVariable
     let openWeaponCreator = $state(false);
     let openEquipCreator = $state(false);
     let openAccessoryCreator = $state(false);
-    let openArcanaCretor = $state(false);
+    let openArcanaCreator = $state(false);
 
     let viewWeapons = $state(false);
     let viewArmor = $state(false);
@@ -58,6 +59,11 @@
         }
     }
 
+    function saveArcanum(arcanum:Arcanum){
+        openArcanaCreator = false;
+        arcanas.push(arcanum);
+    }
+
     $inspect(accessories,"armi");
 
 </script>
@@ -72,7 +78,7 @@
             {@render actionButton(btnStyle,()=>openWeaponCreator=true,faKhanda,"Nuova Arma")}
             {@render actionButton(btnStyle,()=>openEquipCreator=true,faUserShield,"Nuova Armatura/Scudo")}
             {@render actionButton(btnStyle,()=>openAccessoryCreator=true,faMitten,"Nuovo Accessorio")}
-            {@render actionButton(btnStyle,()=>openArcanaCretor=true,faGem,"Nuovo Arcanum")}          
+            {@render actionButton(btnStyle,()=>openArcanaCreator=true,faGem,"Nuovo Arcanum")}          
         </Card.Content>
     </Card.Root>
 
@@ -85,8 +91,8 @@
         {@render displayShields(shields)}
         
         {@render displayAccessory(accessories)}
-    
-    <!-- {@render displayArcanum(arcana)} -->
+
+        {@render displayArcanum(arcanas)}
     </div>
 </div>
 
@@ -111,9 +117,10 @@
     </Dialog.Content>
 </Dialog.Root>
 
-<Dialog.Root open={openArcanaCretor} onOpenChange={(v)=>openArcanaCretor=v}> 
+<!-- Creazione Arcanum -->
+<Dialog.Root open={openArcanaCreator} onOpenChange={(v)=>openArcanaCreator=v}> 
     <Dialog.Content class="flex items-center justify-center w-700"> 
-        <ArcanaGenerator> </ArcanaGenerator>
+        <ArcanaGenerator showImageProcessor={false} dim="w-120" onSave={saveArcanum}> </ArcanaGenerator>
     </Dialog.Content>
 </Dialog.Root>
 
@@ -311,6 +318,58 @@
     </Card.Root>
     
 {/snippet}
+
+{#snippet displayArcanum(arcana: Arcanum[])}
+    <Card.Root class="bg-cafe_noir-600 border-0"> 
+        <Card.Header class="flex flex-row justify-between items-center"> 
+            <p class="text-white">ARCANUM</p>
+            <button onclick={()=>viewArcana=!viewArcana}> 
+                {#if !viewArcana}
+                    <Fa icon={faArrowDown}/>
+                {:else}
+                    <Fa icon={faArrowUp}/>
+                {/if}
+            </button>
+        </Card.Header>
+        {#if viewArcana}
+            <Card.Content class="bg-white flex flex-col gap-5 py-5">
+                {#each arcana as item}
+                    <div>
+                        <ArcanaProcessor
+                            requestedData={
+                                {
+                                    name:item.name,
+                                    domain:item.domain,
+                                    description:item.description,
+                                    fusionName:item.fusion.name,
+                                    fusionEffect:item.fusion.effect,
+                                    impulseName:item.impulse?.name,
+                                    impulseEffect:item.impulse?.effect,
+                                    dismissalName:item.dismissal.name,
+                                    dismissalEffect:item.dismissal.effect,
+                                }
+                            }
+                            rework = {item.reworked}
+                            arcanaImageUrl={item.pic}
+                            onDelete={(arcanaName:string)=>{
+                                let removeIndex = arcanas.findIndex((a)=>a.name === arcanaName);
+                                arcanas.splice(removeIndex,1);
+                            }}
+                        />
+                    </div>
+                {/each}
+                {#if arcanas.length === 0}
+                    <p class="text-gray-500 p-4">Nessun elemento presente</p>
+                {/if}
+            </Card.Content>
+        {/if}
+    </Card.Root>
+{/snippet}
+
+
+
+
+
 
 {#snippet actionButton(styleClass:string,clickFun: ()=>void,icon:IconDefinition, description:string)} 
     <Button onclick={clickFun} class={styleClass}> 

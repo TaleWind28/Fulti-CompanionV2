@@ -1,5 +1,5 @@
 import type { ZodValidationSchema } from 'sveltekit-superforms/adapters';
-import {z} from 'zod/v4';
+import {object, z} from 'zod/v4';
 
 
 /* codici per schemi zod
@@ -8,7 +8,22 @@ import {z} from 'zod/v4';
     2 - Armatura,
     3 - Accessorio
     4 - Personaggio
+    5 - Arcanum
 */
+
+export const ArcanumScheme = z.object({
+    name:z.string(),
+    domain:z.string(),
+    description:z.string(),
+    fusion:z.object({name:z.string(),effect:z.string()}),
+    impulse:z.object({name:z.string(),effect:z.string()}).optional(),
+    dismissal:z.object({name:z.string(),effect:z.string()}),
+    reworked:z.boolean(),
+    code:z.number().default(5),
+    pic:z.string().optional()
+})
+
+export type Arcanum = z.infer<typeof ArcanumScheme>;
 
 export const WeaponScheme = z.object({
     name:z.string(),
@@ -220,6 +235,7 @@ export const inventoryScheme = z.object({
     accessories:z.array(AccessoryScheme).default([]),
     shields:z.array(ShieldScheme).default([]),
     armor:z.array(ArmorScheme).default([]),
+    arcanas:z.array(ArcanumScheme).default([])
 })
 
 export const notesScheme = z.object({

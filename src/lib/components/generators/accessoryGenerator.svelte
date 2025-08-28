@@ -220,7 +220,8 @@
                 </Button>
                 {#if onSave}
                     <Button class="bg-cafe_noir-400 w-30" onclick={handleExport}>
-                        Salva Accessorio                    </Button>
+                        Salva Accessorio
+                    </Button>
                 {/if}
             </Card.Footer>
         </Card.Root>

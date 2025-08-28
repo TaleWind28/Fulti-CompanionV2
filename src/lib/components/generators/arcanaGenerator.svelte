@@ -7,8 +7,11 @@
     import Checkbox from "../ui/checkbox/checkbox.svelte";
     import { onMount } from "svelte";
     import ArcanaProcessor from "../imageProcessors/arcanaProcessor.svelte";
+    import { blobUrlToBase64, downloadFile } from "$lib/utils";
+    import type { Arcanum } from "$lib/zod";
+    import { toast } from "svelte-sonner";
 
-    let {showImageProcessor = true} = $props();
+    let {showImageProcessor = true, dim="w-150" ,onSave = null} = $props();
 
     //Arcana markdown Variables
     let arcanaName = $state("");
@@ -41,9 +44,45 @@
     })
 
 
-   function handleExport(){
+    async function createAccessoryObject(){
+        if (arcanaImageUrl !== undefined)arcanaImageUrl = await blobUrlToBase64(arcanaImageUrl) as string
+        else arcanaImageUrl = "";
+        
+        const propArcanum:Arcanum = {
+            name:requestedData.arcanaName,
+            domain:requestedData.domain,
+            description:requestedData.description,
+            fusion:{name:requestedData.fusionName,effect:requestedData.fusionEffect},
+            impulse:{name:requestedData.impulseName,effect:requestedData.impulseEffect},
+            dismissal:{name:requestedData.dismissalName,effect:requestedData.dismissalEffect},
+            reworked:rework,
+            pic:arcanaImageUrl,
+            code:5
+        }
+        return propArcanum;
+    }
+    async function handleExport(){
+
+        const propArcanum = await createAccessoryObject();
+        console.log("entro");
+        
+        if (!onSave){
+            const downloadableArcanum = JSON.stringify(propArcanum, null, 2);
+            downloadFile(downloadableArcanum,`${requestedData.arcanaName.replace(/\s+/g, '') || 'accessorio'}.json`,'application/json')
+        }else{
+
+            if (!requestedData.arcanaName.trim()) {
+                toast.error("Inserisci un nome per l'arcanum!");
+                return;
+            }
+            onSave(propArcanum);
+            toast.success(`arcanum "${requestedData.arcanaName}" aggiunto all'inventario!`);
+            clearFields();
+        }
         return;
     }
+
+
     
     function handleImport(){
     }
@@ -106,7 +145,7 @@
 <!-- Container -->
 <div class="flex flex-row gap-5">
     <!-- Generatore -->
-    <Card.Root class="w-150 bg-cafe_noir-700 border-0">
+    <Card.Root class="{dim} bg-cafe_noir-700 border-0">
         <Card.Header> 
             Generatore di Arcanum
         </Card.Header>
@@ -191,22 +230,33 @@
                 
             </div>
         </Card.Content>
-        <Card.Footer class="flex justify-center gap-10">
+        <Card.Footer class="flex justify-center gap-2">
             <Button class="bg-cafe_noir-400 w-30" onclick={handleImport}>
-            Carica Json
+                Carica Json
             </Button>
             <Button class="bg-cafe_noir-400 w-30" onclick={clearFields}>
                 Pulisci i Campi
             </Button>
+            
+            {#if onSave}
+                <Button class="bg-cafe_noir-400 w-30" onclick={handleExport}>
+                    Salva Arcanum
+                </Button>
+            {/if} 
+
             <span class="flex flex-row gap-2 ">
                 <Label for="rework_cb">Rework?</Label>
                 <Checkbox id="rework_cb" bind:checked={rework}  class="bg-amber-100 !accent-cafe_noir-500   "/>
             </span>
             
-                
         </Card.Footer>
     </Card.Root>
     {#if showImageProcessor}
-        <ArcanaProcessor requestedData={requestedData} arcanaImageUrl={arcanaImageUrl} rework={rework}/>
+        <ArcanaProcessor 
+            requestedData={requestedData} 
+            arcanaImageUrl={arcanaImageUrl} 
+            rework={rework} 
+            handleExport={handleExport}
+        />
     {/if}
 </div>
