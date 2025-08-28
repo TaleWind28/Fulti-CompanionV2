@@ -13,6 +13,7 @@ export type WithoutChildrenOrChild<T> = WithoutChildren<WithoutChild<T>>;
 export type WithElementRef<T, U extends HTMLElement = HTMLElement> = T & { ref?: U | null };
 
 import { toPng } from 'html-to-image';
+import type { FabulaUltimaCharacter } from "./zod";
 
 export async function exportHtmlToImage(elementId: string) {
 	const node = document.getElementById(elementId);
@@ -118,4 +119,14 @@ export function uploadFile(accept='*'): Promise<{name:string, content:string}>{
 		input.click();
 		document.body.removeChild(input);
 	});
+}
+
+export function retrieveSpellClasses(character:FabulaUltimaCharacter){
+  let spellClasses:string[] = [];
+  character.classes.forEach((cl)=>{
+  if(!spellClasses.includes(cl.spellClass)){
+      spellClasses.push(cl.spellClass.toLowerCase());
+    }
+  })
+  return spellClasses;
 }
