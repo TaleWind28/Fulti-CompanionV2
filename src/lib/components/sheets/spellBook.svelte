@@ -7,18 +7,13 @@
     import ScrollArea from "../ui/scroll-area/scroll-area.svelte";
     import Separator from "../ui/separator/separator.svelte";
     import SpellDescriptor from "../spellDescriptor.svelte";
-    import { onMount } from "svelte";
-    import { retrieveSpellClasses } from "$lib/utils";
 
     /*  PROP  */
-    let {spellBook, callbacks, availableSpells, character } : {spellBook:Spellbook, callbacks:any, availableSpells:any, character:FabulaUltimaCharacter} =$props();
+    let {spellBook, callbacks, availableSpells } : {spellBook:Spellbook, callbacks:any, availableSpells:any, character:FabulaUltimaCharacter} =$props();
     /* FINE PROP */
 
-    // 🔹 unico stato centrale con le spell
-	let spellData = $state(availableSpells);
 
-    let lists:string[] = $derived(Object.keys(spellData));
-    let proxyClasses= $state(character.classes);
+    let lists:string[] = $derived(Object.keys(availableSpells));
     console.log(availableSpells);
     
     let selectedSpellClass = $derived(lists[0]);
@@ -30,34 +25,7 @@
     // let selectedSpell:Spell = $state(spells[0]);
     let selectedButton = $state();
 
-    $effect(()=>{
-		if (
-			JSON.stringify($state.snapshot(character.classes)) !==
-			JSON.stringify($state.snapshot(proxyClasses))
-		) {
-			(async () => {
-                console.log("fetcho");   
-				const characterSpellList: string[] = retrieveSpellClasses(character);
-				const spellListParams = encodeURIComponent(JSON.stringify(characterSpellList));
-				const url = `/api/spells?spellList=${spellListParams}`;
-				try {
-					const res = await fetch(url, {
-						method: 'GET',
-						headers: {
-							'Content-Type': 'application/json'
-						}
-					});
-					const data = await res.json();
-                    
-					// 🔹 aggiorno direttamente lo stato
-					spellData = data;
-				} catch (err) {
-					console.error("Errore nel fetch spells:", err);
-				}
-			});
-		}
-	});
-    $inspect(spellData,"spData");
+    $inspect(availableSpells,"spData");
 </script>
 
 <div class="flex flex-col gap-5">

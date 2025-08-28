@@ -10,6 +10,7 @@
     import StatSheet from '$lib/components/sheets/statSheet.svelte';
     import Separator from '$lib/components/ui/separator/separator.svelte';
     import * as Tabs from '$lib/components/ui/tabs/index.js';
+    import { retrieveSpellClasses } from '$lib/utils.js';
     import {  infoScheme, type FabulaUltimaCharacter, type Spell, type Spellbook} from '$lib/zod.js';
     import { faSave } from '@fortawesome/free-solid-svg-icons';
     import { setContext } from 'svelte';
@@ -20,7 +21,7 @@
 	let { data } = $props();
 
 	let character = $state(data.character);
-
+    let spellData = $state(data.availableSpells);
 	const characterCallbacks = {
         // Callback per campi semplici
         updateField: (field: string, value: any) => {
@@ -698,7 +699,7 @@
 					props:{
 						spellBook:character.spellbook,
                         callbacks:characterCallbacks,
-                        availableSpells:data.availableSpells,
+                        availableSpells:spellData,
                         character:character
 					},
 					
@@ -750,13 +751,36 @@
         return;
     }
 
-   
+   async function handleFetch(){
+    console.log("fetcho");   
+				const characterSpellList: string[] = retrieveSpellClasses(character);
+				const spellListParams = encodeURIComponent(JSON.stringify(characterSpellList));
+				const url = `/api/spells?spellList=${spellListParams}`;
+				try {
+					const res = await fetch(url, {
+						method: 'GET',
+						headers: {
+							'Content-Type': 'application/json'
+						}
+					});
+					const data = await res.json();
+                    if(!data.success){
+                        console.log("errore");
+                        return;
+                    }
+                    console.log(data,"pippo");
+                    spellData = data.spells
+                    
+				} catch (err) {
+					console.error("Errore nel fetch spells:", err);
+				}
+   }
 
 </script>
 
 
 <div class="bg-cafe_noir-900 flex items-center justify-center p-10">
-	<Tabs.Root bind:value={tabValue} onValueChange={async ()=>{console.log("riga 135 posso mettere funzione")}}>
+	<Tabs.Root bind:value={tabValue} onValueChange={handleFetch}>
 		<Tabs.List class="bg-cafe_noir-700 gap-2">
 			{#each tabSelector.contents as trigger, i}
 				<Tabs.Trigger value={trigger.value} class="bg-cafe_noir-700  data-[state=active]:bg-cafe_noir text-white "> 
