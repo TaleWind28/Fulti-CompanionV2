@@ -216,6 +216,21 @@
                 const response = await  fetch(`/api/characters?classNames=${JSON.stringify([className])}`);
                 const result = await response.json();
                 if(result.success){
+                    let classLevels = 0;
+                    for(const classe of character.classes){
+                        classLevels+=classe.level;
+                    }
+
+                    if(classLevels>=character.info.level){
+                        toast.error("Devi prima salire di livello!",{
+                            action:{
+                                label:"OK",
+                                onClick:()=>console.info("undo")
+                            }
+                        })
+                        return false;
+                    }
+                    
                     const newClass = result.characterClasses[0];
                     if(character.classes.some(classe => classe.name === newClass.name)){
                         toast.error('Classe già presente',{
@@ -374,7 +389,11 @@
                     },
                     info:{
                         ...character.info,
-                        level:Number(character.info.level)
+                        level:Number(character.info.level),
+                        zenit:Number(character.info.zenit),
+                        exp:Number(character.info.exp),
+                        fabulaPoints:Number(character.info.fabulaPoints)
+
                     },
                     classes: character.classes.map(cls => ({
                         ...cls,
@@ -749,22 +768,18 @@
 	$effect(()=>{
         if(JSON.stringify($state.snapshot(character)) !== JSON.stringify(data.character)){
             hasBeenChanged = true;
-            console.info("cambiato");
-            characterCheckUp();    
+            console.info("cambiato");  
         }
     });
 
     function characterCheckUp(){
-        
+        console.log("pigro di merda implementami");    
         return;
     }
 
-    async function handleChanges(){
-        characterCheckUp();
-        await handleFetch();
-    }
+    
 
-   async function handleFetch(){
+    async function handleFetch(){
     console.log("fetcho");   
 				const characterSpellList: string[] = retrieveSpellClasses(character);
 				const spellListParams = encodeURIComponent(JSON.stringify(characterSpellList));
@@ -787,7 +802,12 @@
 				} catch (err) {
 					console.error("Errore nel fetch spells:", err);
 				}
-   }
+    }
+
+    async function handleChanges(){
+        characterCheckUp();
+        await handleFetch();
+    }
 
 </script>
 

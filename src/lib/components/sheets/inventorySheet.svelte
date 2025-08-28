@@ -1,6 +1,6 @@
 <script lang="ts">
 
-    import { faArrowDown, faArrowUp, faGem, faKhanda, faUserShield,type IconDefinition } from "@fortawesome/free-solid-svg-icons";
+    import { faArrowDown, faArrowUp, faDiamond, faGem, faKhanda, faMitten, faUserShield,type IconDefinition } from "@fortawesome/free-solid-svg-icons";
     import Button from "../ui/button/button.svelte";
     import * as Card from "../ui/card/index";
     import * as Dialog from "../ui/dialog/index";
@@ -14,6 +14,7 @@
     import WeaponProcessor from "../imageProcessors/weaponProcessor.svelte";  
     import AccessoryProcessor from "../imageProcessors/accessoryProcessor.svelte";
     import EquipProcessor from "../imageProcessors/equipProcessor.svelte";
+    import ArcanaGenerator from "../generators/arcanaGenerator.svelte";
 
     //props
     let {weapons, shields, armor, accessories}: {weapons:Weapon[],armor:Armor[],shields:Shield[],accessories:Accessory[]} = $props();
@@ -21,11 +22,13 @@
     let openWeaponCreator = $state(false);
     let openEquipCreator = $state(false);
     let openAccessoryCreator = $state(false);
+    let openArcanaCretor = $state(false);
 
     let viewWeapons = $state(false);
     let viewArmor = $state(false);
     let viewShields = $state(false);
     let viewAccessories = $state(false);
+    let viewArcana = $state(false);
 
     let btnStyle = "bg-cafe_noir-600 hover:bg-cafe_noir-500 flex flex-row items-center";
 
@@ -68,7 +71,8 @@
         <Card.Content class="flex flex-row items-center justify-center gap-5">
             {@render actionButton(btnStyle,()=>openWeaponCreator=true,faKhanda,"Nuova Arma")}
             {@render actionButton(btnStyle,()=>openEquipCreator=true,faUserShield,"Nuova Armatura/Scudo")}
-            {@render actionButton(btnStyle,()=>openAccessoryCreator=true,faGem,"Nuovo Accessorio")}            
+            {@render actionButton(btnStyle,()=>openAccessoryCreator=true,faMitten,"Nuovo Accessorio")}
+            {@render actionButton(btnStyle,()=>openArcanaCretor=true,faGem,"Nuovo Arcanum")}          
         </Card.Content>
     </Card.Root>
 
@@ -81,6 +85,8 @@
         {@render displayShields(shields)}
         
         {@render displayAccessory(accessories)}
+    
+    <!-- {@render displayArcanum(arcana)} -->
     </div>
 </div>
 
@@ -102,6 +108,12 @@
 <Dialog.Root open={openAccessoryCreator} onOpenChange={(v)=> openAccessoryCreator=v}>
     <Dialog.Content class="flex items-center justify-center w-700">
         <AccessoryGenerator showImageProcessor={false} dim="w-120" onSave={saveAccessory}/>
+    </Dialog.Content>
+</Dialog.Root>
+
+<Dialog.Root open={openArcanaCretor} onOpenChange={(v)=>openArcanaCretor=v}> 
+    <Dialog.Content class="flex items-center justify-center w-700"> 
+        <ArcanaGenerator> </ArcanaGenerator>
     </Dialog.Content>
 </Dialog.Root>
 
