@@ -15,6 +15,7 @@
     import { setContext } from 'svelte';
     import Fa from 'svelte-fa';
     import { toast } from 'svelte-sonner';
+    import { ca } from 'zod/v4/locales';
 
 	let { data } = $props();
 
@@ -253,11 +254,48 @@
         },
         spell:{
             update:(value:Spell)=>{
-                console.log(value.list,"lista");
+                //controllo se la spell può essere aggiunta
+                let magicClass = character.classes.find((cl)=>cl.spellClass.toLowerCase() === value.list);
+                if(!magicClass){
+                    toast.error("classe non trovata",{
+                        action:{
+                            label:"OK",
+                            onClick:()=>console.info("Spell Limit")
+                        }
+                    })
+                    return;
+                }
+                    
+                //controllo se la classe è lo spiritista a causa di abilità con nome simile
+                let skill = magicClass.skills.find((sk)=>sk.name.toLowerCase().includes("magia spirituale"))
+                //controllo se la classe è una delle altre che posseggono una lista di incantesimi
+                if (!skill) skill = magicClass.skills.find((sk)=>sk.name.toLowerCase().includes("magia"))
+                
+                if(!skill){
+                    toast.error("Questa non è una classe magica",{
+                        action:{
+                            label:"OK",
+                            onClick:()=>console.info("Skill not Acquired")
+                        }
+                    })
+                    return;
+                }
                 //se non esiste la lista di incantesimi nel libro la creo
                 if(!character.spellbook[value.list]){
                     character.spellbook[value.list]=[]
                 }
+
+                if( character.spellbook[value.list].length === skill.level.actual){
+                    toast.error("Hai raggiunto il numero massimo di incantesimi per questo livello abilità",{
+                        action:{
+                            label:"OK",
+                            onClick:()=>console.info("Spell Limit")
+                        }
+                    })
+                    return;
+                }
+
+                
                 
                 // controllo duplicati
                 const alreadyExists = character.spellbook[value.list].includes(value);
@@ -274,8 +312,23 @@
 
                 //aggiungi l'incantesimo alla lista
                 character.spellbook[value.list].push(value);
-                console.log(character);
-                console.log("\nLista: ------------------------ \n",character.spellbook);
+                
+                if( character.spellbook[value.list].length === skill.level.actual){
+                    toast.info("Hai aggiunto tutti gli incantesimi per questo livello abilità",{
+                        action:{
+                            label:"OK",
+                            onClick:()=>console.info("Spell Limit after update")
+                        }
+                    })
+                    return;
+                }else{
+                    toast.success("Incantesimo aggiunto con successo!",{
+                        action:{
+                            label:"OK",
+                            onClick:()=>console.info("Spell added")
+                        }
+                    })
+                }
             },
             remove:(value:Spell)=>{
                 let unwantedSpellIndex = character.spellbook[value.list].findIndex((spell)=>spell === value);
