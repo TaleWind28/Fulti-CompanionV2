@@ -1,6 +1,7 @@
 // src/routes/characters/+page.server.js
 
 import type { CharacterClasses } from '$lib';
+import { retriveBenefits } from '$lib/characterUtils.js';
 import { db } from '$lib/firebase';
 import { adminDB } from '$lib/firebase_admin'; // Importa l'istanza del DB admin
 import { affinitiesScheme, characterSchema, FabulaUltimaCharacterScheme, statsScheme, traitsScheme, type FabulaUltimaCharacter } from '$lib/zod.js';

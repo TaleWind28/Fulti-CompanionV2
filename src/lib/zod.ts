@@ -150,6 +150,8 @@ export const benefitScheme = z.object({
     other:z.object({active:z.boolean(),content:z.string()})
 })
 
+export type Benefits = z.infer<typeof benefitScheme>;
+
 export const skillScheme = z.object({
     name:z.string(),
     description:z.string(),

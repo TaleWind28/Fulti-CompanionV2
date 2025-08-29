@@ -1,4 +1,4 @@
-import type { FabulaUltimaCharacter, ritualKey, statusKey } from "./zod";
+import type { Benefits, FabulaUltimaCharacter, ritualKey, statusKey } from "./zod";
 
 export function getClassBenefits(character:FabulaUltimaCharacter, className:string) {
     if (!character.classes) return null;
@@ -44,4 +44,23 @@ export function getActiveMiscBenefits(character:FabulaUltimaCharacter) {
   }
   
   return miscBenefits;
+}
+
+
+export function retriveBenefits(character:FabulaUltimaCharacter){
+  //variabile ausiliaria per memorizzare tutti i benefici gratuiti
+  let totals = {hp:0,mp:0,ip:0}
+
+  for(const classe of character.classes){
+    const benefits:Benefits | null = getClassBenefits(character,classe.name);
+    
+    if (!benefits) continue;
+    
+    if(benefits.hp.active)totals.hp += benefits.hp.quantity;
+    if(benefits.mp.active)totals.mp += benefits.mp.quantity;
+    if(benefits.ip.active)totals.ip += benefits.ip.quantity;
+
+    
+  }
+  return totals;
 }

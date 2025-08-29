@@ -1,6 +1,7 @@
 <script lang="ts">
     import { invalidateAll } from '$app/navigation';
     import type { Accessory, Armor, Shield, StatsSheetProps, Weapon } from '$lib';
+    import { getClassBenefits, hasStatus, retriveBenefits } from '$lib/characterUtils.js';
     import CharacterCard from '$lib/components/characterCard.svelte';
     import CharacterClasses from '$lib/components/sheets/characterClasses.svelte';
     import InfoSheet from '$lib/components/sheets/infoSheet.svelte';
@@ -11,15 +12,19 @@
     import Separator from '$lib/components/ui/separator/separator.svelte';
     import * as Tabs from '$lib/components/ui/tabs/index.js';
     import { retrieveSpellClasses } from '$lib/utils.js';
-    import {  infoScheme, type Arcanum, type FabulaUltimaCharacter, type Spell, type Spellbook} from '$lib/zod.js';
+    import {  infoScheme, type Arcanum, type Benefits, type Spell} from '$lib/zod.js';
     import { faSave } from '@fortawesome/free-solid-svg-icons';
-    import { setContext } from 'svelte';
+    import { onMount, setContext } from 'svelte';
     import Fa from 'svelte-fa';
     import { toast } from 'svelte-sonner';
 
 
 	let { data } = $props();
 
+    onMount(()=>{
+        console.log("faccio un check-up");
+        characterCheckUp();
+    })
 	let character = $state(data.character);
     let spellData = $state(data.availableSpells);
 	const characterCallbacks = {
@@ -381,7 +386,7 @@
         // Utility callback con salvataggio su firestore
         save: async () => {
             try {
-                // Non so perchè ma firestore vede il livello come una stringa
+                // Non so perchè ma firestore vede tutti i campi degli input come una stringa
                 const sanitizedCharacter = {
                     ...character,
                     traits:{
@@ -591,6 +596,7 @@
         }
         return false;
     }
+
     setContext<ClassUp>('classUp',levelClass);
     setContext<Heroic>('editHeroic',editHeroic);
     setContext<SkillUp>('skillUp',levelSkill);
@@ -649,7 +655,7 @@
     }
 
     type SpeelBookProps = {
-        spellBook:SpellBook,
+        spellBook:SpellBook | undefined,
         callbacks:any,
         availableSpells:any,
     }
@@ -764,18 +770,100 @@
 
 );
     let hasBeenChanged = $state(false);
+    let hasBeenDerived = $state(false);
+    let statChanged = $state(false);
 	let tabValue = $state("sheet");
 
 	//consentire all'utente di salvare le modifiche  di character dopo la chiamata alla load a causa dell'invalidateAll
-	$effect(()=>{
+	$effect(()=>{        
         if(JSON.stringify($state.snapshot(character)) !== JSON.stringify(data.character)){
             hasBeenChanged = true;
             console.info("cambiato");  
         }
+
+        else{
+            hasBeenChanged = false;
+            console.info("annullato");
+        }
     });
 
-    function characterCheckUp(){
-        console.log("pigro di merda implementami");    
+
+    function statusCheckUp(){
+        //status che diminuiscono caratteristiche
+        if (hasStatus(character,"slow")){
+            character.attributes.DEX.actual-=2;
+        }
+        if (hasStatus(character,"dazed")){
+            character.attributes.INS.actual-=2;
+        }
+        if (hasStatus(character,"enraged")){
+            character.attributes.INS.actual-=2;
+            character.attributes.DEX.actual-=2;
+        }
+        if (hasStatus(character,"weak")){
+            character.attributes.MIG.actual-=2;
+        }
+        if (hasStatus(character,"shaken")){
+            character.attributes.WLP.actual-=2;
+        }
+        if (hasStatus(character,"poisoned")){
+            character.attributes.MIG.actual-=2;
+            character.attributes.WLP.actual-=2;
+        }
+        
+        //status che aumentano caratteristiche
+        if (hasStatus(character,"dexUp")){
+            character.attributes.DEX.actual+=2;
+        }
+
+        if (hasStatus(character,"insUp")){
+            character.attributes.INS.actual+=2;
+        }
+
+        if (hasStatus(character,"migUp")){
+            character.attributes.MIG.actual+=2;
+        }
+
+        if (hasStatus(character,"wlpUp")){
+            character.attributes.WLP.actual+=2;
+        }
+        
+        //Normalizzo i punteggi di caratteristica se sforano
+        if (character.attributes.DEX.actual<6)character.attributes.DEX.actual = 6;
+        if (character.attributes.DEX.actual>12)character.attributes.DEX.actual = 12;
+
+        if (character.attributes.INS.actual<6)character.attributes.INS.actual = 6;
+        if (character.attributes.INS.actual>12)character.attributes.INS.actual = 12;
+        
+        if (character.attributes.MIG.actual<6)character.attributes.MIG.actual = 6;
+        if (character.attributes.MIG.actual>12)character.attributes.MIG.actual = 12;
+        
+        if (character.attributes.WLP.actual<6)character.attributes.WLP.actual = 6;
+        if (character.attributes.WLP.actual>12)character.attributes.WLP.actual = 12;
+        
+        return;
+    }
+
+    function deriveStats(){
+        //calcolo HP ed MP SENZA BENFICI GRATUITI
+        character.stats.HP.max = (5*character.attributes.MIG.max) + character.info.level;
+        character.stats.MP.max = (5*character.attributes.WLP.max) + character.info.level;
+        character.stats.IP.max = 6;
+        
+        //applico i benefici gratuiti
+        let totals = retriveBenefits(character);
+
+        //aggiorno gli attuali ai massimi
+        character.stats.HP.max += totals.hp
+        character.stats.MP.max += totals.mp
+        character.stats.IP.max += totals.ip
+    }
+
+    function characterCheckUp(){        
+        //controllo gli status da cui è afflitto il personaggio
+        statusCheckUp();
+        //calcolo le statistiche del personaggio
+        deriveStats();
         return;
     }
 
@@ -811,6 +899,7 @@
         await handleFetch();
     }
 
+    $inspect(character.stats,"statistiche");
 </script>
 
 
