@@ -6,6 +6,7 @@
     import CharacterClasses from '$lib/components/sheets/characterClasses.svelte';
     import InfoSheet from '$lib/components/sheets/infoSheet.svelte';
     import InventorySheet from '$lib/components/sheets/inventorySheet.svelte';
+    import LandingSheet from '$lib/components/sheets/landingSheet.svelte';
     import NotesSheet from '$lib/components/sheets/notesSheet.svelte';
     import SpellBook from '$lib/components/sheets/spellBook.svelte';
     import StatSheet from '$lib/components/sheets/statSheet.svelte';
@@ -680,7 +681,7 @@
 				{
 					value:"sheet",
 					text:"Scheda Personaggio",
-					component:CharacterCard,
+					component:LandingSheet,
 					props:{
 						character:character,
 						},
@@ -771,8 +772,6 @@
 
 );
     let hasBeenChanged = $state(false);
-    let hasBeenDerived = $state(false);
-    let statChanged = $state(false);
 	let tabValue = $state("sheet");
     let addedValues = $state({hp:0,mp:0});
 
@@ -904,9 +903,6 @@
         character.stats.HP.max = (5*character.attributes.MIG.max) + Number(character.info.level);
         character.stats.MP.max = (5*character.attributes.WLP.max) + Number(character.info.level);
         character.stats.IP.max = 6;
-
-        console.log(character.attributes.MIG.max,"HP step 1");
-        //console.log(character.stats.MP,"MP step 1");
         
         //applico i benefici gratuiti
         let totals = retriveBenefits(character);
@@ -916,15 +912,9 @@
         character.stats.MP.max += totals.mp
         character.stats.IP.max += totals.ip
 
-        //console.log(character.stats.HP,"HP step 2");
-        // console.log(character.stats.MP,"MP step 2");
-
         //aggiorno in base alle abilità 
         addFortress();
         addConcentration();
-
-        //console.log(character.stats.HP,"HP step 3");
-        //console.log(character.stats.MP,"MP step 3");
 
         //calcolo difesa e difesa magica SENZA CONSIDERARE ARMATURE E SCUDI
         character.stats.DEF = character.attributes.DEX.actual;
@@ -1019,7 +1009,6 @@
         class="fixed bottom-6 right-6 bg-green-600 hover:bg-green-700 text-white p-4 rounded-full shadow-lg transition-all duration-300 ease-in-out hover:scale-110 focus:outline-none focus:ring-4 focus:ring-green-300"
         aria-label="Salva modifiche"
     >
-        <!-- <i class="fas fa-save text-xl"></i> -->
         <Fa icon={faSave}/>
     </button>
 {/if}
