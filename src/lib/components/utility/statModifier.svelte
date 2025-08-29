@@ -22,6 +22,7 @@
                 type="number" 
                 bind:value={inputValue} 
                 class="w-20"
+                min={0}
             />
             <span class="flex flex-col gap-2 items-center justify-center">
                 <Button class={btnDarkColor} onclick={()=>clickFun(inputValue,field)}>Recupera</Button>

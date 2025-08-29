@@ -1,5 +1,5 @@
 import { faBoltLightning, faFire, faFistRaised, faKhanda, faMoon, faMountain, faSkullCrossbones, faSnowflake, faSun, faWind } from "@fortawesome/free-solid-svg-icons"
-import type { Affinity, ArmorScheme, Attributes, ShieldScheme, Status } from "./zod"
+import type { Affinity, Arcanum, ArmorScheme, Attributes, CharacterClass, FabulaUltimaCharacter, ShieldScheme, Spell, Spellbook, Status } from "./zod"
 import type z from "zod"
 
 // place files you want to import through the `$lib` alias in this folder.
@@ -101,3 +101,44 @@ export type StatsSheetProps = {
   statuses: Status;
   callbacks:any;
 }
+
+type CharacterClassesProps ={
+        classes: CharacterClass[],
+        classNames:string[],
+        callbacks:any
+
+    }
+
+	type LandingSheetProps = {
+        character: FabulaUltimaCharacter & {id:string},
+        callbacks:any
+    };
+
+    type InfoSheetProps = {
+        name: string;
+        pic: string | undefined;
+        traits: any;
+        bonds: any;
+        info: any;
+        callbacks:any;
+    };
+
+    type InventorySheetProps = {
+        weapons:Weapon[],
+        shields:Shield[],
+        armor:Armor[],
+        accessories:Accessory[],
+        arcanas:Arcanum[]
+    }
+
+    type NotesProps = {
+        notes:Array<{title:string,description:string,id:number}>
+    }
+
+    type SpeelBookProps = {
+        spellBook:Spellbook | undefined,
+        callbacks:any,
+        availableSpells:any,
+    }
+
+export type TabContentProps = LandingSheetProps | InfoSheetProps | StatsSheetProps | CharacterClassesProps | InventorySheetProps | NotesProps | SpeelBookProps;

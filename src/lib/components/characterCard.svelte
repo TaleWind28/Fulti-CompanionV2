@@ -78,17 +78,30 @@
       <div class="flex flex-col gap-2">
         <img src={currentPic} alt="character-pic" class="w-40 h-40 border border-black">
         <span class="flex flex-row items-center justify-center gap-2">
-          <LabeledProgress value={character.stats.HP.actual} max={character.stats.HP.max} trackColor = 'bg-red-200' progressColor='bg-red-500' class="h-3"/>
+          <LabeledProgress 
+            value={character.stats.HP.actual} 
+            max={character.stats.HP.max} 
+            progressColor="h-6 bg-red-200 [&_[data-slot=progress-indicator]]:bg-red-500" 
+            class="h-3"
+          />
           <p>HP</p>  
         </span>
 
         <span class="flex flex-row items-center justify-center gap-2">
-          <LabeledProgress value={character.stats.MP.actual} max={character.stats.MP.max} trackColor = 'bg-blue-200' progressColor='bg-blue-500' class="h-3"/>
+          <LabeledProgress 
+            value={character.stats.MP.actual} 
+            max={character.stats.MP.max} 
+            progressColor="h-6 bg-blue-200 [&_[data-slot=progress-indicator]]:bg-blue-500" 
+            class="h-3"/>
           <p>MP</p>  
         </span>
 
         <span class="flex flex-row items-center justify-center gap-2">
-          <LabeledProgress value={character.stats.IP.actual} max={character.stats.IP.max} trackColor = 'bg-green-200' progressColor='bg-green-500' class="h-3"/>
+          <LabeledProgress 
+            value={character.stats.IP.actual} 
+            max={character.stats.IP.max} 
+            progressColor="h-6 bg-green-200 [&_[data-slot=progress-indicator]]:bg-green-500" 
+            class="h-3"/>
           <p>IP</p>  
         </span>
       </div>

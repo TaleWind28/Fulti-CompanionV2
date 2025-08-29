@@ -110,3 +110,14 @@ export function hasAlreadyEquippedShield(character:FabulaUltimaCharacter){
   }
   return false;
 }
+
+export function hasMartialArmorEquipped(character:FabulaUltimaCharacter){
+  for(let shield of character.inventory.shields){
+    if(shield.equipped)return true;
+  }
+  for(let armor of character.inventory.armor){
+    if(armor.equipped && armor.martial)return true;
+  }
+  console.log("ritorno");
+  return false;
+}

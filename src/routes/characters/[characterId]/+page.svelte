@@ -1,7 +1,7 @@
 <script lang="ts">
     import { invalidateAll } from '$app/navigation';
-    import type { Accessory, Armor, Shield, StatsSheetProps, Weapon } from '$lib';
-    import { canEquipMartialArmor, canEquipMartialShield, getClassBenefits, hasAbility, hasAlreadyEquippedArmor, hasAlreadyEquippedShield, hasStatus, retriveBenefits } from '$lib/characterUtils.js';
+    import type { Accessory, Armor, Shield, StatsSheetProps, TabContentProps, Weapon } from '$lib';
+    import { canEquipMartialArmor, canEquipMartialShield, getClassBenefits, hasAbility, hasAlreadyEquippedArmor, hasAlreadyEquippedShield, hasMartialArmorEquipped, hasStatus, retriveBenefits } from '$lib/characterUtils.js';
     import CharacterCard from '$lib/components/characterCard.svelte';
     import CharacterClasses from '$lib/components/sheets/characterClasses.svelte';
     import InfoSheet from '$lib/components/sheets/infoSheet.svelte';
@@ -19,17 +19,18 @@
     import { onMount, setContext } from 'svelte';
     import Fa from 'svelte-fa';
     import { toast } from 'svelte-sonner';
-  import { ar } from 'zod/v4/locales';
-
+  
 
 	let { data } = $props();
 
     onMount(()=>{
-        console.log("faccio un check-up");
+        //aggiorno i dati per essere sicuro che tutto sia corretto
         characterCheckUp();
     })
+
 	let character = $state(data.character);
     let spellData = $state(data.availableSpells);
+    //callbacks per aggiornare character
 	const characterCallbacks = {
         // Callback per campi semplici
         updateField: (field: string, value: any) => {
@@ -117,9 +118,27 @@
         // Callback per stats
         stats: {
             updateActual: (value: number,field:"HP" | "MP" | "IP") => {
-                console.log(`value:${value}, field:${field}`)
+                if(value === 0){
+                    toast.error("Devi scegliere un valore diverso da 0",{
+                        action:{
+                            label:"OK",
+                            onClick:()=>console.info("Deh metti più di 0")
+                        }
+                    })
+                    return;
+                }
+                if(character.stats[field].actual === character.stats[field].max && value>0){
+                    toast.error(`Possiedi già il massimo di ${field}`,{
+                        action:{
+                            label:"OK",
+                            onClick:()=>console.info("OverStatting")
+                        }
+                    });
+                    return;
+                }
                 //prendo il valore minore, così se il recupero supera la soglia massima allora ho il massimo
                 const updatedValue = Math.min(character.stats[field].actual + value, character.stats[field].max);
+
                 character = {
                     ...character,
                     stats: {
@@ -127,13 +146,23 @@
                         [field]: { ...character.stats[field], actual: updatedValue }
                     }
                 };
+
+                if(character.stats[field].actual === character.stats[field].max){
+                    toast.info(`Valore massimo di ${field} raggiunto`,{
+                        action:{
+                            label:"OK",
+                            onClick:()=>console.info("Full")
+                        }
+                    });
+                }
             },
         },
 
         // Callback per Status
         status:{
             update:(statusField:string,value:boolean)=>{
-                console.log(statusField," :field\t",value," :value\t")
+                
+
                 //assegno lo status
                 character = {
                     ...character,
@@ -150,7 +179,6 @@
             update:(affinity:"fisico"|"aria"|"fulmine"|"fuoco"|"ghiaccio"|"luce"|"oscurita"|"terra"|"veleno",value:any)=>{
                 
                 let affinityType = value === 0 ? "immune" : value === 1 ? "weak" : value === 3 ? "resistant" : value === 4 ? "absorb" : "";
-                console.log(affinity," :field\t",value," :value\t",affinityType,"\t affinityType")
                 //resetto l'oggetto per mantere la mutua esclusione
                 character = {
                     ...character,
@@ -182,7 +210,7 @@
 
         attributes:{
         update:(attribute:"DEX"|"MIG"|"INS"|"WLP",value:number,field:"max" | "actual")=>{
-                console.log(attribute,"attribute", value,"value");
+             
                 character = {
                     ...character,
                     attributes:{
@@ -311,7 +339,8 @@
                 
                 // controllo duplicati
                 const alreadyExists = character.spellbook[value.list].includes(value);
-                console.log(alreadyExists,"duplicati");
+               
+                
                 if (alreadyExists){
                     toast.error("Incantesimo già presente",{
                         action:{
@@ -401,8 +430,7 @@
                 });
                 
                 if (response.ok) {
-                    
-                    console.log('Personaggio salvato!');
+                   
                     toast.success('Personaggio salvato con successo!',{
                         action:{
                             label:"OK",
@@ -427,7 +455,9 @@
     type DeleteClass = (className:string)=>boolean;
     type WearArmor = (equipName:string)=>boolean;
     type EquipArmor = (equipName:string,value:boolean) => boolean;
-
+    type DeleteNote = (noteId:number)=>boolean;
+    type UpdateNote = (noteId:number,field:"description" | "title",value:string)=>boolean;
+    
     function ArmorUp(equipName:string){
         //controllo prima se è un'armatura
         for(let equip of character.inventory.armor){
@@ -463,8 +493,7 @@
         }
         return false;
     }
-    setContext<WearArmor>('CheckArmor',ArmorUp);
-    setContext<EquipArmor>('WearArmor',EquipArmor);
+    
     function levelSkill(skillName: string,up:boolean,className:string): boolean {
 
         // Trova la classe e la skill
@@ -524,7 +553,6 @@
         }
     }
 
-   
     function levelClass(className:string,up:boolean):boolean{
         const desiredClass = character.classes.find(c => c.name === className);
 
@@ -558,7 +586,7 @@
             toast.error('La classe ha raggiunto il livello massimo',{
                 action:{
                     label:"OK",
-                    onClick:()=>console.log("undo")
+                    onClick:()=>console.info("undo")
                 }
             })
             return false;
@@ -568,7 +596,7 @@
             toast.error('Il livello della classe non può essere inferiore ad 1',{
                 action:{
                     label:"OK",
-                    onClick:()=>console.log("undo")
+                    onClick:()=>console.info("undo")
                 }
             })
             return false;
@@ -617,14 +645,6 @@
         return false;
     }
 
-    setContext<ClassUp>('classUp',levelClass);
-    setContext<Heroic>('editHeroic',editHeroic);
-    setContext<SkillUp>('skillUp',levelSkill);
-    setContext<DeleteClass>('delete',deleteClass)
-
-    type DeleteNote = (noteId:number)=>boolean;
-    type UpdateNote = (noteId:number,field:"description" | "title",value:string)=>boolean;
-
     function deleteNote(noteId:number){
         let deleteIndex = character.notes.findIndex((n)=>n.id === noteId);
         character.notes.splice(deleteIndex,1);
@@ -640,49 +660,17 @@
         return true;
     }
     
+    //setto tutti i context per poterli riusare nei componenti
     setContext<DeleteNote>('deleteNote',deleteNote);
     setContext<UpdateNote>('updateNote',updateNote);
-    type CharacterClassesProps ={
-        classes: typeof character.classes,
-        classNames:string[],
-        callbacks:any
-
-    }
-
-	type LandingSheetProps = {
-        character: typeof character,
-        callbacks:any
-    };
-
-    type InfoSheetProps = {
-        name: string;
-        pic: string | undefined;
-        traits: any;
-        bonds: any;
-        info: any;
-        callbacks:any;
-    };
-
-    type InventorySheetProps = {
-        weapons:Weapon[],
-        shields:Shield[],
-        armor:Armor[],
-        accessories:Accessory[],
-        arcanas:Arcanum[]
-    }
-
-    type NotesProps = {
-        notes:Array<{title:string,description:string,id:number}>
-    }
-
-    type SpeelBookProps = {
-        spellBook:SpellBook | undefined,
-        callbacks:any,
-        availableSpells:any,
-    }
-
-	type TabContentProps = LandingSheetProps | InfoSheetProps | StatsSheetProps | CharacterClassesProps | InventorySheetProps | NotesProps | SpeelBookProps;
-
+    setContext<ClassUp>('classUp',levelClass);
+    setContext<Heroic>('editHeroic',editHeroic);
+    setContext<SkillUp>('skillUp',levelSkill);
+    setContext<DeleteClass>('delete',deleteClass)
+    setContext<WearArmor>('CheckArmor',ArmorUp);
+    setContext<EquipArmor>('WearArmor',EquipArmor);
+    
+    
 	 type TabContent = {
         value: string;
         text: string;
@@ -793,7 +781,6 @@
 );
     let hasBeenChanged = $state(false);
 	let tabValue = $state("sheet");
-    let addedValues = $state({hp:0,mp:0});
 
 	//consentire all'utente di salvare le modifiche  di character dopo la chiamata alla load a causa dell'invalidateAll
 	$effect(()=>{        
@@ -869,18 +856,14 @@
         for (const armor of character.inventory.armor){
             //se l'armatura è equipaggiata considero le sue statistiche
             if ( armor.equipped){
-                console.log("pippo");
                 //controllo se devo aggiungere un valore alla taglia
                 if(armor.def.toLowerCase().includes("taglia")){
                     const senzaSpazi = armor.def.replace(/\s+/g, "");
                     const add = senzaSpazi.split("+")[1];
                     if(add.length === 0)return;
-                    console.log(add,"add");
-                    character.stats.DEF = Number(add);
+                    character.stats.DEF+= Number(add);
 
                 }else{
-                    //ho un numero da aggiungere
-                    console.log(armor.def);
                     character.stats.DEF = Number(armor.def);
                 }
                 //controllo se devo aggiungere un valore alla taglia
@@ -888,7 +871,7 @@
                     const senzaSpazi = armor.mdef.replace(/\s+/g, "");
                     const add = senzaSpazi.split("+")[1];
                     if(add.length === 0)return;
-                    character.stats.MDEF = Number(add);
+                    character.stats.MDEF+= Number(add);
                 }else{
                     //ho un numero da aggiungere
                     character.stats.MDEF = Number(armor.mdef);
@@ -904,7 +887,6 @@
         for (const shield of character.inventory.shields){
             //se lo scudo è equipaggiato considero le sue statistiche
             if ( shield.equipped){
-                console.log(`shield:Def = ${shield.def}\nMdef = ${shield.mdef} `);
                 character.stats.DEF += Number(shield.def);
                 character.stats.MDEF += Number(shield.mdef);
                 shieldsEquipped++;
@@ -923,7 +905,16 @@
         const concentrazioneLv = hasAbility(character,"Concentrazione");
         character.stats.MP.max += ( 5 * concentrazioneLv);
     }
-    
+
+    function addDodge(){
+        //se ho un'armatura marziale o uno scudo equipaggiato non controllo neanche di avere l'abilità
+        if(hasMartialArmorEquipped(character))return;
+        //altrimenti ricavo ed aggiungo il livello dell'abilità
+        const dodgeLevel = hasAbility(character,"Schivata");
+        character.stats.DEF += dodgeLevel;
+        return;
+    }
+
     function deriveStats(){
         
         //calcolo HP ed MP SENZA BENFICI GRATUITI
@@ -939,24 +930,28 @@
         character.stats.MP.max += totals.mp
         character.stats.IP.max += totals.ip
 
-        //controllo se gli attuali sono maggiori dei massimi
+        //controllo se gli attuali sono maggiori dei massimi ed in caso li normalizzo
         character.stats.HP.actual = Math.min(character.stats.HP.max,character.stats.HP.actual);
         character.stats.MP.actual = Math.min(character.stats.MP.max,character.stats.MP.actual);
         character.stats.IP.actual = Math.min(character.stats.IP.max,character.stats.MP.actual);
 
-        //aggiorno in base alle abilità 
+        //aggiungo Fortezza 
         addFortress();
+        //aggiungo Concentrazione
         addConcentration();
 
         //calcolo difesa e difesa magica SENZA CONSIDERARE ARMATURE E SCUDI
         character.stats.DEF = character.attributes.DEX.actual;
         character.stats.MDEF = character.attributes.INS.actual; 
-        console.log("armorUP");
+
         //controllo le armature equipaggiate
         armorUp();
 
         //controllo gli scudi equipaggiati
         shieldUp();
+
+        //aggiungo Schivata
+        addDodge();
 
     }
 
@@ -977,13 +972,13 @@
         return;
     }
 
-    
-
+    //gestione fetch delle spellList
     async function handleFetch(){
-                 console.log("fetcho");   
+                
 				const characterSpellList: string[] = retrieveSpellClasses(character);
                 if (characterSpellList.length === 0){
-                    console.log("non fetcho")
+                    
+                
                     return;
                 } 
 				const spellListParams = encodeURIComponent(JSON.stringify(characterSpellList));
@@ -997,10 +992,9 @@
 					});
 					const data = await res.json();
                     if(!data.success){
-                        console.log("errore");
+                        console.error("errore");
                         return;
                     }
-                    console.log(data,"pippo");
                     spellData = data.spells
                     
 				} catch (err) {
@@ -1008,17 +1002,18 @@
 				}
     }
 
+    //funzione che viene invocata ogni volta che viene selezionata una nuova tab
     async function handleChanges(){
         characterCheckUp();
         await handleFetch();
     }
 
-    $inspect(addedValues,"values");
 </script>
 
 
 <div class="bg-cafe_noir-900 flex items-center justify-center p-10">
-	<Tabs.Root bind:value={tabValue} onValueChange={handleChanges}>
+	<!-- Componente Tabs che consente di montare tutti i componenti passati in tabSelector per poi visualizzarli On-Demand -->
+    <Tabs.Root bind:value={tabValue} onValueChange={handleChanges}>
 		<Tabs.List class="bg-cafe_noir-700 gap-2">
 			{#each tabSelector.contents as trigger, i}
 				<Tabs.Trigger value={trigger.value} class="bg-cafe_noir-700  data-[state=active]:bg-cafe_noir text-white "> 
@@ -1029,7 +1024,7 @@
 				{/if}
 			{/each}
 		</Tabs.List>
-
+        <!-- Monto tutti i componenti con i relativi props -->
         {#each tabSelector.contents as content }
             <Tabs.Content value={content.value} class="py-10" > 
                 <div>
@@ -1039,13 +1034,15 @@
         {/each}
 
 	</Tabs.Root>
+
+    <!-- Pulsante per salvare modifiche -->
     {#if hasBeenChanged}
-    <button 
-        onclick={characterCallbacks.save}
-        class="fixed bottom-6 right-6 bg-green-600 hover:bg-green-700 text-white p-4 rounded-full shadow-lg transition-all duration-300 ease-in-out hover:scale-110 focus:outline-none focus:ring-4 focus:ring-green-300"
-        aria-label="Salva modifiche"
-    >
-        <Fa icon={faSave}/>
-    </button>
-{/if}
+        <button 
+            onclick={characterCallbacks.save}
+            class="fixed bottom-6 right-6 bg-green-600 hover:bg-green-700 text-white p-4 rounded-full shadow-lg transition-all duration-300 ease-in-out hover:scale-110 focus:outline-none focus:ring-4 focus:ring-green-300"
+            aria-label="Salva modifiche"
+        >
+            <Fa icon={faSave}/>
+        </button>
+    {/if}
 </div>
