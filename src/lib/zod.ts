@@ -52,6 +52,7 @@ export const ArmorScheme = z.object({
     quality:z.string(),
     martial:z.boolean(),
     price:z.number(),
+    equipped:z.boolean(),
     pic:z.string().optional(),
     code:z.number()
 })
@@ -64,6 +65,7 @@ export const ShieldScheme = z.object({
     quality:z.string(),
     martial:z.boolean(),
     price:z.number(),
+    equipped:z.boolean(),
     pic:z.string().optional(),
     code:z.number()
 })

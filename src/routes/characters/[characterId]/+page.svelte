@@ -1,7 +1,7 @@
 <script lang="ts">
     import { invalidateAll } from '$app/navigation';
     import type { Accessory, Armor, Shield, StatsSheetProps, Weapon } from '$lib';
-    import { getClassBenefits, hasStatus, retriveBenefits } from '$lib/characterUtils.js';
+    import { getClassBenefits, hasAbility, hasStatus, retriveBenefits } from '$lib/characterUtils.js';
     import CharacterCard from '$lib/components/characterCard.svelte';
     import CharacterClasses from '$lib/components/sheets/characterClasses.svelte';
     import InfoSheet from '$lib/components/sheets/infoSheet.svelte';
@@ -9,6 +9,7 @@
     import NotesSheet from '$lib/components/sheets/notesSheet.svelte';
     import SpellBook from '$lib/components/sheets/spellBook.svelte';
     import StatSheet from '$lib/components/sheets/statSheet.svelte';
+    import Menubar from '$lib/components/ui/menubar/menubar.svelte';
     import Separator from '$lib/components/ui/separator/separator.svelte';
     import * as Tabs from '$lib/components/ui/tabs/index.js';
     import { retrieveSpellClasses } from '$lib/utils.js';
@@ -773,6 +774,7 @@
     let hasBeenDerived = $state(false);
     let statChanged = $state(false);
 	let tabValue = $state("sheet");
+    let addedValues = $state({hp:0,mp:0});
 
 	//consentire all'utente di salvare le modifiche  di character dopo la chiamata alla load a causa dell'invalidateAll
 	$effect(()=>{        
@@ -844,22 +846,108 @@
         return;
     }
 
+    function armorUp(){
+        for (const armor of character.inventory.armor){
+            //se l'armatura è equipaggiata considero le sue statistiche
+            if ( armor.equipped){
+                //controllo se devo aggiungere un valore alla taglia
+                if(armor.def.toLowerCase().includes("taglia")){
+                    const senzaSpazi = armor.def.replace(/\s+/g, "");
+                    const add = senzaSpazi.split("+")[1];
+                    character.stats.DEF = Number(add);
+                }else{
+                    //ho un numero da aggiungere
+                    character.stats.DEF = Number(armor.def);
+                }
+                //controllo se devo aggiungere un valore alla taglia
+                if(armor.mdef.toLowerCase().includes("taglia")){
+                    const senzaSpazi = armor.mdef.replace(/\s+/g, "");
+                    const add = senzaSpazi.split("+")[1];
+                    character.stats.MDEF = Number(add);
+                }else{
+                    //ho un numero da aggiungere
+                    character.stats.MDEF = Number(armor.mdef);
+                }
+                //posso avere solo un'armatura quindi faccio return
+                return;
+            }
+        }
+    }
+
+    function shieldUp(){
+        let shieldsEquipped = 0;
+        for (const shield of character.inventory.shields){
+            //se l'armatura è equipaggiata considero le sue statistiche
+            if ( shield.equipped){
+                character.stats.DEF += Number(shield.def);
+                character.stats.MDEF += Number(shield.mdef);
+                shieldsEquipped++;
+                if(hasAbility(character,"Doppio Scudo") && shieldsEquipped<2)continue;
+                else return;
+            }
+        }
+    }
+
+    function addFortress(){
+        const fortressLevel = hasAbility(character,"Fortezza");   
+        character.stats.HP.max += ( 5 * fortressLevel);
+    }
+
+    function addConcentration(){
+        const concentrazioneLv = hasAbility(character,"Concentrazione");
+        character.stats.MP.max += ( 5 * concentrazioneLv);
+    }
+    
     function deriveStats(){
+        
         //calcolo HP ed MP SENZA BENFICI GRATUITI
-        character.stats.HP.max = (5*character.attributes.MIG.max) + character.info.level;
-        character.stats.MP.max = (5*character.attributes.WLP.max) + character.info.level;
+        character.stats.HP.max = (5*character.attributes.MIG.max) + Number(character.info.level);
+        character.stats.MP.max = (5*character.attributes.WLP.max) + Number(character.info.level);
         character.stats.IP.max = 6;
+
+        //console.log(character.stats.HP,"HP step 1");
+        //console.log(character.stats.MP,"MP step 1");
         
         //applico i benefici gratuiti
         let totals = retriveBenefits(character);
 
-        //aggiorno gli attuali ai massimi
+        //aggiorno i massimi
         character.stats.HP.max += totals.hp
         character.stats.MP.max += totals.mp
         character.stats.IP.max += totals.ip
+
+        //console.log(character.stats.HP,"HP step 2");
+        // console.log(character.stats.MP,"MP step 2");
+
+        //aggiorno in base alle abilità 
+        addFortress();
+        addConcentration();
+
+        //console.log(character.stats.HP,"HP step 3");
+        //console.log(character.stats.MP,"MP step 3");
+
+        //calcolo difesa e difesa magica SENZA CONSIDERARE ARMATURE E SCUDI
+        character.stats.DEF = character.attributes.DEX.actual;
+        character.stats.MDEF = character.attributes.INS.actual; 
+
+        //controllo le armature equipaggiate
+        armorUp();
+
+        //controllo gli scudi equipaggiati
+        shieldUp();
+
     }
 
-    function characterCheckUp(){        
+    function updateActuals(){
+        character.attributes.DEX.actual = character.attributes.DEX.max;
+        character.attributes.INS.actual = character.attributes.INS.max;
+        character.attributes.MIG.actual = character.attributes.MIG.max;
+        character.attributes.WLP.actual = character.attributes.WLP.max;
+    }
+
+    function characterCheckUp(){
+        //aggiorno gli attributi attuali a quelli massimi
+        updateActuals();
         //controllo gli status da cui è afflitto il personaggio
         statusCheckUp();
         //calcolo le statistiche del personaggio
@@ -899,7 +987,7 @@
         await handleFetch();
     }
 
-    $inspect(character.stats,"statistiche");
+    $inspect(addedValues,"values");
 </script>
 
 

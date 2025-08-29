@@ -1,4 +1,4 @@
-import type { Benefits, FabulaUltimaCharacter, ritualKey, statusKey } from "./zod";
+import { FabulaUltimaCharacterScheme, type Benefits, type FabulaUltimaCharacter, type ritualKey, type statusKey } from "./zod";
 
 export function getClassBenefits(character:FabulaUltimaCharacter, className:string) {
     if (!character.classes) return null;
@@ -13,6 +13,18 @@ export function getClassBenefits(character:FabulaUltimaCharacter, className:stri
 // Controlla se il personaggio ha uno status specifico
 export function hasStatus(character:FabulaUltimaCharacter, statusName:statusKey) {
   return character.status && character.status[statusName] === true;
+}
+
+
+export function hasAbility(character:FabulaUltimaCharacter,skillName:string){
+  for(const classe of character.classes){
+    for(const abilità of classe.skills){
+      const abilitàFlat = abilità.name.toLowerCase().replace(/\s+/g, "");
+      const skillNameFlat = skillName.toLowerCase();
+      if(abilitàFlat === skillNameFlat)return abilità.level.actual;
+    }
+  }
+  return 0;
 }
 
 // Controlla se il personaggio ha accesso a rituali di un tipo specifico
@@ -60,7 +72,7 @@ export function retriveBenefits(character:FabulaUltimaCharacter){
     if(benefits.mp.active)totals.mp += benefits.mp.quantity;
     if(benefits.ip.active)totals.ip += benefits.ip.quantity;
 
-    
+
   }
   return totals;
 }
