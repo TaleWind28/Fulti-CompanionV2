@@ -198,6 +198,7 @@
                                 shields.splice(removeIndex,1);
                             }
                         }
+                        equip={item.equipped}
                     />
                     </div>
                 {/each}
@@ -244,7 +245,8 @@
                                     let removeIndex = armor.findIndex((ar)=>ar.name === armorName);
                                     armor.splice(removeIndex,1)
                                 }
-                            }     
+                            }
+                            equip={item.equipped}
                         />
                     </div>
                     

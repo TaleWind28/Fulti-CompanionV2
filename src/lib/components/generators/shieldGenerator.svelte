@@ -75,6 +75,7 @@
             price:requestedData.totalPrice,
             pic:equipImageUrl,
             isMartial:isMartial,
+            equipped:false,
             code:triggerEquipment.toLowerCase().includes("scudo") ?  1 : 2 
         }
         return propEquipment;

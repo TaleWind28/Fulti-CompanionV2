@@ -76,3 +76,37 @@ export function retriveBenefits(character:FabulaUltimaCharacter){
   }
   return totals;
 }
+
+export function hasAlreadyEquippedArmor(character:FabulaUltimaCharacter){
+  for(let armor of character.inventory.armor){
+    if(armor.equipped)return true;
+  }
+  return false;
+}
+
+export function canEquipMartialArmor(character:FabulaUltimaCharacter){
+  for(const classe of character.classes){
+    let benefit = getClassBenefits(character,classe.name);
+    if(benefit?.martial.equipment.armor){
+      return true;
+    }
+  }
+  return false;
+}
+
+export function canEquipMartialShield(character:FabulaUltimaCharacter){
+  for(const classe of character.classes){
+    let benefit = getClassBenefits(character,classe.name);
+    if(benefit?.martial.equipment.shields){
+      return true;
+    }
+  }
+  return false;
+}
+
+export function hasAlreadyEquippedShield(character:FabulaUltimaCharacter){
+  for(let shield of character.inventory.shields){
+    if(shield.equipped)return true;
+  }
+  return false;
+}

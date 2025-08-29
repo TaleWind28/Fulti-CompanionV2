@@ -1,7 +1,7 @@
 <script lang="ts">
     import { invalidateAll } from '$app/navigation';
     import type { Accessory, Armor, Shield, StatsSheetProps, Weapon } from '$lib';
-    import { getClassBenefits, hasAbility, hasStatus, retriveBenefits } from '$lib/characterUtils.js';
+    import { canEquipMartialArmor, canEquipMartialShield, getClassBenefits, hasAbility, hasAlreadyEquippedArmor, hasAlreadyEquippedShield, hasStatus, retriveBenefits } from '$lib/characterUtils.js';
     import CharacterCard from '$lib/components/characterCard.svelte';
     import CharacterClasses from '$lib/components/sheets/characterClasses.svelte';
     import InfoSheet from '$lib/components/sheets/infoSheet.svelte';
@@ -19,6 +19,7 @@
     import { onMount, setContext } from 'svelte';
     import Fa from 'svelte-fa';
     import { toast } from 'svelte-sonner';
+  import { ar } from 'zod/v4/locales';
 
 
 	let { data } = $props();
@@ -115,40 +116,18 @@
 
         // Callback per stats
         stats: {
-            updateHP: (value: number) => {
+            updateActual: (value: number,field:"HP" | "MP" | "IP") => {
+                console.log(`value:${value}, field:${field}`)
+                //prendo il valore minore, così se il recupero supera la soglia massima allora ho il massimo
+                const updatedValue = Math.min(character.stats[field].actual + value, character.stats[field].max);
                 character = {
                     ...character,
                     stats: {
                         ...character.stats,
-                        HP: { ...character.stats.HP, actual: value }
+                        [field]: { ...character.stats[field], actual: updatedValue }
                     }
                 };
             },
-            
-            updateMaxHP: (value: number) => {
-                character = {
-                    ...character,
-                    stats: {
-                        ...character.stats,
-                        HP: { ...character.stats.HP, max: value }
-                    }
-                };
-            },
-            
-            heal: (amount: number) => {
-                const newHP = Math.min(
-                    character.stats.HP.actual + amount,
-                    character.stats.HP.max
-                );
-                
-                character = {
-                    ...character,
-                    stats: {
-                        ...character.stats,
-                        HP: { ...character.stats.HP, actual: newHP }
-                    }
-                };
-            }
         },
 
         // Callback per Status
@@ -446,7 +425,49 @@
     type Heroic =(className:string,heroicName:string,heroicDescription:string)=> boolean;
     type ClassUp = (className:string,up:boolean)=> boolean;
     type DeleteClass = (className:string)=>boolean;
+    type WearArmor = (equipName:string)=>boolean;
+    type EquipArmor = (equipName:string,value:boolean) => boolean;
 
+    function ArmorUp(equipName:string){
+        //controllo prima se è un'armatura
+        for(let equip of character.inventory.armor){
+            if (equip.name === equipName || equip.nickname === equipName){
+                //se è già equipaggiato allora devo abilitare la checkbox per farlo disequipaggiare
+                if(equip.equipped)return false;
+                //se ho già un'armatura equipaggiata mi ferno qui
+                if (hasAlreadyEquippedArmor(character)) return true;
+                //se non è marziale lo può sicuramente equipaggiare -> torno false perchè voglio sapere se la checkbox è disabled -> false = !disabled -> cliccabile
+                if(!equip.martial)return false;
+                //altrimenti bisogna vedere se può equipaggiare armature marziali
+                if(canEquipMartialArmor(character))return false;
+            }
+        }
+
+        //controllo se posso equipaggiare lo scudo
+        for(let shield of character.inventory.shields){
+            if(shield.name === equipName || shield.nickname === equipName){
+                if(shield.equipped)return false;
+                if(hasAlreadyEquippedShield(character) && hasAbility(character,"Doppio Scudo") === 0)return true;
+                if(!shield.martial)return false;
+                if(canEquipMartialShield(character))return false;
+            }
+        }
+        return true;
+    }
+
+    function EquipArmor(equipName:string,value:boolean){
+        for(let armor of character.inventory.armor){
+            if(armor.name === equipName || armor.nickname === equipName){
+                
+                armor.equipped = value;
+                // let index = character.inventory.armor.findIndex(armor);
+                // character.inventory.armor[index] = armor;
+            }
+        }
+        return false;
+    }
+    setContext<WearArmor>('CheckArmor',ArmorUp);
+    setContext<EquipArmor>('WearArmor',EquipArmor);
     function levelSkill(skillName: string,up:boolean,className:string): boolean {
 
         // Trova la classe e la skill
@@ -631,8 +652,9 @@
 
     }
 
-	type CharacterCardProps = {
-        character: typeof character;
+	type LandingSheetProps = {
+        character: typeof character,
+        callbacks:any
     };
 
     type InfoSheetProps = {
@@ -662,7 +684,7 @@
         availableSpells:any,
     }
 
-	type TabContentProps = CharacterCardProps | InfoSheetProps | StatsSheetProps | CharacterClassesProps | InventorySheetProps | NotesProps | SpeelBookProps;
+	type TabContentProps = LandingSheetProps | InfoSheetProps | StatsSheetProps | CharacterClassesProps | InventorySheetProps | NotesProps | SpeelBookProps;
 
 	 type TabContent = {
         value: string;
@@ -684,6 +706,7 @@
 					component:LandingSheet,
 					props:{
 						character:character,
+                        callbacks:characterCallbacks
 						},
 					
 				},
@@ -912,6 +935,11 @@
         character.stats.MP.max += totals.mp
         character.stats.IP.max += totals.ip
 
+        //controllo se gli attuali sono maggiori dei massimi
+        character.stats.HP.actual = Math.min(character.stats.HP.max,character.stats.HP.actual);
+        character.stats.MP.actual = Math.min(character.stats.MP.max,character.stats.MP.actual);
+        character.stats.IP.actual = Math.min(character.stats.IP.max,character.stats.MP.actual);
+
         //aggiorno in base alle abilità 
         addFortress();
         addConcentration();
@@ -948,8 +976,12 @@
     
 
     async function handleFetch(){
-    console.log("fetcho");   
+                 console.log("fetcho");   
 				const characterSpellList: string[] = retrieveSpellClasses(character);
+                if (characterSpellList.length === 0){
+                    console.log("non fetcho")
+                    return;
+                } 
 				const spellListParams = encodeURIComponent(JSON.stringify(characterSpellList));
 				const url = `/api/spells?spellList=${spellListParams}`;
 				try {
