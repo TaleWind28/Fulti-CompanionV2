@@ -458,10 +458,7 @@
     function EquipArmor(equipName:string,value:boolean){
         for(let armor of character.inventory.armor){
             if(armor.name === equipName || armor.nickname === equipName){
-                
                 armor.equipped = value;
-                // let index = character.inventory.armor.findIndex(armor);
-                // character.inventory.armor[index] = armor;
             }
         }
         return false;
@@ -872,19 +869,25 @@
         for (const armor of character.inventory.armor){
             //se l'armatura è equipaggiata considero le sue statistiche
             if ( armor.equipped){
+                console.log("pippo");
                 //controllo se devo aggiungere un valore alla taglia
                 if(armor.def.toLowerCase().includes("taglia")){
                     const senzaSpazi = armor.def.replace(/\s+/g, "");
                     const add = senzaSpazi.split("+")[1];
+                    if(add.length === 0)return;
+                    console.log(add,"add");
                     character.stats.DEF = Number(add);
+
                 }else{
                     //ho un numero da aggiungere
+                    console.log(armor.def);
                     character.stats.DEF = Number(armor.def);
                 }
                 //controllo se devo aggiungere un valore alla taglia
                 if(armor.mdef.toLowerCase().includes("taglia")){
                     const senzaSpazi = armor.mdef.replace(/\s+/g, "");
                     const add = senzaSpazi.split("+")[1];
+                    if(add.length === 0)return;
                     character.stats.MDEF = Number(add);
                 }else{
                     //ho un numero da aggiungere
@@ -899,8 +902,9 @@
     function shieldUp(){
         let shieldsEquipped = 0;
         for (const shield of character.inventory.shields){
-            //se l'armatura è equipaggiata considero le sue statistiche
+            //se lo scudo è equipaggiato considero le sue statistiche
             if ( shield.equipped){
+                console.log(`shield:Def = ${shield.def}\nMdef = ${shield.mdef} `);
                 character.stats.DEF += Number(shield.def);
                 character.stats.MDEF += Number(shield.mdef);
                 shieldsEquipped++;
@@ -947,7 +951,7 @@
         //calcolo difesa e difesa magica SENZA CONSIDERARE ARMATURE E SCUDI
         character.stats.DEF = character.attributes.DEX.actual;
         character.stats.MDEF = character.attributes.INS.actual; 
-
+        console.log("armorUP");
         //controllo le armature equipaggiate
         armorUp();
 
