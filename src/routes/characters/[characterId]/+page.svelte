@@ -905,7 +905,7 @@
         character.stats.MP.max = (5*character.attributes.WLP.max) + Number(character.info.level);
         character.stats.IP.max = 6;
 
-        //console.log(character.stats.HP,"HP step 1");
+        console.log(character.attributes.MIG.max,"HP step 1");
         //console.log(character.stats.MP,"MP step 1");
         
         //applico i benefici gratuiti
