@@ -9,13 +9,42 @@
     import SpellDescriptor from "../spellDescriptor.svelte";
 
     /*  PROP  */
-    let {spellBook, callbacks, availableSpells } : {spellBook:Spellbook, callbacks:any, availableSpells:any, character:FabulaUltimaCharacter} =$props();
+    let {
+        spellBook = {},
+        callbacks,
+        availableSpells
+    
+    } : {spellBook:Spellbook, callbacks:any, availableSpells:any, character:FabulaUltimaCharacter} =$props();
     /* FINE PROP */
+
+    //controllo necessario per le classi non magiche
+    if (Object.keys(availableSpells).length === 0){
+        availableSpells = {
+            "spiritista":{
+                spells:[
+                    {
+                        name:"Guarigione",
+                        offensive:"false",
+                        special:"nessuno",
+                        targets:{
+                            max:3,
+                            description:"Fino a 3 creature"
+                        },
+                        list:"spiritista",
+                        duration:"istantanea",
+                        cost:10,
+                        description:"Infondi vigore nei tuoi compagni, lenendone il dolore e la stanchezza. Ciascun bersaglio recupera 40 Punti Vita. Questo ammontare aumenta a 50 Punti Vita se sei di livello 20 o superiore, oppure a 60 Punti Vita se sei di livello 40 o superiore.",
+
+                    }
+                ]
+            }
+        } 
+    }
 
 
     let lists:string[] = $derived(Object.keys(availableSpells));
-    console.log(availableSpells);
-    
+    console.log(availableSpells,"spells");
+
     let selectedSpellClass = $derived(lists[0]);
     const spellClassTrigger = $derived(
         lists.find(sp=>sp === selectedSpellClass) || lists[0]
