@@ -1,8 +1,7 @@
 <script lang="ts">
     import { invalidateAll } from '$app/navigation';
-    import type { Accessory, Armor, Shield, StatsSheetProps, TabContentProps, Weapon } from '$lib';
-    import { canEquipMartialArmor, canEquipMartialShield, getClassBenefits, hasAbility, hasAlreadyEquippedArmor, hasAlreadyEquippedShield, hasMartialArmorEquipped, hasStatus, retriveBenefits } from '$lib/characterUtils.js';
-    import CharacterCard from '$lib/components/characterCard.svelte';
+    import type {  TabContentProps} from '$lib';
+    import { canEquipMartialArmor, canEquipMartialShield, hasAbility, hasAlreadyEquippedArmor, hasAlreadyEquippedShield, hasMartialArmorEquipped, hasStatus, retriveBenefits } from '$lib/characterUtils.js';
     import CharacterClasses from '$lib/components/sheets/characterClasses.svelte';
     import InfoSheet from '$lib/components/sheets/infoSheet.svelte';
     import InventorySheet from '$lib/components/sheets/inventorySheet.svelte';
@@ -10,11 +9,10 @@
     import NotesSheet from '$lib/components/sheets/notesSheet.svelte';
     import SpellBook from '$lib/components/sheets/spellBook.svelte';
     import StatSheet from '$lib/components/sheets/statSheet.svelte';
-    import Menubar from '$lib/components/ui/menubar/menubar.svelte';
     import Separator from '$lib/components/ui/separator/separator.svelte';
     import * as Tabs from '$lib/components/ui/tabs/index.js';
     import { retrieveSpellClasses } from '$lib/utils.js';
-    import {  infoScheme, type Arcanum, type Benefits, type Spell} from '$lib/zod.js';
+    import {  infoScheme, type Spell} from '$lib/zod.js';
     import { faSave } from '@fortawesome/free-solid-svg-icons';
     import { onMount, setContext } from 'svelte';
     import Fa from 'svelte-fa';
