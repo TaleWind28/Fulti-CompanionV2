@@ -25,25 +25,29 @@
 	async function detectSWUpdate() {
 		const registration = await navigator.serviceWorker.ready;
 		console.log("detection");
-		registration.addEventListener('updateFound',()=>{
-			const newSW = registration.installing
-			newSW?.addEventListener('statechange',()=>{
+
+		registration.addEventListener('updatefound', () => {
+			const newSW = registration.installing;
+			newSW?.addEventListener('statechange', () => {
 				console.log("Vino");
-				if (newSW.state === 'installed'){
+				if (newSW.state === 'installed') {
 					console.log("Toast");
-					toast.info("Aggiornamento disponibile! Ricaricare la pagine per aggiornare?",{
-						action:{
-							label:"OK",
-							onClick:()=>{
-								newSW.postMessage({type:'SKIP_WAITING'});
-								window.location.reload();
-							}
-						}
-					})
-					
+					// toast.info("Aggiornamento disponibile! Ricaricare la pagina per aggiornare?", {
+					// 	action: {
+					// 		label: "OK",
+					// 		onClick: () => {
+					// 			newSW.postMessage({ type: 'SKIP_WAITING' });
+					// 			window.location.reload();
+					// 		}
+					// 	}
+					// });
+					if(confirm("aggiorna")){
+						newSW.postMessage({ type: 'SKIP_WAITING' });
+						window.location.reload();
+					}
 				}
-			})
-		})
+			});
+		});
 	}
 
 	onMount(()=>{

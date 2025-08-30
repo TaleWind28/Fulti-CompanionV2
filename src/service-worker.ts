@@ -22,7 +22,6 @@ self.addEventListener('install',event=>{
 
 
 //attivare il SW
-
 self.addEventListener('activate', event=>{
     async function deleteOldCaches() {
         for (const key of await caches.keys()){
@@ -36,7 +35,7 @@ self.addEventListener('activate', event=>{
 })
 
 //ascoltare le Fetch
-self.addEventListener('fetch', event=>{
+self.addEventListener('fetch', (event)=>{
     //accettiamo solo le GET
     if(event.request.method !== "GET") return;
 
@@ -75,11 +74,10 @@ self.addEventListener('fetch', event=>{
 })
 
 
-self.addEventListener('message', event=>{
+self.addEventListener('message', (event)=>{
     if(event.data && event.data.type === 'SKIP_WAITING'){
         self.skipWaiting()
     }
 })
 
-
-console.log("provo con la build");
+console.log("mmmon");
