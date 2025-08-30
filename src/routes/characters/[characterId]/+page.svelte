@@ -472,15 +472,17 @@
                 if(canEquipMartialArmor(character))return false;
             }
         }
-
+        console.log("cercoScudo")
         //controllo se posso equipaggiare lo scudo
         for(let shield of character.inventory.shields){
+            console.log("cerco")
             if(shield.name === equipName || shield.nickname === equipName){
                 if(shield.equipped)return false;
                 if(hasAlreadyEquippedShield(character) && hasAbility(character,"Doppio Scudo") === 0)return true;
                 if(!shield.martial)return false;
                 if(canEquipMartialShield(character))return false;
             }
+            console.log("muoio")
         }
         return true;
     }
@@ -489,6 +491,12 @@
         for(let armor of character.inventory.armor){
             if(armor.name === equipName || armor.nickname === equipName){
                 armor.equipped = value;
+            }
+        }
+
+        for(let shield of character.inventory.shields){
+            if(shield.name === equipName || shield.nickname === equipName){
+                shield.equipped = value;
             }
         }
         return false;
@@ -885,8 +893,10 @@
     function shieldUp(){
         let shieldsEquipped = 0;
         for (const shield of character.inventory.shields){
+            console.log("cerco");
             //se lo scudo è equipaggiato considero le sue statistiche
             if ( shield.equipped){
+                console.log("dentroShieldUp")
                 character.stats.DEF += Number(shield.def);
                 character.stats.MDEF += Number(shield.mdef);
                 shieldsEquipped++;
