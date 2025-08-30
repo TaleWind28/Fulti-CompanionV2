@@ -23,24 +23,13 @@
 	let headerLinks =[{link:"/campaign/",name:"Campagne"},{link:"/characters/",name:"Schede Personaggio"},{link:"/itemGenerator/",name:"Generatore di Oggetti"},{link:"/bestiary",name:"Bestiario"}];
 	
 	async function detectSWUpdate() {
+		
 		const registration = await navigator.serviceWorker.ready;
-		console.log("detection");
 
 		registration.addEventListener('updatefound', () => {
 			const newSW = registration.installing;
 			newSW?.addEventListener('statechange', () => {
-				console.log("Vino");
 				if (newSW.state === 'installed') {
-					console.log("Toast");
-					// toast.info("Aggiornamento disponibile! Ricaricare la pagina per aggiornare?", {
-					// 	action: {
-					// 		label: "OK",
-					// 		onClick: () => {
-					// 			newSW.postMessage({ type: 'SKIP_WAITING' });
-					// 			window.location.reload();
-					// 		}
-					// 	}
-					// });
 					if(confirm("aggiorna")){
 						newSW.postMessage({ type: 'SKIP_WAITING' });
 						window.location.reload();

@@ -1,0 +1,32 @@
+{
+    "name":"FultiCompanion",
+    "short_name":"FultiComp",
+    "start_url":"/",
+    "display":"standalone",
+    "background_color": "#17191c",
+    "theme_color":"#ff3f20",
+    "description":"Fulti-Companion, un compagno digitale per Fabula Ultima",
+    "icons": [
+    {
+      "src": "pwa-64x64.png",
+      "sizes": "64x64",
+      "type": "image/png"
+    },
+    {
+      "src": "pwa-64x64.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "pwa-64x64.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "pwa-64x64.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

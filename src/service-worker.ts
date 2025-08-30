@@ -51,15 +51,17 @@ self.addEventListener('fetch', (event)=>{
         //controllo se c'è rete
         try{
             const response = await fetch(event.request);
-
+            console.log("controllo la rete");
             const isNotExtension = url.protocol === 'http:';
             const isSuccess = response.status === 200;
             
             if(isNotExtension && isSuccess){
+                console.log("avevo rete");
                 cache.put(event.request, response.clone());
             }
             return response;
         }catch{
+            console.log("niente rete");
             //fallback to cache
             const cachedResponse = await cache.match(url.pathname);
             if(cachedResponse){
@@ -79,5 +81,3 @@ self.addEventListener('message', (event)=>{
         self.skipWaiting()
     }
 })
-
-console.log("mmmon");
