@@ -19,7 +19,7 @@
 	let { children } = $props();
 	let poweredSrc = "/images/Powered by Fabula Ultima Logo.png";
 	let logo = "/images/Logo5.1.png";
-	let headerLinks =[{link:"/campaign/",name:"Campagne"},{link:"/characters/",name:"Schede Personaggio"},{link:"/itemGenerator/",name:"Generatore di Oggetti"},{link:"/",name:"Bestiario"}];
+	let headerLinks =[{link:"/campaign/",name:"Campagne"},{link:"/characters/",name:"Schede Personaggio"},{link:"/itemGenerator/",name:"Generatore di Oggetti"},{link:"/bestiary",name:"Bestiario"}];
 	
 
 	onMount(()=>{
