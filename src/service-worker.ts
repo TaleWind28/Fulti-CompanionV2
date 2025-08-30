@@ -81,3 +81,5 @@ self.addEventListener('message', (event)=>{
         self.skipWaiting()
     }
 })
+
+console.log("pino");
