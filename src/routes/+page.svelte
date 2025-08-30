@@ -11,7 +11,7 @@ const features = [
       icon: faScroll,
       iconColor:"text-amber-800",
       title: "Schede Personaggio",
-      description: "Creazione guidata, con aggiunta di equipaggiamento e note. Sempre disponibili, anche offline."
+      description: "Creazione semplificata, con aggiunta di equipaggiamento e note."
     },
     {
       icon:faBookSkull,
@@ -25,18 +25,18 @@ const features = [
       title: "Gestione Campagne & Wiki",
       description: "Organizza le tue campagne, invita giocatori e costruite insieme ad una Wiki condivisa per lore e appunti."
     },
-    {
-      icon:faDiceD20,
-      iconColor:"text-purple-900",
-      title: "Dice Roller Avanzato",
-      description: "Tira dadi personalizzati con un click. Log storico dei tiri per non perdere nulla."
-    },
-    {
-      icon:faKhanda,
-      iconColor:" text-red-900",
-      title: "Combat Helper",
-      description: "Un simulatore di combattimento per tenere tenere sempre alta l'attenzione dei giocatori."
-    },
+    // {
+    //   icon:faDiceD20,
+    //   iconColor:"text-purple-900",
+    //   title: "Dice Roller Avanzato",
+    //   description: "Tira dadi personalizzati con un click. Log storico dei tiri per non perdere nulla."
+    // },
+    // {
+    //   icon:faKhanda,
+    //   iconColor:" text-red-900",
+    //   title: "Combat Helper",
+    //   description: "Un simulatore di combattimento per tenere tenere sempre alta l'attenzione dei giocatori."
+    // },
     {
       icon:faCloud,
       iconColor:"text-grey-900",

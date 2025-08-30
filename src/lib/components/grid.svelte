@@ -12,7 +12,7 @@
     
 </script>
 
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mx-4 sm:mx-0">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mx-4 sm:mx-0">
     {#each grid as elem}
         <div class="bg-white p-3 rounded-lg shadow flex flex-col justify-center">
             <Fa class="flex {elem.iconColor} text-2xl " icon={elem.icon}/>
