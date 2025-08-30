@@ -459,7 +459,7 @@
     type UpdateNote = (noteId:number,field:"description" | "title",value:string)=>boolean;
     
     function ArmorUp(equipName:string){
-        //controllo prima se è un'armatura
+        //controllo prima le armature
         for(let equip of character.inventory.armor){
             if (equip.name === equipName || equip.nickname === equipName){
                 //se è già equipaggiato allora devo abilitare la checkbox per farlo disequipaggiare
@@ -472,17 +472,19 @@
                 if(canEquipMartialArmor(character))return false;
             }
         }
-        console.log("cercoScudo")
         //controllo se posso equipaggiare lo scudo
         for(let shield of character.inventory.shields){
-            console.log("cerco")
             if(shield.name === equipName || shield.nickname === equipName){
+                //se è già equipaggiato allora devo abilitare la checkbox per farlo disequipaggiare
                 if(shield.equipped)return false;
+                //se ho uno scudo equipaggiato e non ho doppio scudo del guardiano non posso equipaggiarne altri
                 if(hasAlreadyEquippedShield(character) && hasAbility(character,"Doppio Scudo") === 0)return true;
+                //se lo scudo non è marziale posso equipaggiarlo
                 if(!shield.martial)return false;
+                //altrimenti controllo se posso equipaggiare scudi marziali
                 if(canEquipMartialShield(character))return false;
             }
-            console.log("muoio")
+            
         }
         return true;
     }
