@@ -37,9 +37,7 @@ self.addEventListener('activate', event=>{
 //ascoltare le Fetch
 self.addEventListener('fetch', (event)=>{
     const url = new URL(event.request.url);
-    //se è una fetch ad API locali allora la faccio passare
-    if(url.pathname === '/api/accessoryGenerator' && event.request.method === 'POST'){
-        async function handleApiCall(){
+     async function handleApiCall(){
             try {
                 // tenta comunque la fetch normale
                 return await fetch(event.request);
@@ -65,6 +63,10 @@ self.addEventListener('fetch', (event)=>{
                 );
             }
         }
+    
+    //se è una fetch ad API locali allora la faccio passare
+    if(url.pathname === '/api/accessoryGenerator' && event.request.method === 'POST'){
+       
         event.respondWith(handleApiCall());
     }
     //accettiamo solo le GET
