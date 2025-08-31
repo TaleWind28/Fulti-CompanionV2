@@ -49,9 +49,6 @@ self.addEventListener('fetch', (event)=>{
                         success:true,
                         data:{
                             offline:true,
-                            accessoryName:"",
-                            quality:"Nessuna Qualità",
-                            price:0
                         },
                         message:"SW Response",
                         
