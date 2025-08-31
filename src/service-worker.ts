@@ -51,7 +51,6 @@ self.addEventListener('fetch', (event)=>{
         //controllo se c'è rete
         try{
             const response = await fetch(event.request);
-            console.log("controllo la rete");
             const isNotExtension = url.protocol === 'http:';
             const isSuccess = response.status === 200;
             
