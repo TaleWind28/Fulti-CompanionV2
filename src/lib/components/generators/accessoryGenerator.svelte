@@ -20,6 +20,8 @@
     let customQuality = $state("");
     let customCost = $state(0);
     let isRealCustomQuality = $state(false);
+    let offline = $state(false);
+
     //sarà da fetchare
     let requestedData = $state({
         accessoryName:"",
@@ -131,6 +133,13 @@
         const result = await response.json();
 
         if(result.success){
+            console.log(result);
+            if (result.data.offline){
+                offline=false;
+                return;
+            }else{
+                offline = true;
+            }
             requestedData = result.data;
             if(requestedData.quality !== "Nessuna Qualità" && isRealCustomQuality === false){
                 customQuality = requestedData.quality;
@@ -141,17 +150,17 @@
 
     onMount(async ()=>{
         console.log("initial Fetch");
-        //recupero i dati dal db
         const response = await fetch('/api/accessoryGenerator');
         const data = await response.json();
         baseQualities = data.qualities; 
-        console.log(data);
+        calculateParams();
     });
 
     $effect(()=>{    
         calculateParams();
     })
 
+    $inspect(offline,"offline");
 </script>
 
 <div class=" flex gap-5 justify-evenly">
@@ -228,7 +237,7 @@
     </div>
 
     <!-- ImageProcessor -->
-    {#if showImageProcessor}
+    {#if offline}
         
         <AccessoryProcessor
             requestedData = {requestedData}

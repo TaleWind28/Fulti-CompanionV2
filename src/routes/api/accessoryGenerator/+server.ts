@@ -35,6 +35,7 @@ export async function POST({request}){
     return json({
         success:true,
         data:{
+            offline:false,
             accessoryName,
             quality: selectedQuality.effect,
             price:selectedQuality.price,
