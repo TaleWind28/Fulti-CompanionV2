@@ -48,10 +48,15 @@ self.addEventListener('fetch', (event)=>{
                 // offline → rispondi tu direttamente
                 return new Response(
                     JSON.stringify({
-                        ok: true,
-                        offline: true,
-                        message: 'Risposta generata dal service worker (offline)',
-                        data: null
+                        success:true,
+                        data:{
+                            offline:true,
+                            accessoryName:"",
+                            quality:"Nessuna Qualità",
+                            price:0
+                        },
+                        message:"SW Response",
+                        
                     }),
                     {
                         status: 200,

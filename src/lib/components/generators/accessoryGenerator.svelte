@@ -135,10 +135,10 @@
         if(result.success){
             console.log(result);
             if (result.data.offline){
-                offline=false;
+                offline=true;
                 return;
             }else{
-                offline = true;
+                offline = false;
             }
             requestedData = result.data;
             if(requestedData.quality !== "Nessuna Qualità" && isRealCustomQuality === false){
@@ -237,7 +237,7 @@
     </div>
 
     <!-- ImageProcessor -->
-    {#if offline}
+    {#if !offline && showImageProcessor}
         
         <AccessoryProcessor
             requestedData = {requestedData}
