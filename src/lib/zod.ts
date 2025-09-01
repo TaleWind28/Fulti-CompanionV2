@@ -269,6 +269,23 @@ export const FabulaUltimaCharacterScheme = z.object({
 
 export type FabulaUltimaCharacter = z.infer<typeof FabulaUltimaCharacterScheme>;
 
+export const pageScheme = z.object({
+    name:z.string(),
+    description:z.string(),
+    id:z.number()
+})
+
+export const campaignScheme = z.object({
+    name:z.string(),
+    description:z.string(),
+    pic:z.string().optional(),
+    players:z.array(FabulaUltimaCharacterScheme),
+    master:z.string(),
+    pages:z.array(pageScheme),
+    id:z.number()
+})
+
+export type Campaign = z.infer<typeof campaignScheme>;
 
 //FORM SCHEMES  
 export const characterSchema = z.object({
@@ -305,4 +322,13 @@ export const characterSchema = z.object({
   }
 }) as ZodValidationSchema;
 
+
+//schema per creare campagne
 export type FormCharacterSchema = typeof characterSchema;
+
+export const campaignSchema = z.object({
+    name:z.string().min(3,{message:"Il nome deve contenere almeno 3 caratteri"}).default(""),
+    description:z.string().min(3,{message:"La descrizione deve spiegare a cosa andranno incontro i giocatori"})
+}) as ZodValidationSchema;
+
+export type FormCampaignScheme = typeof campaignSchema

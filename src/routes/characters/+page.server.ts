@@ -1,15 +1,9 @@
 // src/routes/characters/+page.server.js
-
-import type { CharacterClasses } from '$lib';
-import { retriveBenefits } from '$lib/characterUtils.js';
-import { db } from '$lib/firebase';
 import { adminDB } from '$lib/firebase_admin'; // Importa l'istanza del DB admin
-import { affinitiesScheme, characterSchema, FabulaUltimaCharacterScheme, statsScheme, traitsScheme, type FabulaUltimaCharacter } from '$lib/zod.js';
-import { error, fail, redirect, type Actions } from '@sveltejs/kit';
-import { collection, getDocs, orderBy, query, where } from 'firebase/firestore';
-import { message, superValidate } from 'sveltekit-superforms';
+import {  characterSchema, FabulaUltimaCharacterScheme, type FabulaUltimaCharacter } from '$lib/zod.js';
+import { fail, redirect, type Actions } from '@sveltejs/kit';
+import {  superValidate } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
-import z, { url } from 'zod/v4';
 
 
 

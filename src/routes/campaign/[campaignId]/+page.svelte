@@ -1,7 +1,9 @@
-<script>
-    
+<script lang="ts">
+
+    let {data} = $props();
+    $inspect(data,"data")
 </script>
 
 <div>
-    portanna
+    {data.campaignId}
 </div>
