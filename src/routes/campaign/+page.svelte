@@ -1,9 +1,14 @@
 <script lang="ts">
     import Button from "$lib/components/ui/button/button.svelte";
     import Input from "$lib/components/ui/input/input.svelte";
-    import type { Campaign} from "$lib/zod";
-
+    import { campaignSchema, type Campaign} from "$lib/zod";
+    import * as Dialog from "$lib/components/ui/dialog/index";
+    import { superForm } from "sveltekit-superforms";
+    import { zod4Client } from "sveltekit-superforms/adapters";
+    import { toast } from "svelte-sonner";
+    import type { PageData } from "../$types";
     
+    let {data} : {data: PageData} = $props();
 
     let fetched:Campaign[] = $state([
         {
@@ -40,6 +45,28 @@
         fetched.filter( (campaign) => campaign.name.toLowerCase().includes(searchCampaign.toLowerCase())) || []    
     )
 
+    const form = superForm(data.form,{
+        validators: zod4Client(campaignSchema),
+        taintedMessage:null,
+        dataType:'json',
+        onUpdated: ({ form: f }) =>{
+            console.info("form Updated");
+            if(f.valid){
+                console.info("form Valid");
+                openCreateCampaign = false;
+
+                toast.success("Campagna creata con successo!",{
+                    action:{
+                        label:"Mostra",
+                        onClick: ()=>console.info("Portamici")
+                    }
+                })
+            }
+        }
+    })
+
+    const {form: formData, enhance} = form;
+
     async function handleNewCampaign() {
         fetched.push(
             {
@@ -52,6 +79,8 @@
                 id:3,
             })
     }
+
+    let openCreateCampaign = $state(false);
     $inspect(filteredCampaigns,"search");
 </script>
 <div class="flex flex-col gap-5 bg-cafe_noir-900">
@@ -92,5 +121,14 @@
         </section>
     </div>
 </div>
+
+<Dialog.Root open={openCreateCampaign} onOpenChange={(v)=>{openCreateCampaign = v}}> 
+    <Dialog.Header> 
+
+    </Dialog.Header>
+    <Dialog.Content>
+        pp
+    </Dialog.Content>
+</Dialog.Root>
 
 
