@@ -3,10 +3,12 @@
     import Input from "$lib/components/ui/input/input.svelte";
     import { campaignSchema, type Campaign} from "$lib/zod";
     import * as Dialog from "$lib/components/ui/dialog/index";
+    import * as Form from "$lib/components/ui/form/index";
     import { superForm } from "sveltekit-superforms";
     import { zod4Client } from "sveltekit-superforms/adapters";
     import { toast } from "svelte-sonner";
-    import type { PageData } from "../$types";
+    import type { PageData } from "./$types";
+    import { goto } from "$app/navigation";
     
     let {data} : {data: PageData} = $props();
 
@@ -49,16 +51,16 @@
         validators: zod4Client(campaignSchema),
         taintedMessage:null,
         dataType:'json',
-        onUpdated: ({ form: f }) =>{
-            console.info("form Updated");
-            if(f.valid){
-                console.info("form Valid");
+        onResult: ({result}) => {
+            console.info("Result Received", result);
+            if(result.type === 'success' && result.data?.id){
+                console.info("Campaign Created");
                 openCreateCampaign = false;
-
+                const campaignId = result.data?.id;
                 toast.success("Campagna creata con successo!",{
                     action:{
                         label:"Mostra",
-                        onClick: ()=>console.info("Portamici")
+                        onClick: ()=> goto(`/campaign/${campaignId}`)
                     }
                 })
             }
@@ -68,16 +70,7 @@
     const {form: formData, enhance} = form;
 
     async function handleNewCampaign() {
-        fetched.push(
-            {
-                name:"minosse",
-                description:"Minno",
-                pic:"/images/map-2.png",
-                players:[],
-                master:"TaleWind",
-                pages:[],
-                id:3,
-            })
+        openCreateCampaign = true;
     }
 
     let openCreateCampaign = $state(false);
@@ -127,7 +120,37 @@
 
     </Dialog.Header>
     <Dialog.Content>
-        pp
+        <form id="campaignCreation" method="POST" use:enhance>
+
+            <!-- Nome Campagna -->
+            <Form.Field {form} name="name"> 
+                <Form.Control> 
+                    <Form.Label> 
+                        Nome Campagna
+                    </Form.Label>
+                    <Input bind:value={$formData.name}/> 
+                </Form.Control>
+                <Form.FieldErrors />
+            </Form.Field>
+
+            <!-- Descrizione Campagna -->
+            <Form.Field {form} name="description"> 
+                <Form.Control> 
+                    <Form.Label> 
+                        Descrizione
+                    </Form.Label>
+                    <Input bind:value={$formData.description}/> 
+                </Form.Control>
+                <Form.FieldErrors />
+            </Form.Field>
+        </form>
+
+        <Dialog.Footer> 
+            <Form.Button form="campaignCreation" type='submit'> 
+                Crea Campagnia
+            </Form.Button>
+        </Dialog.Footer>
+
     </Dialog.Content>
 </Dialog.Root>
 
