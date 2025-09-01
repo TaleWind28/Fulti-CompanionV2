@@ -19,8 +19,12 @@ export const PUT: RequestHandler = async ({request,locals}) =>{
     }
 
     const uid = currentUser.uid;
-    console.log(character);
-    const fuCharacter = FabulaUltimaCharacterScheme.parse(character.parsedCharacter);
+    // console.log(character);
+    
+    // const {id, ...characterWithoutId} = character;
+    // console.log(characterWithoutId);
+    const fuCharacter = FabulaUltimaCharacterScheme.parse(character.character);
+    
 
     try {
             // 4. Salva l'oggetto COMPLETO nel database

@@ -76,6 +76,7 @@
 				body:JSON.stringify({
 					character: parsedCharacter
 				})
+				
 			});
 
 			if(!response.ok){
