@@ -7,6 +7,9 @@
 
     let isPlayer= $state(false);
     let campaign : Campaign  = $derived(data.campaign);
+    
+    let landing = $derived(campaign.pages[0]);
+    
     $inspect(data,"data")
 </script>
 
@@ -21,7 +24,11 @@
             
             <span class="flex flex-col border border-black p-5">
                 <p>Obiettivi Correnti</p>
-
+                <p>
+                    {#if landing.content[0].type === 'text'}
+                        {landing.content[0].text}
+                    {/if}
+                </p>
             </span>
             
 

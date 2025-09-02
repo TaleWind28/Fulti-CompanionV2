@@ -15,9 +15,17 @@ const ImageBlock = z.object({
   alt: z.string().max(200).optional()
 });
 
+const LandingBlock = z.object({
+    type: z.literal('object'),
+    objectives: z.array(z.string()),
+    wiki: z.array(z.string()),
+    
+})
+
 export const BlockSchema = z.discriminatedUnion('type', [
   TextBlock,
-  ImageBlock
+  ImageBlock,
+  LandingBlock
 ]);
 
 export const PageScheme = z.object({
