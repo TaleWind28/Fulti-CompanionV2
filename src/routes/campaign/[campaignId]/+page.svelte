@@ -3,6 +3,7 @@
     import Label from '$lib/components/ui/label/label.svelte';
     import Switch from '$lib/components/ui/switch/switch.svelte';
     import type { Campaign } from '$lib/zod.js';
+    import { string } from 'zod';
 
 
     let {data} = $props();
@@ -20,11 +21,13 @@
 
 <div class="bg-lion-900 h-full flex flex-col gap-5 items-center justify-start p-5">
     <section class="bg-white h-full flex flex-col gap-5 items-center justify-start p-2">
+        {#if isMaster}   
+            <span class="flex flex-row items-center justify-center">
+                <Label>Modifica</Label>
+                <Switch bind:checked = {allowModify}></Switch>
+            </span>
+        {/if}
 
-        <span class="flex flex-row items-center justify-center">
-            <Label>Modifica</Label>
-            <Switch bind:checked = {allowModify}></Switch>
-        </span>
         {#if !allowModify}
 
             <div class="flex flex-col">
@@ -33,17 +36,21 @@
                 <img src={campaign.pic} alt="BackgroundPic" class="w-full"/>
             </div>
             <div class="flex flex-row justify-start px-5 gap-10">
-                
+                <!-- Obiettivi -->
                 <span class="flex flex-col border border-black p-5">
                     <p>Obiettivi Correnti</p>
-                    <p>
-                        {#if landing.content[0].type === 'text'}
-                            {landing.content[0].text}
-                        {/if}
-                    </p>
+                    
+                    {#if landing.content[0].type === 'object'}
+                        <ul>
+                            {#each landing.content[0].objectives as objective }
+                                <li>{objective}</li>
+                            {/each}
+                        </ul>
+                    {/if}
+                
                 </span>
                 
-
+                <!-- Giocatori -->
                 <span class="flex flex-col gap-5 border border-black p-5">
                     <p>Giocatori Attuali</p>
                     
@@ -60,6 +67,8 @@
                         
                     {/if}
                 </span>
+
+                <!-- Calendario -->
                 <span class="flex flex-col border border-black p-5 w-32">
                     
                     <p>Prossima Sessione</p>
@@ -71,13 +80,21 @@
             <div class="flex flex-col  items-start justify-start">
                 <p>Wiki</p>
                 <span>
-                    mostrare link alla lore/pagine
+                    <ul>                    
+                        {#if landing.content[0].type === 'object'}
+                            {#each landing.content[0].wiki as value }
+                                <li>
+                                    <a href={value.link}>
+                                        {value.name}
+                                    </a>
+                                </li>
+                            {/each}
+                        {/if}
+                    </ul>
                 </span>
             </div>
         {:else}
             porcodio
         {/if}
    </section>
-
 </div>
-
