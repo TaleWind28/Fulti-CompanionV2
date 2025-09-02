@@ -18,8 +18,7 @@ const ImageBlock = z.object({
 const LandingBlock = z.object({
     type: z.literal('object'),
     objectives: z.array(z.string()),
-    wiki: z.array(z.string()),
-    
+    wiki: z.array(z.object({name:z.string(),link:z.string()})),
 })
 
 export const BlockSchema = z.discriminatedUnion('type', [

@@ -68,7 +68,7 @@ export const actions:Actions ={
                 title:"landing",
                 summary:description,
                 coverImage:"",
-                content:[],
+                content:[{type:'object',objectives:[],wiki:[]}],
                 tags:[],
                 ownerId: uid,//forse è meglio avere questo del displayname
                 visibility:"private",
