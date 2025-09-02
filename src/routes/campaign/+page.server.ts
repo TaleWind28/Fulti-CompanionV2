@@ -64,7 +64,7 @@ export const actions:Actions ={
 
             //creo una landing page di defaul che poi il master potrà stilare
             const landingPage = {
-                id:"0",
+                id:0,
                 title:"landing",
                 summary:description,
                 coverImage:"",
@@ -82,7 +82,7 @@ export const actions:Actions ={
                 pic: "/images/map-2.png",
                 players: [],
                 master: uid,
-                pages: [],
+                pages: [landingPage],
                 id:id 
             }
             //aggiorno il documento creato

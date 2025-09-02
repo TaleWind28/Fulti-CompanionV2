@@ -22,14 +22,11 @@ export const BlockSchema = z.discriminatedUnion('type', [
 
 export const PageScheme = z.object({
   // id univoco (usato come documentId in Firestore e negli URL)
-  id: z.string()
-    .min(3)
-    .max(120)
-    .regex(/^[a-z0-9-]+$/, 'usa solo minuscole, numeri e trattini'),
+  id: z.number(),
 
   title: z.string().min(1).max(120),
   summary: z.string().max(280).optional(),
-  coverImage: z.string().url().optional().nullable(),
+  coverImage: z.string().optional().nullable(),
 
   content: z.array(BlockSchema).default([]),
   tags: z.array(z.string().min(1).max(30)).max(20).default([]),
@@ -38,8 +35,8 @@ export const PageScheme = z.object({
   visibility: PageVisibility.default('private'),
   status: PageStatus.default('draft'),
 
-  createdAt: z.number().int(),
-  updatedAt: z.number().int(),
+//   createdAt: z.number().int(),
+//   updatedAt: z.number().int(),
 
   version: z.number().int().min(1).default(1)
 });
