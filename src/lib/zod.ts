@@ -1,5 +1,6 @@
 import type { ZodValidationSchema } from 'sveltekit-superforms/adapters';
 import {object, z} from 'zod/v4';
+import { PageScheme } from './zodPages';
 
 
 /* codici per schemi zod
@@ -269,20 +270,14 @@ export const FabulaUltimaCharacterScheme = z.object({
 
 export type FabulaUltimaCharacter = z.infer<typeof FabulaUltimaCharacterScheme>;
 
-export const pageScheme = z.object({
-    name:z.string(),
-    description:z.string(),
-    id:z.number()
-})
-
 export const campaignScheme = z.object({
     name:z.string(),
     description:z.string(),
     pic:z.string().optional(),
     players:z.array(FabulaUltimaCharacterScheme),
     master:z.string(),
-    pages:z.array(pageScheme),
-    id:z.number()
+    pages:z.array(PageScheme),
+    id:z.string()
 })
 
 export type Campaign = z.infer<typeof campaignScheme>;

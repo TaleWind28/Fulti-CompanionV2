@@ -1,14 +1,41 @@
-import { campaignSchema } from '$lib/zod';
+import { campaignSchema, campaignScheme } from '$lib/zod';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import { message, superValidate } from 'sveltekit-superforms';
 import type { PageServerLoad } from './$types';
-import { fail, type Actions } from '@sveltejs/kit';
+import { fail, redirect, type Actions } from '@sveltejs/kit';
+import { adminDB } from '$lib/firebase_admin';
+import { doc } from 'firebase/firestore';
 
 export const load:PageServerLoad = async ({url, locals, fetch}) => {
+    console.info("chiamato");
     const form = await superValidate(zod4(campaignSchema));
-    return {
-        form:form
+    const currentUser = locals.user;
+
+    if(!currentUser){
+        console.info("Unkown User: Redirecting...");
+        throw redirect(302,`/login?redirectTo=${encodeURIComponent(url.pathname)}`)
     }
+
+    //fetcho le campagne esistenti  
+    const snapshot = await adminDB.collection('campaigns').get();
+
+    const raws = snapshot.docs.map(doc => ({id:doc.id, ...doc.data()}))
+    console.log(raws,"raws");
+
+    const parsed =  campaignScheme.array().safeParse(raws);
+    console.log(parsed);
+    if(parsed.success){
+            return {
+            form:form,
+            campaigns: parsed.data
+        }
+    }else{
+        return {
+            form:form,
+            campaigns:[]
+        }
+    }
+    
 }
 
 export const actions:Actions ={
@@ -18,11 +45,58 @@ export const actions:Actions ={
         if(!form.valid){
             return fail(400, {form, message:'Form non valido'});
         }
-        console.info("form valido");
-        const id = 10
-        return {
-            form,
-            id:id
+
+        const currentUser = locals.user;
+        
+        if (!currentUser) {
+            return fail(401, { form, message: 'Devi essere loggato per creare una campagna.' });
         }
+
+        const uid = currentUser.uid;
+        const {name, description} = form.data;
+        
+
+        try{
+            //creo il documento per avere l'id generato da firestore
+            const docRef = adminDB.collection('campaigns').doc() 
+
+            const id = docRef.id;
+
+            //creo una landing page di defaul che poi il master potrà stilare
+            const landingPage = {
+                id:"0",
+                title:"landing",
+                summary:description,
+                coverImage:"",
+                content:[],
+                tags:[],
+                ownerId: uid,//forse è meglio avere questo del displayname
+                visibility:"private",
+                status:"draft",
+            }
+
+            //creo la campagna aggiungendo l'id ottenuto da firestore
+            const campaign = {
+                name: name,
+                description: description,
+                pic: "/images/map-2.png",
+                players: [],
+                master: uid,
+                pages: [],
+                id:id 
+            }
+            //aggiorno il documento creato
+            await docRef.set(campaign);
+            console.info("form valido");
+
+            return {
+                form,
+                id:campaign.id
+            }
+        }
+        catch{
+            return null;
+        }
+
     }
 }

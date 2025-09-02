@@ -8,54 +8,27 @@
     import { zod4Client } from "sveltekit-superforms/adapters";
     import { toast } from "svelte-sonner";
     import type { PageData } from "./$types";
-    import { goto } from "$app/navigation";
+    import { goto, invalidateAll } from "$app/navigation";
     
     let {data} : {data: PageData} = $props();
 
-    let fetched:Campaign[] = $state([
-        {
-            id:0,
-            name:"Smash Around the universe",
-            description:"Questà è l'unica seria",
-            pic:"/images/map-2.png",
-            players:[],
-            master:"TaleWind",
-            pages:[],
-        },
-        {
-            id:1,
-            name:"UnrivalUnranked",
-            description:"Il master è un min maxer",
-            pic:"/images/map-2.png",
-            players:[],
-            master:"TaleWind",
-            pages:[],
-        },
-        {
-            id:2,
-            name:"The Conjuring",
-            description:"bhooo",
-            pic:"/images/map-2.png",
-            players:[],
-            master:"TaleWind",
-            pages:[],
-        }
-        ]); 
-
     let searchCampaign = $state("");
     let filteredCampaigns:Campaign[] = $derived(
-        fetched.filter( (campaign) => campaign.name.toLowerCase().includes(searchCampaign.toLowerCase())) || []    
+        data.campaigns?.filter( (campaign) => campaign.name.toLowerCase().includes(searchCampaign.toLowerCase())) || []    
     )
 
     const form = superForm(data.form,{
         validators: zod4Client(campaignSchema),
         taintedMessage:null,
         dataType:'json',
-        onResult: ({result}) => {
+        onResult: async ({result}) => {
             console.info("Result Received", result);
             if(result.type === 'success' && result.data?.id){
                 console.info("Campaign Created");
                 openCreateCampaign = false;
+                console.info("awaiting reload...")
+                await invalidateAll();
+                console.info("reloaded");
                 const campaignId = result.data?.id;
                 toast.success("Campagna creata con successo!",{
                     action:{
@@ -63,6 +36,7 @@
                         onClick: ()=> goto(`/campaign/${campaignId}`)
                     }
                 })
+
             }
         }
     })
@@ -74,7 +48,7 @@
     }
 
     let openCreateCampaign = $state(false);
-    $inspect(filteredCampaigns,"search");
+    $inspect(data,"data")
 </script>
 <div class="flex flex-col gap-5 bg-cafe_noir-900">
     <!-- Intestazione della pagina e pulsante per creare campagne -->
@@ -103,7 +77,7 @@
                         
                         {campaign.name}
                         <img 
-                            src={campaign.pic} 
+                            src={"/images/map-2.png"} 
                             alt={`immagine ${campaign.name}`}
                             class="w-80"    
                         />
