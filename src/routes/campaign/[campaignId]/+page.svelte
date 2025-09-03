@@ -1,4 +1,5 @@
 <script lang="ts">
+    import DatePicker from '$lib/components/datePicker.svelte';
     import Button from '$lib/components/ui/button/button.svelte';
     import Label from '$lib/components/ui/label/label.svelte';
     import Switch from '$lib/components/ui/switch/switch.svelte';
@@ -73,10 +74,10 @@
             </span>
 
             <!-- Calendario -->
-            <span class="flex flex-col border border-black p-5 w-32">
+            <span class="flex flex-col border border-black p-5 w-auto">
                 
                 <p>Prossima Sessione</p>
-                //mettere calendario
+                <DatePicker/>
             </span>
 
         </div>
