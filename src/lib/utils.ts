@@ -14,6 +14,7 @@ export type WithElementRef<T, U extends HTMLElement = HTMLElement> = T & { ref?:
 
 import { toPng } from 'html-to-image';
 import type { FabulaUltimaCharacter } from "./zod";
+import { fromDate, getLocalTimeZone, type DateValue } from "@internationalized/date";
 
 export async function exportHtmlToImage(elementId: string) {
 	const node = document.getElementById(elementId);
@@ -129,4 +130,10 @@ export function retrieveSpellClasses(character:FabulaUltimaCharacter){
     }
   })
   return spellClasses;
+}
+
+export function isoToDateValue(iso: string | null | undefined): DateValue | undefined {
+  if (!iso) return undefined;
+  const d = new Date(iso);
+  return Number.isNaN(d.getTime()) ? undefined : fromDate(d, getLocalTimeZone());
 }

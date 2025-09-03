@@ -15,8 +15,8 @@
   const df = new DateFormatter("en-US", {
     dateStyle: "long"
   });
- 
-  let {value = $bindable()} : {value : DateValue | undefined}  = $props();
+  
+  let {value = $bindable(), editable = true } : {value : DateValue | undefined, editable : boolean}  = $props();
   const valueString = $derived(
     value ? df.format(value.toDate(getLocalTimeZone())) : ""
   );
@@ -31,6 +31,7 @@
  
 <Popover.Root>
   <Popover.Trigger
+  disabled={!editable}
     class={cn(
       buttonVariants({
         variant: "outline",
@@ -44,6 +45,7 @@
   </Popover.Trigger>
   <Popover.Content class="flex w-auto flex-col space-y-2 p-2">
     <Select.Root
+      disabled={!editable}
       type="single"
       bind:value={
         () => valueString,

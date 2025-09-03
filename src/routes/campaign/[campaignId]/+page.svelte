@@ -6,6 +6,7 @@
     import Switch from '$lib/components/ui/switch/switch.svelte';
     import EditableLink from '$lib/components/utility/editableLink.svelte';
     import EditableLists from '$lib/components/utility/editableLists.svelte';
+    import { isoToDateValue } from '$lib/utils.js';
     import type { Campaign } from '$lib/zod.js';
     import { getLocalTimeZone, type DateValue } from '@internationalized/date';
     import { toast } from 'svelte-sonner';
@@ -27,7 +28,14 @@
 
     let isMaster = $state(true);
     let allowModify = $state(false);
-    let selected: DateValue | undefined = $state();
+
+    //sta cosa è oscena ma va bene -> si aggiusta a fine lavorazione
+    let retrievedData: DateValue | undefined = $derived(undefined);
+    if(landing.content[0].type === 'object'){
+        retrievedData = isoToDateValue(landing.content[0].nextSessionAt);
+    }
+    
+    let selected: DateValue | undefined = $derived(retrievedData);
     // derived per ottenere la data in formato Date
     const isoDate = $derived(
         selected ? selected.toDate(getLocalTimeZone()) : null
@@ -127,7 +135,7 @@
             <span class="flex flex-col border border-black p-5 w-auto">
                 
                 <p>Prossima Sessione</p>
-                <DatePicker bind:value = {selected}/>
+                <DatePicker bind:value = {selected} editable={allowModify}/>
             </span>
 
         </div>
