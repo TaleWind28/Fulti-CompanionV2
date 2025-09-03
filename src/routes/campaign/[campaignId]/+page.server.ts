@@ -28,6 +28,8 @@ export const load: PageServerLoad = async ({params,locals,url})=>{
 
     return {
         campaignId:params.campaignId,
-        campaign: parsed.data
+        campaign: parsed.data,
+        userId: currentUser.uid,
+        displayName: currentUser.displayName
     }
 }

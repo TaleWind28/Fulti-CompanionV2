@@ -7,13 +7,13 @@
     import EditableLink from '$lib/components/utility/editableLink.svelte';
     import EditableLists from '$lib/components/utility/editableLists.svelte';
     import { isoToDateValue } from '$lib/utils.js';
-    import type { Campaign } from '$lib/zod.js';
+    import { FabulaUltimaCharacterScheme, type Campaign } from '$lib/zod.js';
     import { getLocalTimeZone, type DateValue } from '@internationalized/date';
     import { toast } from 'svelte-sonner';
 
     let {data} = $props();
 
-    let isPlayer= $state(false);
+    
     let campaign : Campaign  = $derived(data.campaign);
 
     type LinkItem = {name:string,link:string}
@@ -23,17 +23,23 @@
     landing.content[0]?.type === 'object' ? landing.content[0].objectives ?? [] : []);
     
     let wiki = $derived<LinkItem[]>(
-    landing.content[0]?.type === 'object' ? (landing.content[0].wiki ?? []) : []
-  );
+        landing.content[0]?.type === 'object' ? (landing.content[0].wiki ?? []) : []
+    );
 
-    let isMaster = $state(true);
+    let isMaster = $derived(
+        campaign.master === data.userId ? true : false
+    );
+
+    let isPlayer= $derived(
+        campaign.players.some((player)=> player.nickname === data.displayName)
+    );
+
     let allowModify = $state(false);
 
     //sta cosa è oscena ma va bene -> si aggiusta a fine lavorazione
-    let retrievedData: DateValue | undefined = $derived(undefined);
-    if(landing.content[0].type === 'object'){
-        retrievedData = isoToDateValue(landing.content[0].nextSessionAt);
-    }
+    let retrievedData: DateValue | undefined = $derived(
+        landing.content[0].type === 'object' ? isoToDateValue(landing.content[0].nextSessionAt) : undefined
+    );
     
     let selected: DateValue | undefined = $derived(retrievedData);
     // derived per ottenere la data in formato Date
@@ -41,10 +47,7 @@
         selected ? selected.toDate(getLocalTimeZone()) : null
     );
 
-    $inspect(
-
-        landing.content[0],"landing"
-    )
+    $inspect(isMaster, data.userId, data.campaign.master)
 
     async function save() {
         //creo il payload da passare alla fetch
@@ -54,8 +57,6 @@
             wiki: wiki,
             nextSessionAt: isoDate
         };
-
-        console.log(payload,"pl");
 
         const response = await fetch('/api/campaign/landing-save',{
             method:'POST',
@@ -82,11 +83,39 @@
             }
         })
     }
+
+    async function addPlayer() {
+        //mettere un dialog per confermare l'adesione
+        //non può succedere che uno sia loggato ma non abbia username però almeno typescript è contento
+        if(!data.displayName) return;
+        const newCharacter = await FabulaUltimaCharacterScheme.parse(
+            {
+            name:"-",
+            traits:{},
+            stats:{},
+            affinities:{},
+            status:{},
+            info:{},
+            inventory:{},
+            classes:[],
+        }
+        )
+        //sta cosa non funziona
+        campaign.players.push({nickname:data.displayName,character:newCharacter}),
+        campaign.players = [...campaign.players];
+    }
+    
+    async function removePlayer(){
+
+    }
+    
+    $inspect(campaign.players,"players");
     
 </script>
 
 <div class="bg-lion-900 flex flex-col gap-5 items-center justify-start p-5">
     <section class="bg-white flex flex-col gap-5 items-center justify-start p-2">
+        <!-- Sezione Master only per modifiche -->
         {#if isMaster}   
             <span class="flex flex-row items-center justify-center">
                 <Label>Modifica</Label>
@@ -101,6 +130,7 @@
             <img src={campaign.pic} alt="BackgroundPic" />
         </div>
         <div class="flex flex-row justify-start px-5 gap-10">
+            
             <!-- Obiettivi -->
             <span class="flex flex-col border border-black p-5">
                 {#if landing.content[0].type === 'object'}
@@ -116,18 +146,19 @@
             <!-- Giocatori -->
             <span class="flex flex-col gap-5 border border-black p-5">
                 <p>Giocatori Attuali</p>
-                
                 <span class="flex flex-col">
                     {#each campaign.players as player}
-                        <p>{player.name}</p>                    
+                        <p>{player.nickname}</p>                    
                     {/each}
                 </span>
-
-                {#if !isPlayer}
-                    <Button class="w-20">
+                {#if !isPlayer && !isMaster}
+                    <Button class="w-20" onclick={addPlayer}>
                         Unisciti
                     </Button>
-                    
+                {:else}
+                    <Button class="w-20" onclick={removePlayer}>
+                        Lascia
+                    </Button>
                 {/if}
             </span>
 
@@ -140,6 +171,7 @@
 
         </div>
 
+        <!-- Wiki -->
         <div class="flex flex-col  items-start justify-start">
             <span>                
                 {#if landing.content[0].type === 'object'}
@@ -147,9 +179,7 @@
                         modify={allowModify}
                         listContent={wiki}
                         title={"Wiki"}
-                    /> 
-
-  
+                    />
                 {/if}
             </span>
         </div>
