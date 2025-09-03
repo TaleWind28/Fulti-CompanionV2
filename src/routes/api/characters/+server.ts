@@ -1,9 +1,7 @@
-import { error, json, redirect } from '@sveltejs/kit';
+import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { adminDB } from '$lib/firebase_admin'; // Assumendo che tu abbia inizializzato l'Admin SDK qui
-import { message } from 'sveltekit-superforms';
 import { FabulaUltimaCharacterScheme } from '$lib/zod';
-import { success } from 'zod';
 
 export const PUT: RequestHandler = async ({request,locals}) =>{
     const character = await request.json();

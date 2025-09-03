@@ -23,8 +23,6 @@
         listContent.splice(i,1)
         listContent = [...listContent];
     }
-
-    $inspect(listContent);
 </script>
 
 <p>{title}</p>

@@ -1,7 +1,7 @@
-import { error, redirect } from "@sveltejs/kit";
+import { error, redirect, type Actions } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 import { adminDB } from "$lib/firebase_admin";
-import { campaignSchema, campaignScheme } from "$lib/zod";
+import { campaignScheme } from "$lib/zod";
 
 export const load: PageServerLoad = async ({params,locals,url})=>{
     const {campaignId} = params;
@@ -23,6 +23,8 @@ export const load: PageServerLoad = async ({params,locals,url})=>{
         console.error(parsed.error.flatten());
         throw error(500,"dati non validi");
     }
+
+    
 
     return {
         campaignId:params.campaignId,

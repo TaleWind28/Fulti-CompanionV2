@@ -19,6 +19,7 @@ const LandingBlock = z.object({
     type: z.literal('object'),
     objectives: z.array(z.string()),
     wiki: z.array(z.object({name:z.string(),link:z.string()})),
+    nextSessionAt: z.string().optional()
 })
 
 export const BlockSchema = z.discriminatedUnion('type', [

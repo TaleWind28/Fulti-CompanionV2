@@ -16,7 +16,7 @@
     dateStyle: "long"
   });
  
-  let value: DateValue | undefined = $state();
+  let {value = $bindable()} : {value : DateValue | undefined}  = $props();
   const valueString = $derived(
     value ? df.format(value.toDate(getLocalTimeZone())) : ""
   );

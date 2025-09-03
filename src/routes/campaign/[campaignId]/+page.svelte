@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { invalidateAll } from '$app/navigation';
     import DatePicker from '$lib/components/datePicker.svelte';
     import Button from '$lib/components/ui/button/button.svelte';
     import Label from '$lib/components/ui/label/label.svelte';
@@ -6,8 +7,8 @@
     import EditableLink from '$lib/components/utility/editableLink.svelte';
     import EditableLists from '$lib/components/utility/editableLists.svelte';
     import type { Campaign } from '$lib/zod.js';
-    import { string } from 'zod';
-
+    import { getLocalTimeZone, type DateValue } from '@internationalized/date';
+    import { toast } from 'svelte-sonner';
 
     let {data} = $props();
 
@@ -26,6 +27,54 @@
 
     let isMaster = $state(true);
     let allowModify = $state(false);
+    let selected: DateValue | undefined = $state();
+    // derived per ottenere la data in formato Date
+    const isoDate = $derived(
+        selected ? selected.toDate(getLocalTimeZone()) : null
+    );
+
+    $inspect(
+
+        landing.content[0],"landing"
+    )
+
+    async function save() {
+        //creo il payload da passare alla fetch
+        const payload = {
+            campaignId: campaign.id,
+            objectives: objectives,
+            wiki: wiki,
+            nextSessionAt: isoDate
+        };
+
+        console.log(payload,"pl");
+
+        const response = await fetch('/api/campaign/landing-save',{
+            method:'POST',
+            headers:{'Content-type': 'application/json'},
+            body:JSON.stringify(payload)
+        })
+        
+        if(!response.ok){
+            const error = await response.json().catch(()=>({}));
+            console.error('Save Failure',error);
+            toast.error(`Errore nel salvataggio: ${error?.message ?? response.statusText}`,{
+                action:{
+                    label:'OK',
+                    onClick:()=>console.info('page modify failed')
+                }
+            }) 
+        }
+
+        await invalidateAll();
+        toast.success('Pagina modificata con successo',{
+            action:{
+                label:'OK',
+                onClick:()=>console.info('page modified')
+            }
+        })
+    }
+    
 </script>
 
 <div class="bg-lion-900 flex flex-col gap-5 items-center justify-start p-5">
@@ -34,6 +83,7 @@
             <span class="flex flex-row items-center justify-center">
                 <Label>Modifica</Label>
                 <Switch bind:checked = {allowModify}></Switch>
+                <Button onclick={save}>Salva</Button>
             </span>
         {/if}
 
@@ -77,7 +127,7 @@
             <span class="flex flex-col border border-black p-5 w-auto">
                 
                 <p>Prossima Sessione</p>
-                <DatePicker/>
+                <DatePicker bind:value = {selected}/>
             </span>
 
         </div>
