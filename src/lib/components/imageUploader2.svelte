@@ -25,6 +25,8 @@
     return imageUrl;
   });
 
+  $inspect(imageUrl);
+
   let modality = () => {
     if(fill === true) return "object-fill";
     else return "object-cover";

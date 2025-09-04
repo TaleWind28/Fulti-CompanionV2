@@ -28,6 +28,8 @@ export const BlockSchema = z.discriminatedUnion('type', [
   LandingBlock
 ]);
 
+export type Block = z.infer<typeof BlockSchema>
+
 export const PageScheme = z.object({
   // id univoco (usato come documentId in Firestore e negli URL)
   id: z.string(),

@@ -13,6 +13,8 @@
     import { toast } from 'svelte-sonner';
     import Input from '$lib/components/ui/input/input.svelte';
     import type { Page } from '$lib/zodPages.js';
+    import { faMinus } from '@fortawesome/free-solid-svg-icons';
+    import Fa from 'svelte-fa';
 
     let {data} = $props();
 
@@ -205,6 +207,26 @@
         return true;
     }
 
+    async function masterKill(name:string){
+        let index = campaign.players.findIndex((player)=> player.nickname === name);
+        campaign.players.splice(index,1);
+        await save()
+        await invalidateAll()
+        toast.success(`Hai fatto fuori ${name}`,{
+            action:{
+                label:'OK',
+                onClick:()=>console.info("Kicked From Campaign")
+            }
+        })
+    }
+
+    function updateItem(index: number, newValue: string) {
+        objectives[index] = newValue;
+        objectives = [...objectives]; // Triggera la reattività
+        console.info("updated,list")
+    }
+
+
     $inspect(objectives);
 
 </script>
@@ -231,6 +253,7 @@
             <span class="flex flex-col border border-black p-5">
                 {#if landing.content[0].type === 'object'}
                     <EditableLists 
+                        updateItem = {updateItem}
                         title="Obiettivi Correnti"
                         modify={allowModify} 
                         listContent={objectives}
@@ -244,7 +267,8 @@
                 <p>Giocatori Attuali</p>
                 <span class="flex flex-col">
                     {#each campaign.players as player}
-                        <p>{player.nickname}</p>                    
+                        <p>{player.nickname}</p>
+                        <button onclick={()=>masterKill(player.nickname)}> <Fa icon={faMinus}/> </button>                    
                     {/each}
                 </span>
                 {#if !isPlayer && !isMaster}
