@@ -4,6 +4,7 @@
     import Button from '$lib/components/ui/button/button.svelte';
     import Label from '$lib/components/ui/label/label.svelte';
     import Switch from '$lib/components/ui/switch/switch.svelte';
+    import * as Dialog from '$lib/components/ui/dialog/index.js';
     import EditableLink from '$lib/components/utility/editableLink.svelte';
     import EditableLists from '$lib/components/utility/editableLists.svelte';
     import { isoToDateValue } from '$lib/utils.js';
@@ -36,7 +37,6 @@
 
     let allowModify = $state(false);
 
-    //sta cosa è oscena ma va bene -> si aggiusta a fine lavorazione
     let retrievedData: DateValue | undefined = $derived(
         landing.content[0].type === 'object' ? isoToDateValue(landing.content[0].nextSessionAt) : undefined
     );
@@ -47,21 +47,25 @@
         selected ? selected.toDate(getLocalTimeZone()) : null
     );
 
-    $inspect(isMaster, data.userId, data.campaign.master)
+    $inspect(isMaster, data.userId, data.campaign.master);
+
+    let showConfirmationDialog = $state(false);
 
     async function save() {
-        //creo il payload da passare alla fetch
-        const payload = {
-            campaignId: campaign.id,
-            objectives: objectives,
-            wiki: wiki,
-            nextSessionAt: isoDate
-        };
+        //controllo se l'utente è il master perchè solo lui può modificare la landingPage
+        if(isMaster){
+            let nextSessionAt = isoDate?.toString() ;
+            campaign.pages[0].content[0].type === 'object' ? campaign.pages[0].content[0] = {wiki, nextSessionAt, objectives, type:'object'} : null; 
+        }else{
+            campaign.pages[0].content[0].type === 'object' ? campaign.pages[0].content[0].wiki = wiki : null ;
+        }
+
+        //gli unici campi modificabili da tutti sono la wiki e i giocator
 
         const response = await fetch('/api/campaign/landing-save',{
             method:'POST',
             headers:{'Content-type': 'application/json'},
-            body:JSON.stringify(payload)
+            body:JSON.stringify(campaign)
         })
         
         if(!response.ok){
@@ -85,10 +89,10 @@
     }
 
     async function addPlayer() {
-        //mettere un dialog per confermare l'adesione
         //non può succedere che uno sia loggato ma non abbia username però almeno typescript è contento
+        console.log("entro");
         if(!data.displayName) return;
-        const newCharacter = await FabulaUltimaCharacterScheme.parse(
+        const newCharacter = FabulaUltimaCharacterScheme.parse(
             {
             name:"-",
             traits:{},
@@ -100,16 +104,38 @@
             classes:[],
         }
         )
-        //sta cosa non funziona
         campaign.players.push({nickname:data.displayName,character:newCharacter}),
-        campaign.players = [...campaign.players];
+        campaign = {
+            ...campaign,
+            players: [...campaign.players]
+        }
+        console.log(campaign.players);
+        await save();
+        console.info("saved-addedPlayer");
+        showConfirmationDialog = false;
+        await invalidateAll();
+        toast.success(`Ti sei unito a ${campaign.name}`,{
+            action:{
+                label:'OK',
+                onClick:()=>console.info("Campaign Joined")
+            }
+        })
     }
     
     async function removePlayer(){
-
+        let index = campaign.players.findIndex((player)=> player.nickname === data.userId);
+        campaign.players.splice(index,1);
+        console.log("pino");
+        //await invalidateAll()
+        toast.success(`Hai lasciato ${campaign.name}`,{
+            action:{
+                label:'OK',
+                onClick:()=>console.info("Campaign Left")
+            }
+        })
     }
     
-    $inspect(campaign.players,"players");
+    $inspect(retrievedData,"retr");
     
 </script>
 
@@ -152,10 +178,10 @@
                     {/each}
                 </span>
                 {#if !isPlayer && !isMaster}
-                    <Button class="w-20" onclick={addPlayer}>
+                    <Button class="w-20" onclick={()=>showConfirmationDialog = true}>
                         Unisciti
                     </Button>
-                {:else}
+                {:else if !isMaster}
                     <Button class="w-20" onclick={removePlayer}>
                         Lascia
                     </Button>
@@ -183,6 +209,19 @@
                 {/if}
             </span>
         </div>
+        <Dialog.Root open={showConfirmationDialog} onOpenChange={(v)=> showConfirmationDialog = v}> 
+            <Dialog.Content> 
+                <Dialog.Header> 
+                    Confermare l'adesione alla campagna?
+                </Dialog.Header>
+                Puoi sempre lasciare la campagna in qualsiasi momento
+                <Dialog.Footer> 
+                <Button onclick={addPlayer}> Iscriviti</Button>
+            </Dialog.Footer>
+            </Dialog.Content>
+            
+        </Dialog.Root>
         
    </section>
 </div>
+

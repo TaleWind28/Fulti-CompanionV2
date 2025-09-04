@@ -1,10 +1,10 @@
 import { adminDB } from "$lib/firebase_admin";
-import { campaignScheme } from "$lib/zod";
+import { campaignScheme, type Campaign } from "$lib/zod";
 import { error, json, type RequestHandler } from "@sveltejs/kit";
 
 
 export const POST:RequestHandler = async ({request,locals})=>{
-    const payload = await request.json();
+    const payload: Campaign = await request.json();
     
     const currentUser = locals.user;
     if(!currentUser){
@@ -18,34 +18,30 @@ export const POST:RequestHandler = async ({request,locals})=>{
     const uid = currentUser.uid;
 
     try{
-        const ref = adminDB.collection('campaigns').doc(payload.campaignId);
-        const snapshot = await ref.get();
-        
-        const parse = campaignScheme.safeParse(snapshot.data());
-        
-        if(!parse.success)throw error(400,"campagna non valida");
-        
-        const campaign = parse.data;
-        
-        if(campaign.master !== uid){
-            throw error(401,'Solo il master può modificare la landingPage');
+        const campaignRef = adminDB.collection('campaigns').doc(payload.id);
+        const doc = await campaignRef.get();
+
+        if(!doc.exists){
+            throw error(404,"Campagna non trovata");
         }
 
+        /* QUESTO HA POCO SENSO PERCHè QUANDO UN GIOCATORE SI AGGIUNGE LA PAGINA DEVE SALVARE SU FIRESTORE */
+        // const parse = campaignScheme.safeParse(doc.data());
         
+        // if(!parse.success)throw error(400,"campagna non valida");
+        
+        // const parsedCampaign = parse.data;
         
 
-        if(campaign.pages[0].content[0].type === 'object'){
-            campaign.pages[0].content[0].objectives = payload.objectives;
-            campaign.pages[0].content[0].wiki = payload.wiki;
-            campaign.pages[0].content[0].nextSessionAt = payload.nextSessionAt;
-        }
-        const pages = [...campaign.pages]
-        console.log(pages[0].content,"mod");
+        // if(parsedCampaign.master !== uid){
+        //     throw error(401,'Solo il master può modificare la landingPage');
+        // }
+        
+        await campaignRef.update(payload);
 
-        await ref.update({pages});
+        console.log("aggiornato");
 
         return json({success:true,message:"Landing Salvata con successo"})
-
     }
     catch(err){
         console.error("errore: ",err);

@@ -134,6 +134,20 @@ export function retrieveSpellClasses(character:FabulaUltimaCharacter){
 
 export function isoToDateValue(iso: string | null | undefined): DateValue | undefined {
   if (!iso) return undefined;
+  
   const d = new Date(iso);
-  return Number.isNaN(d.getTime()) ? undefined : fromDate(d, getLocalTimeZone());
+ 
+  if (Number.isNaN(d.getTime())) {
+    console.error('Invalid date');
+    return undefined;
+  }
+  
+  try {
+    const timeZone = getLocalTimeZone();
+    const result = fromDate(d, timeZone);    
+    return result;
+  } catch (error) {
+    console.error('Error in fromDate:', error);
+    return undefined;
+  }
 }
