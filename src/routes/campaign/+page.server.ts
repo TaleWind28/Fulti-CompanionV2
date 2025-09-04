@@ -1,12 +1,12 @@
 import { campaignSchema, campaignScheme } from '$lib/zod';
 import { zod4 } from 'sveltekit-superforms/adapters';
-import { message, superValidate } from 'sveltekit-superforms';
+import { superValidate } from 'sveltekit-superforms';
 import type { PageServerLoad } from './$types';
 import { fail, redirect, type Actions } from '@sveltejs/kit';
 import { adminDB } from '$lib/firebase_admin';
-import { doc } from 'firebase/firestore';
 
-export const load:PageServerLoad = async ({url, locals, fetch}) => {
+
+export const load:PageServerLoad = async ({url, locals}) => {
     console.info("chiamato");
     const form = await superValidate(zod4(campaignSchema));
     const currentUser = locals.user;
@@ -64,12 +64,13 @@ export const actions:Actions ={
 
             //creo una landing page di defaul che poi il master potrà stilare
             const landingPage = {
-                id:0,
+                id:"landing",
                 title:"landing",
                 summary:description,
                 coverImage:"",
                 content:[{type:'object',objectives:[],wiki:[]}],
                 tags:[],
+                masterId:uid,//solo il master può creare la campagna e di conseguenza la landing
                 ownerId: uid,//forse è meglio avere questo del displayname
                 visibility:"private",
                 status:"draft",

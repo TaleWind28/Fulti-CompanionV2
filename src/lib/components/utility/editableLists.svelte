@@ -12,6 +12,7 @@
     function updateItem(index: number, newValue: string) {
         listContent[index] = newValue;
         listContent = [...listContent]; // Triggera la reattività
+        console.info("updated,list")
     }
 
     function add(){

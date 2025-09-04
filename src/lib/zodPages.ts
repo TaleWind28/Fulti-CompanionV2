@@ -30,7 +30,7 @@ export const BlockSchema = z.discriminatedUnion('type', [
 
 export const PageScheme = z.object({
   // id univoco (usato come documentId in Firestore e negli URL)
-  id: z.number(),
+  id: z.string(),
 
   title: z.string().min(1).max(120),
   summary: z.string().max(280).optional(),
@@ -38,7 +38,7 @@ export const PageScheme = z.object({
 
   content: z.array(BlockSchema).default([]),
   tags: z.array(z.string().min(1).max(30)).max(20).default([]),
-
+  masterID:z.string(),
   ownerId: z.string().min(1), // impostato lato server
   visibility: PageVisibility.default('private'),
   status: PageStatus.default('draft'),

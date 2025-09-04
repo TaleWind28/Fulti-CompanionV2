@@ -6,23 +6,22 @@
     let {
         modify,
         listContent,
-        title
+        title,
+        allowedToModify = false,
+        add,
+        remove,
+        auxiliaryUpdate
     } = $props();
 
     //mantenere funzione ma fare una fetch per generare una nuova pagina sul db
-    function updateItem(index: number, newValue: string, field:"name" | "link") {
-        listContent[index][field] = newValue;
+    function updateItem(index: number, newValue: string) {
+        if(auxiliaryUpdate){
+            let retVal = auxiliaryUpdate(listContent[index].name,newValue)
+            if(!retVal) return;
+        }
+        listContent[index].name = newValue;
+        
         listContent = [...listContent]; // Triggera la reattività
-    }
-
-    function add(){
-        listContent.push({name:"Aggiungi elemento",link:"link"});
-        listContent = [...listContent];
-    }
-
-    function remove(i:number){
-        listContent.splice(i,1)
-        listContent = [...listContent];
     }
 </script>
 
@@ -35,12 +34,7 @@
                     <Input
                         class="w-full" 
                         value={listContent[i].name} 
-                        oninput={(e)=>updateItem(i,(e.target as HTMLInputElement).value,"name")}
-                    />
-                    <Input
-                        class="w-full" 
-                        value={listContent[i].link} 
-                        oninput={(e)=>updateItem(i,(e.target as HTMLInputElement).value,"link")}
+                        oninput={(e)=>updateItem(i,(e.target as HTMLInputElement).value)}
                     />
                 </span>
                 <button onclick={()=>remove(i)}>
@@ -56,7 +50,7 @@
             </li>
         {/if}
     {/each}
-    {#if modify}
+    {#if modify || allowedToModify}
             <button onclick={add}>
                 <Fa icon={faPlus}/>
             </button>

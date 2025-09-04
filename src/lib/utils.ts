@@ -15,6 +15,7 @@ export type WithElementRef<T, U extends HTMLElement = HTMLElement> = T & { ref?:
 import { toPng } from 'html-to-image';
 import type { FabulaUltimaCharacter } from "./zod";
 import { fromDate, getLocalTimeZone, type DateValue } from "@internationalized/date";
+import { PageScheme } from "./zodPages";
 
 export async function exportHtmlToImage(elementId: string) {
 	const node = document.getElementById(elementId);
@@ -150,4 +151,16 @@ export function isoToDateValue(iso: string | null | undefined): DateValue | unde
     console.error('Error in fromDate:', error);
     return undefined;
   }
+}
+
+export function createPage(data: {
+  id: string;
+  title: string;
+  masterID: string;
+  ownerId: string;
+  summary?: string;
+  coverImage?: string;
+  tags?: string[];
+}) {
+  return PageScheme.parse(data);
 }

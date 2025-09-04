@@ -11,6 +11,8 @@
     import { FabulaUltimaCharacterScheme, type Campaign } from '$lib/zod.js';
     import { getLocalTimeZone, type DateValue } from '@internationalized/date';
     import { toast } from 'svelte-sonner';
+    import Input from '$lib/components/ui/input/input.svelte';
+    import type { Page } from '$lib/zodPages.js';
 
     let {data} = $props();
 
@@ -52,16 +54,16 @@
     let showConfirmationDialog = $state(false);
 
     async function save() {
-        //controllo se l'utente è il master perchè solo lui può modificare la landingPage
+        //controllo se l'utente è il master perchè solo lui può modificare tutti i campi della landingPage
         if(isMaster){
             let nextSessionAt = isoDate?.toString() ;
             campaign.pages[0].content[0].type === 'object' ? campaign.pages[0].content[0] = {wiki, nextSessionAt, objectives, type:'object'} : null; 
-        }else{
+        }
+        else{//gli unici campi modificabili da tutti sono la wiki e i giocatori
             campaign.pages[0].content[0].type === 'object' ? campaign.pages[0].content[0].wiki = wiki : null ;
         }
 
-        //gli unici campi modificabili da tutti sono la wiki e i giocator
-
+        //salvo la landingPage
         const response = await fetch('/api/campaign/landing-save',{
             method:'POST',
             headers:{'Content-type': 'application/json'},
@@ -135,8 +137,73 @@
         })
     }
     
-    $inspect(retrievedData,"retr");
-    
+    let showWikiPageCreationDialog = $state(false);
+    let newPageName = $state("");
+    async function addWikiPage(){
+        //se il nome della pagina è già presente allora esco subito 
+        if(campaign.pages.some((page)=>page.title === newPageName)){
+            toast.error('Esiste già una pagina con quel nome',{
+                action:{
+                    label:'OK',
+                    onClick:()=>console.info('page duplicated')
+                }
+            })
+            showWikiPageCreationDialog = false;
+            newPageName = "";    
+            return;
+        }
+
+        //fetch a pageCreator per creare una pagina
+        //pageCreator NON aggiorna firestore si occupa solo di creare un nuovo oggetto pagina.
+        const response = await fetch('/api/campaign/pageCreator',{
+            method:"PUT",
+            headers:{'Content-type' :' application/json'},
+            body:JSON.stringify({name:newPageName,masterId:campaign.master})
+        })
+
+        if(!response.ok) return;
+        
+        const result = await response.json();
+        
+        const createdPage:Page = result.page;
+
+
+        campaign.pages.push(createdPage);
+        
+        if(campaign.pages[0].content[0].type==='object'){
+            campaign.pages[0].content[0].wiki.push({name:createdPage.title,link:`/campaign/${campaign.id}/${createdPage.id}`});
+        }
+
+        await save();
+
+        showWikiPageCreationDialog = false;
+        newPageName = "";    
+        await invalidateAll();
+    }
+
+    async function removeWikiPage(index:number){
+
+        if(landing.content[0].type === 'object'){
+            let deleted = wiki.splice(index,1);
+            wiki = [...wiki];
+            let removeIndex = campaign.pages.findIndex((page)=>page.title === deleted[0].name);
+            campaign.pages.splice(removeIndex,1);
+            toast.info('Modifica attuata, per salvare premere il pulsante Salva')
+        }
+        
+        
+    }
+
+    function updatePageName(oldName:string,newName:string){
+        let index = campaign.pages.findIndex((page)=> page.title === oldName);
+        if(index === -1) return false;
+        campaign.pages[index].title = newName;
+        console.info("updated");
+        return true;
+    }
+
+    $inspect(objectives);
+
 </script>
 
 <div class="bg-lion-900 flex flex-col gap-5 items-center justify-start p-5">
@@ -190,7 +257,6 @@
 
             <!-- Calendario -->
             <span class="flex flex-col border border-black p-5 w-auto">
-                
                 <p>Prossima Sessione</p>
                 <DatePicker bind:value = {selected} editable={allowModify}/>
             </span>
@@ -202,6 +268,10 @@
             <span>                
                 {#if landing.content[0].type === 'object'}
                     <EditableLink 
+                        auxiliaryUpdate = {updatePageName}
+                        remove={removeWikiPage}
+                        add={()=>showWikiPageCreationDialog = true}
+                        allowedToModify = {isPlayer}
                         modify={allowModify}
                         listContent={wiki}
                         title={"Wiki"}
@@ -218,9 +288,21 @@
                 <Dialog.Footer> 
                 <Button onclick={addPlayer}> Iscriviti</Button>
             </Dialog.Footer>
-            </Dialog.Content>
-            
+        </Dialog.Content>
         </Dialog.Root>
+
+        <Dialog.Root open={showWikiPageCreationDialog} onOpenChange={(v)=> showWikiPageCreationDialog = v}> 
+            <Dialog.Content> 
+                <Dialog.Header> 
+                    Inserisci un nome per la pagina
+                </Dialog.Header>
+                    <Input bind:value = {newPageName}/>
+                <Dialog.Footer> 
+                <Button onclick={addWikiPage}> Aggiungi</Button>
+            </Dialog.Footer>
+            </Dialog.Content>    
+        </Dialog.Root>
+        
         
    </section>
 </div>
