@@ -26,6 +26,7 @@ export const load: PageServerLoad  = async ({url, locals, params})=> {
 
     return {
         pageId:params.pageId,
-        page:requiredPage
+        page:requiredPage,
+        campaignId:params.campaignId
     }
 }

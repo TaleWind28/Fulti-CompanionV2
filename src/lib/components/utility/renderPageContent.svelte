@@ -7,11 +7,11 @@
     import Fa from "svelte-fa";
 
     let {
-        content, 
+        content = $bindable(), 
         handleTextChange, 
         handleImageChange,
         remove,
-        
+        canModify,
         index
     } 
     : {
@@ -20,29 +20,45 @@
         handleTextChange:any, 
         handleImageChange:any, 
         index:number,
+        canModify:boolean
     
     } = $props();
 
-    
+   
 </script>
 
 <div class="flex flex-row gap-2 ">
     {#if content.type === 'text'}
-        <Textarea value={content.text} oninput={(e)=>handleTextChange(index,(e.target as HTMLTextAreaElement).value)} class="w-200">
+        {#if canModify}
+            <Textarea value={content.text} oninput={(e)=>handleTextChange(index,(e.target as HTMLTextAreaElement).value)} class="w-300">
 
-        </Textarea>
-        <button onclick={()=>remove(index)}>
-            <Fa icon={faMinusCircle}/>
-        </button>
-    {:else if content.type === 'image'}
-        <ImageUploader2 
-            imageUrl={content.url} 
-            allowUrlInput={true}
-            showButtons = {true}
-            showDeletion = {true}
-            />
-        <button onclick={()=>remove(index)}>
-            <Fa icon={faMinusCircle}/>
-        </button>
+            </Textarea>
+            <button onclick={()=>remove(index)}>
+                <Fa icon={faMinusCircle}/>
+            </button>
+        {:else}
+            <p class="w-300">
+                {content.text}
+            </p>
+        {/if}
     {/if}
+    <!-- {#if content.type === 'image'}
+        {#if canModify}
+            <ImageUploader2 
+                bind:imageUrl={content.url} 
+                allowUrlInput={true}
+                showButtons = {true}
+                showDeletion = {true}
+                padre={content.type+index}
+                />
+            <button onclick={()=>remove(index)}>
+                <Fa icon={faMinusCircle}/>
+            </button>
+        {:else}
+            <img 
+                src={content.url}
+                alt={content.alt}
+            />
+        {/if}
+    {/if} -->
 </div>

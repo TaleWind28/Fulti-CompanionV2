@@ -80,7 +80,8 @@
                     label:'OK',
                     onClick:()=>console.info('page modify failed')
                 }
-            }) 
+            })
+            return;
         }
 
         await invalidateAll();
