@@ -21,7 +21,7 @@
 	let username = $state("");
 	let { data }: { data: {redirectTo:string} } = $props();
 
-	
+	$inspect(username);
 	let successRoute = $state("/");
 	async function firebaseLogin(){
 		login(email,password)

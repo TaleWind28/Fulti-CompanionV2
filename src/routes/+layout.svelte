@@ -13,7 +13,6 @@
 	import { Toaster } from "$lib/components/ui/sonner/index.js";
 	import * as MenuBar from '$lib/components/ui/menubar/index';
     import { goto } from '$app/navigation';
-    import { toast } from 'svelte-sonner';
 
   	
 		
@@ -41,8 +40,12 @@
 
 	onMount(()=>{
 		detectSWUpdate();
-		const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+		const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+			await firebaseUser?.reload();
+			console.log("reloaded")
+			console.log(firebaseUser?.displayName);
 			user.set(firebaseUser);
+			console.log($user?.displayName);
 		});
 
 		return unsubscribe;

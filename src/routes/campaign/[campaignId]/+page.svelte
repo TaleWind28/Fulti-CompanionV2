@@ -93,7 +93,10 @@
     async function addPlayer() {
         //non può succedere che uno sia loggato ma non abbia username però almeno typescript è contento
         console.log("entro");
-        if(!data.displayName) return;
+        if(!data.displayName){
+            console.log(data,"displayname");
+            return;
+        } 
         const newCharacter = FabulaUltimaCharacterScheme.parse(
             {
             name:"-",
@@ -107,13 +110,12 @@
         }
         )
         campaign.players.push({nickname:data.displayName,character:newCharacter}),
+        
         campaign = {
             ...campaign,
             players: [...campaign.players]
         }
-        console.log(campaign.players);
         await save();
-        console.info("saved-addedPlayer");
         showConfirmationDialog = false;
         await invalidateAll();
         toast.success(`Ti sei unito a ${campaign.name}`,{
@@ -128,7 +130,8 @@
         let index = campaign.players.findIndex((player)=> player.nickname === data.userId);
         campaign.players.splice(index,1);
         console.log("pino");
-        //await invalidateAll()
+        await save()
+        await invalidateAll()
         toast.success(`Hai lasciato ${campaign.name}`,{
             action:{
                 label:'OK',

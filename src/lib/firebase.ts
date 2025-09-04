@@ -58,13 +58,15 @@ export async function registerUser(email: string, password: string, username: st
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     
     if (username === null) throw new Error("invalid username");
+    console.log("username",username)
     await updateProfile(userCredential.user, {
       displayName: username
     });
-    
+     //ricarica i dati aggiornati dal server per ottenere displayName
+    await userCredential.user.reload();
     user.set(userCredential.user); // Aggiorna lo store Svelte
     await syncSessionWithServer(userCredential.user); // Sincronizza con il server
-
+    console.log("faccio");
     return userCredential;
 }
 

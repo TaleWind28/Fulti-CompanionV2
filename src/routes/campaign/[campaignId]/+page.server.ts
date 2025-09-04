@@ -6,6 +6,8 @@ import { campaignScheme } from "$lib/zod";
 export const load: PageServerLoad = async ({params,locals,url})=>{
     const {campaignId} = params;
     const currentUser = locals.user;
+    console.log(currentUser?.displayName,"dn");
+    console.log(currentUser);
     if(!currentUser){
         console.info("Unknown User: Redirecting");
         throw redirect(302,`/login?redirectTo=${encodeURIComponent(url.pathname)}`)
