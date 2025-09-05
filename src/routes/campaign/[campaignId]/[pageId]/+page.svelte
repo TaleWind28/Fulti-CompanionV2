@@ -8,11 +8,11 @@
     import { invalidateAll } from "$app/navigation";
     import Switch from "$lib/components/ui/switch/switch.svelte";
     import Label from "$lib/components/ui/label/label.svelte";
+    import { blobUrlToBase64 } from "$lib/utils";
     let {data} : {data: PageData}  = $props();
     
     let {page , pageId, campaignId} = $derived(data);
     function addTextBlock(){
-        if(!page)return;
         page = {
             ...page,
             content:[
@@ -22,14 +22,36 @@
         }
     }
 
+    function addImageBlock(){
+        page = {
+            ...page,
+            content:[
+                ...page.content,
+                {type:'image',url:'',alt:'image not found'}
+            ]
+        }
+    }
+
     function textChange(index:number, newText: string){
         page.content[index] = {text:newText,type:'text'};
         page.content = [...page.content];
-    
+    }
+
+    async function handleImageChange(index:number,newImg:string){
+        if(page.content[index].type !== 'image')return;
+        if(newImg.toLowerCase().includes("blob")) newImg =  await blobUrlToBase64(newImg) as string;
+        page.content[index].url = newImg;
+
     }
 
     function removeText(index:number){
+        console.log("rimuovo");
         page.content.splice(index,1);
+        //triggera reattività
+        page = {
+            ...page
+        }
+        console.log("rimuovo");
     }
 
     async function save(){
@@ -63,7 +85,6 @@
     let wantsToModify = $state(false);
 
     let canModify = $derived(page.ownerId === $user?.uid || page?.masterID ===$user?.uid);
-    $inspect(page,"page");
 </script>
 <div class="bg-cafe_noir-900">
     
@@ -88,9 +109,9 @@
                 <RenderPageContent 
                     remove = {removeText}
                     index={i}
-                    handleImageChange={()=>console.info('image')}
+                    handleImageChange={handleImageChange}
                     handleTextChange={textChange}
-                    bind:content={page.content[i]}
+                    content={content}
                     canModify = {canModify && wantsToModify}
                     />
                 <Separator orientation='horizontal'></Separator>
@@ -101,7 +122,7 @@
                 <Button onclick={addTextBlock}> 
                     Aggiungi Paragrafo
                 </Button>
-                <Button onclick={()=>page?.content.push({type:'image',url:'',alt:'image not found'})}>
+                <Button onclick={addImageBlock}>
                     Aggiungi Immagine
                 </Button>
             </span>   

@@ -11,7 +11,7 @@ const TextBlock = z.object({
 
 const ImageBlock = z.object({
   type: z.literal('image'),
-  url: z.string().url(),
+  url: z.string(),
   alt: z.string().max(200).optional()
 });
 

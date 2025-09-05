@@ -7,14 +7,15 @@
     import * as Dialog from '$lib/components/ui/dialog/index.js';
     import EditableLink from '$lib/components/utility/editableLink.svelte';
     import EditableLists from '$lib/components/utility/editableLists.svelte';
-    import { isoToDateValue } from '$lib/utils.js';
+    import { blobUrlToBase64, isoToDateValue } from '$lib/utils.js';
     import { FabulaUltimaCharacterScheme, type Campaign } from '$lib/zod.js';
     import { getLocalTimeZone, type DateValue } from '@internationalized/date';
     import { toast } from 'svelte-sonner';
     import Input from '$lib/components/ui/input/input.svelte';
     import type { Page } from '$lib/zodPages.js';
-    import { faMinus } from '@fortawesome/free-solid-svg-icons';
+    import { faMinus, faMinusCircle } from '@fortawesome/free-solid-svg-icons';
     import Fa from 'svelte-fa';
+    import ImageUploader2 from '$lib/components/imageUploader2.svelte';
 
     let {data} = $props();
 
@@ -60,6 +61,11 @@
         if(isMaster){
             let nextSessionAt = isoDate?.toString() ;
             campaign.pages[0].content[0].type === 'object' ? campaign.pages[0].content[0] = {wiki, nextSessionAt, objectives, type:'object'} : null; 
+            console.log(campaign.pages[0].coverImage,"cI");
+            if(imageUrl.toLowerCase().includes("blob"))imageUrl = await blobUrlToBase64(imageUrl) as string
+            campaign.pages[0].coverImage = imageUrl;
+            console.log("aggiornato",campaign.pages[0].coverImage);
+
         }
         else{//gli unici campi modificabili da tutti sono la wiki e i giocatori
             campaign.pages[0].content[0].type === 'object' ? campaign.pages[0].content[0].wiki = wiki : null ;
@@ -227,13 +233,17 @@
         console.info("updated,list")
     }
 
+    let imageUrl = $derived(
+        campaign.pages[0].coverImage || ""
+    )
 
-    $inspect(objectives);
+
+    $inspect(campaign.pages[0].coverImage,"coverImage",imageUrl);
 
 </script>
 
 <div class="bg-lion-900 flex flex-col gap-5 items-center justify-start p-5">
-    <section class="bg-white flex flex-col gap-5 items-center justify-start p-2">
+    <section class="bg-white flex flex-col gap-5 items-start justify-center p-2">
         <!-- Sezione Master only per modifiche -->
         {#if isMaster}   
             <span class="flex flex-row items-center justify-center">
@@ -243,10 +253,19 @@
             </span>
         {/if}
 
-        <div class="flex flex-col">
+        <div class="flex flex-col items-center justify-start">
             <h1 class="text-5xl font-bold "> {campaign.name} </h1>
             <h2>{campaign.description}</h2>
-            <img src={campaign.pic} alt="BackgroundPic" />
+            {#if isMaster && allowModify}
+                <ImageUploader2
+                    bind:imageUrl={imageUrl}
+                    allowUrlInput={true}
+                    showButtons={true}
+                    showDeletion={true}
+                />
+            {:else}
+                <img src={campaign.pages[0].coverImage} alt="BackgroundPic" />
+            {/if} 
         </div>
         <div class="flex flex-row justify-start px-5 gap-10">
             
@@ -266,10 +285,10 @@
             <!-- Giocatori -->
             <span class="flex flex-col gap-5 border border-black p-5">
                 <p>Giocatori Attuali</p>
-                <span class="flex flex-col">
+                <span class="flex flex-row gap-5">
                     {#each campaign.players as player}
                         <p>{player.nickname}</p>
-                        <button onclick={()=>masterKill(player.nickname)}> <Fa icon={faMinus}/> </button>                    
+                        <button onclick={()=>masterKill(player.nickname)}> <Fa icon={faMinusCircle}/> </button>                    
                     {/each}
                 </span>
                 {#if !isPlayer && !isMaster}

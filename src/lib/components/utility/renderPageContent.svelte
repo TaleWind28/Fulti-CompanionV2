@@ -23,8 +23,15 @@
         canModify:boolean
     
     } = $props();
+    let imageUrl = $derived(
+        content.type === 'image' ? content.url : " "
+    );
 
-   
+    $effect(()=>{
+        if(content.type === 'image'){
+            handleImageChange(index,imageUrl)
+        }
+    })
 </script>
 
 <div class="flex flex-row gap-2 ">
@@ -42,15 +49,16 @@
             </p>
         {/if}
     {/if}
-    <!-- {#if content.type === 'image'}
+    {#if content.type === 'image'}
         {#if canModify}
-            <ImageUploader2 
-                bind:imageUrl={content.url} 
-                allowUrlInput={true}
-                showButtons = {true}
-                showDeletion = {true}
-                padre={content.type+index}
-                />
+                <ImageUploader2 
+                    bind:imageUrl={imageUrl} 
+                    allowUrlInput={true}
+                    showButtons = {true}
+                    showDeletion = {true}
+                    padre={content.type+index}
+                    
+                    />
             <button onclick={()=>remove(index)}>
                 <Fa icon={faMinusCircle}/>
             </button>
@@ -60,5 +68,5 @@
                 alt={content.alt}
             />
         {/if}
-    {/if} -->
+    {/if}
 </div>
