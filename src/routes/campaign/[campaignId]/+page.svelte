@@ -326,6 +326,7 @@
                 {/if}
             </span>
         </div>
+        
         <Dialog.Root open={showConfirmationDialog} onOpenChange={(v)=> showConfirmationDialog = v}> 
             <Dialog.Content> 
                 <Dialog.Header> 
