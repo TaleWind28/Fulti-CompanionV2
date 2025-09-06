@@ -7,7 +7,7 @@ import { adminDB } from '$lib/firebase_admin';
 
 
 export const load:PageServerLoad = async ({url, locals}) => {
-    console.info("chiamato");
+    
     const form = await superValidate(zod4(campaignSchema));
     const currentUser = locals.user;
 
@@ -20,10 +20,10 @@ export const load:PageServerLoad = async ({url, locals}) => {
     const snapshot = await adminDB.collection('campaigns').get();
 
     const raws = snapshot.docs.map(doc => ({id:doc.id, ...doc.data()}))
-    console.log(raws,"raws");
+    
 
     const parsed =  campaignScheme.array().safeParse(raws);
-    console.log(parsed);
+ 
     if(parsed.success){
             return {
             form:form,

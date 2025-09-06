@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { invalidateAll } from '$app/navigation';
+    import { goto, invalidateAll } from '$app/navigation';
     import DatePicker from '$lib/components/datePicker.svelte';
-    import Button from '$lib/components/ui/button/button.svelte';
+    import Button, { buttonVariants } from '$lib/components/ui/button/button.svelte';
     import Label from '$lib/components/ui/label/label.svelte';
     import Switch from '$lib/components/ui/switch/switch.svelte';
     import * as Dialog from '$lib/components/ui/dialog/index.js';
@@ -13,15 +13,16 @@
     import { toast } from 'svelte-sonner';
     import Input from '$lib/components/ui/input/input.svelte';
     import type { Page } from '$lib/zodPages.js';
-    import { faMinus, faMinusCircle } from '@fortawesome/free-solid-svg-icons';
+    import { faArrowUpRightFromSquare, faMinus, faMinusCircle } from '@fortawesome/free-solid-svg-icons';
     import Fa from 'svelte-fa';
     import ImageUploader2 from '$lib/components/imageUploader2.svelte';
+    import * as Tooltip from '$lib/components/ui/tooltip/index.js';
 
     let {data} = $props();
 
     
     let campaign : Campaign  = $derived(data.campaign);
-
+    
     type LinkItem = {name:string,link:string}
     
     let landing = $derived(campaign.pages[0]);
@@ -61,10 +62,10 @@
         if(isMaster){
             let nextSessionAt = isoDate?.toString() ;
             campaign.pages[0].content[0].type === 'object' ? campaign.pages[0].content[0] = {wiki, nextSessionAt, objectives, type:'object'} : null; 
-            console.log(campaign.pages[0].coverImage,"cI");
+          
             if(imageUrl.toLowerCase().includes("blob"))imageUrl = await blobUrlToBase64(imageUrl) as string
             campaign.pages[0].coverImage = imageUrl;
-            console.log("aggiornato",campaign.pages[0].coverImage);
+        
 
         }
         else{//gli unici campi modificabili da tutti sono la wiki e i giocatori
@@ -101,11 +102,8 @@
 
     async function addPlayer() {
         //non può succedere che uno sia loggato ma non abbia username però almeno typescript è contento
-        console.log("entro");
-        if(!data.displayName){
-            console.log(data,"displayname");
-            return;
-        } 
+        
+        if(!data.displayName)return; 
         const newCharacter = FabulaUltimaCharacterScheme.parse(
             {
             name:"-",
@@ -118,7 +116,33 @@
             classes:[],
         }
         )
-        campaign.players.push({nickname:data.displayName,character:newCharacter}),
+        //bisogna fetchare
+        const response = await fetch('/api/characters',{
+				method:'PUT',
+				headers:{
+					'Content-Type':'application/json'
+				},
+				body:JSON.stringify({
+					character: newCharacter
+				})
+				
+			})
+
+        if (!response.ok){
+            toast.error( 'Impossibile creare il personaggio.',{
+                action:{
+                    label:"OK",
+                    onClick: () =>{console.info("undo")}
+                }
+            });
+            return;
+        }
+
+        const characterData = await response.json();
+
+        const id = characterData.id;
+
+        campaign.players.push({nickname:data.displayName,character:newCharacter,characterId:id}),
         
         campaign = {
             ...campaign,
@@ -138,7 +162,6 @@
     async function removePlayer(){
         let index = campaign.players.findIndex((player)=> player.nickname === data.userId);
         campaign.players.splice(index,1);
-        console.log("pino");
         await save()
         await invalidateAll()
         toast.success(`Hai lasciato ${campaign.name}`,{
@@ -237,8 +260,8 @@
         campaign.pages[0].coverImage || ""
     )
 
-
-    $inspect(campaign.pages[0].coverImage,"coverImage",imageUrl);
+    let playerToKill = $state("");
+    let showKillDialog = $state(false);
 
 </script>
 
@@ -252,7 +275,7 @@
                 <Button onclick={save}>Salva</Button>
             </span>
         {/if}
-
+        <!-- Immagine della landing page -->
         <div class="flex flex-col items-center justify-start">
             <h1 class="text-5xl font-bold "> {campaign.name} </h1>
             <h2>{campaign.description}</h2>
@@ -285,10 +308,26 @@
             <!-- Giocatori -->
             <span class="flex flex-col gap-5 border border-black p-5">
                 <p>Giocatori Attuali</p>
-                <span class="flex flex-row gap-5">
+                <span class="flex flex-row gap-5 items-center justify-center">
                     {#each campaign.players as player}
                         <p>{player.nickname}</p>
-                        <button onclick={()=>masterKill(player.nickname)}> <Fa icon={faMinusCircle}/> </button>                    
+                        {#if isMaster}
+                            <button onclick={()=>{playerToKill = player.nickname; showKillDialog = true}}> <Fa icon={faMinusCircle}/> </button>                    
+                        {/if}
+                        <button>
+                        <Tooltip.Provider>
+                            <Tooltip.Root>
+                                <Tooltip.Trigger class={buttonVariants({ variant: "outline" } )} onclick={()=>goto(`/characters/${player.characterId}`)}>
+                                    <Fa icon={faArrowUpRightFromSquare}/>    
+                                </Tooltip.Trigger>
+                                    
+                                <Tooltip.Content>
+                                <p>Mostra scheda Personaggio</p>
+                                </Tooltip.Content>
+                            </Tooltip.Root>
+                        </Tooltip.Provider>
+                            
+                        </button>
                     {/each}
                 </span>
                 {#if !isPlayer && !isMaster}
@@ -347,6 +386,19 @@
                     <Input bind:value = {newPageName}/>
                 <Dialog.Footer> 
                 <Button onclick={addWikiPage}> Aggiungi</Button>
+            </Dialog.Footer>
+            </Dialog.Content>    
+        </Dialog.Root>
+
+        <Dialog.Root open={showKillDialog} onOpenChange={(v)=> showKillDialog = v}> 
+            <Dialog.Content> 
+                <Dialog.Header> 
+                    Vuoi davvero rimuovere {playerToKill} dalla campagna?
+                </Dialog.Header>
+                <Button class="bg-green-600 hover:bg-green-700" onclick={()=>masterKill(playerToKill)}> SI</Button>
+                <Button class="bg-red-600 hover:bg-red-700" onclick={()=>showKillDialog=false}> NO </Button>
+                <Dialog.Footer> 
+                
             </Dialog.Footer>
             </Dialog.Content>    
         </Dialog.Root>

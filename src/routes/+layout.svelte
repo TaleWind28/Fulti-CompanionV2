@@ -42,10 +42,8 @@
 		detectSWUpdate();
 		const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
 			await firebaseUser?.reload();
-			console.log("reloaded")
-			console.log(firebaseUser?.displayName);
 			user.set(firebaseUser);
-			console.log($user?.displayName);
+
 		});
 
 		return unsubscribe;

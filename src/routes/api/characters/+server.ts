@@ -1,10 +1,10 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { adminDB } from '$lib/firebase_admin'; // Assumendo che tu abbia inizializzato l'Admin SDK qui
+import { adminDB } from '$lib/firebase_admin';
 import { FabulaUltimaCharacterScheme } from '$lib/zod';
 
 export const PUT: RequestHandler = async ({request,locals}) =>{
-    const character = await request.json();
+    const data = await request.json();
 
     const currentUser = locals.user;
 
@@ -12,34 +12,33 @@ export const PUT: RequestHandler = async ({request,locals}) =>{
         throw error(401,'Utente non autenticato');
     }
 
-    if(!character){
+    if(!data){
         throw error(400,'Personaggio non valido');
     }
 
     const uid = currentUser.uid;
-    // console.log(character);
+    
     
     // const {id, ...characterWithoutId} = character;
     // console.log(characterWithoutId);
-    const fuCharacter = FabulaUltimaCharacterScheme.parse(character.character);
-    
+    const fuCharacter = FabulaUltimaCharacterScheme.parse(data.character);
+    console.log(fuCharacter, "fuc");
 
     try {
             // 4. Salva l'oggetto COMPLETO nel database
-            await adminDB
+            const docRef = await adminDB
                 .collection('users')
                 .doc(uid)
                 .collection('characters')
                 .add(fuCharacter); 
-
             console.log(`Personaggio completo salvato per l'utente ${uid}`);
-
+            
+            return json({success:true, message:"personaggio importato con successo",id:docRef.id}); 
         } catch (err) {
             console.error("Errore nel salvataggio del personaggio completo su Firestore:", err);
             return json({success:false, message:"Personaggio già presente nel database"});
         }
 
-    return json({success:true, message:"personaggio importato con successo"});
 }
 
 export const GET: RequestHandler = async ({url}) => {

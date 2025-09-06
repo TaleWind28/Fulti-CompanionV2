@@ -1,5 +1,5 @@
 import type { ZodValidationSchema } from 'sveltekit-superforms/adapters';
-import {object, z} from 'zod/v4';
+import {object, string, z} from 'zod/v4';
 import { PageScheme } from './zodPages';
 
 
@@ -274,7 +274,7 @@ export const campaignScheme = z.object({
     name:z.string(),
     description:z.string(),
     pic:z.string().optional(),
-    players:z.array(z.object({nickname:z.string(),character:FabulaUltimaCharacterScheme})).default([]),
+    players:z.array(z.object({nickname:z.string(),character:FabulaUltimaCharacterScheme, characterId:z.string()})).default([]),
     master:z.string(),
     pages:z.array(PageScheme),
     id:z.string()
