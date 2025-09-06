@@ -17,6 +17,7 @@
     import Fa from 'svelte-fa';
     import ImageUploader2 from '$lib/components/imageUploader2.svelte';
     import * as Tooltip from '$lib/components/ui/tooltip/index.js';
+    import { user } from '$lib/stores/user.js';
 
     let {data} = $props();
 
@@ -142,7 +143,7 @@
 
         const id = characterData.id;
 
-        campaign.players.push({nickname:data.displayName,character:newCharacter,characterId:id}),
+        campaign.players.push({nickname:data.displayName,uid:data.userId,characterId:id}),
         
         campaign = {
             ...campaign,
@@ -317,7 +318,8 @@
                         <button>
                         <Tooltip.Provider>
                             <Tooltip.Root>
-                                <Tooltip.Trigger class={buttonVariants({ variant: "outline" } )} onclick={()=>goto(`/characters/${player.characterId}`)}>
+                                <!-- il trim è necessario perchè player.uid a quanto apre ha uno spazio in fondo-->
+                                <Tooltip.Trigger class={buttonVariants({ variant: "outline" } )} onclick={()=>goto(`/characters/${player.characterId}?uid=${player.uid.trim()}&master=${campaign.master.trim()}`)}>
                                     <Fa icon={faArrowUpRightFromSquare}/>    
                                 </Tooltip.Trigger>
                                     

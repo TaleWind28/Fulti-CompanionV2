@@ -421,7 +421,7 @@
                     }))
                 };
 
-                const response = await fetch(`/api/characters/${character.id}`, {
+                const response = await fetch(`/api/characters/${character.id}?master=${data.master}&ownerId=${data.owner}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(sanitizedCharacter)
@@ -438,6 +438,18 @@
                     await invalidateAll();
                     hasBeenChanged = false;
                 } else {
+                    console.error(response.status);
+                    let errorMessage = "";
+                    switch(response.status){
+                        case 404:errorMessage = 'Personaggio non trovato o non appartenente a te';break;
+                        case 500: errorMessage = 'Errore del Server'
+                    }
+                    toast.error(`${response.status}: ${errorMessage}`,{
+                        action:{
+                            label:"OK",
+                            onClick:()=>console.info(`Save Error: ${response.status}: ${errorMessage}`)
+                        }
+                    })
                     console.error('Errore nel salvataggio');
                 }
             } catch (error) {
@@ -1018,6 +1030,7 @@
         await handleFetch();
     }
 
+$inspect("master",data.master,"owner",data.owner)
 </script>
 
 

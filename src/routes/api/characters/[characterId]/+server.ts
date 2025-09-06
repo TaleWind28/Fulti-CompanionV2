@@ -46,7 +46,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
   }
 };
 
-export const PUT: RequestHandler = async ({ params, locals, request }) => {
+export const PUT: RequestHandler = async ({ params, locals, request, url}) => {
   // --- Sicurezza: Verifica che l'utente sia autenticato ---
   if (!locals.user) {
     throw error(401, 'Non autorizzato');
@@ -54,6 +54,9 @@ export const PUT: RequestHandler = async ({ params, locals, request }) => {
 
   const userId = locals.user.uid;
   const characterId = params.characterId;
+  const master = url.searchParams.get('master');
+  const owner = url.searchParams.get('ownerId');
+  console.log(owner,master);
 
   if (!characterId) {
     throw error(400, 'ID del personaggio non fornito');
@@ -67,16 +70,26 @@ export const PUT: RequestHandler = async ({ params, locals, request }) => {
     if (!characterData || typeof characterData !== 'object') {
       throw error(400, 'Dati del personaggio non validi');
     }
+    
+    let characterRef;
 
-    const characterRef = adminDB.collection('users')
+    if(master !== "" && owner){
+      characterRef = adminDB.collection('users')
+      .doc(owner)
+      .collection('characters')
+      .doc(characterId);
+    }else{
+      characterRef = adminDB.collection('users')
       .doc(userId)
       .collection('characters')
       .doc(characterId);
+    }
+    
 
     // --- Sicurezza: Verifica dell'esistenza prima di aggiornare ---
     const doc = await characterRef.get();
     if (!doc.exists) {
-      throw error(404, 'Personaggio non trovato o non ti appartiene');
+      throw error(404,{message:'Personaggio non trovato o non ti appartiene' });
     }
 
     console.log(characterData);

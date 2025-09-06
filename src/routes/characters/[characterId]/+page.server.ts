@@ -5,7 +5,7 @@ import type { PageServerLoad } from './$types';
 import { FabulaUltimaCharacterScheme, type FabulaUltimaCharacter } from '$lib/zod.js';
 import { retrieveSpellClasses } from '$lib/utils';
 
-export const load: PageServerLoad = async ({ locals, params, fetch }) => {
+export const load: PageServerLoad = async ({ locals, params, fetch, url }) => {
     // Guardia di sicurezza: l'utente deve essere loggato
     if (!locals.user) {
         throw redirect(303, '/login');
@@ -14,6 +14,8 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
     // 1. Ottieni l'ID del personaggio direttamente dall'URL
     const characterId = params.characterId;
     const uid = locals.user.uid;
+    const otherPlayerUid = url.searchParams.get('uid');
+    const master = url.searchParams.get('master') || "";
 
     let classNames:string[] = [];
     //fetcho l'api per il recupero delle classi e le memorizzo nella variabile classnames
@@ -33,8 +35,20 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
     
     try {
         // 2. Interroga Firestore per ottenere UN SOLO documento
-        const docRef = adminDB.collection('users').doc(uid).collection('characters').doc(characterId);
+        let docRef;
+
+        //controllo se l'utente che sta accedendo alla pagina è il "proprietario"
+        if(otherPlayerUid){
+            docRef = adminDB.collection('users').doc(otherPlayerUid).collection('characters').doc(characterId);
+        }
+        else{
+            docRef = adminDB.collection('users').doc(uid).collection('characters').doc(characterId);
+        }
+
+
+        
         const docSnap = await docRef.get();
+
 
         // 3. Gestisci il caso in cui il personaggio non esista
         if (!docSnap.exists) {
@@ -84,7 +98,9 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
         return {
             character: characterData,
             classNames: classNames,
-            availableSpells: availableSpells 
+            availableSpells: availableSpells,
+            master: master,
+            owner:otherPlayerUid
         };
 
     } catch (err:any) {

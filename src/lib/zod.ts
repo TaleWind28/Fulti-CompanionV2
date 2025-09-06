@@ -274,7 +274,7 @@ export const campaignScheme = z.object({
     name:z.string(),
     description:z.string(),
     pic:z.string().optional(),
-    players:z.array(z.object({nickname:z.string(),character:FabulaUltimaCharacterScheme, characterId:z.string()})).default([]),
+    players:z.array(z.object({nickname:z.string(),uid:z.string(), characterId:z.string()})).default([]),
     master:z.string(),
     pages:z.array(PageScheme),
     id:z.string()
