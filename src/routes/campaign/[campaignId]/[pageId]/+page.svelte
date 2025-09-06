@@ -84,7 +84,7 @@
 
     let wantsToModify = $state(false);
 
-    let canModify = $derived(page.ownerId === $user?.uid || page?.masterID ===$user?.uid);
+    let canModify = $derived(page.ownerId === $user?.uid || page?.masterId ===$user?.uid);
 </script>
 <div class="bg-cafe_noir-900">
     
@@ -117,7 +117,7 @@
                 <Separator orientation='horizontal'></Separator>
             </div>
         {/each}
-        {#if page.ownerId === $user?.uid || page?.masterID ===$user?.uid}
+        {#if page.ownerId === $user?.uid || page?.masterId ===$user?.uid}
             <span class="flex flex-row gap-2">
                 <Button onclick={addTextBlock}> 
                     Aggiungi Paragrafo

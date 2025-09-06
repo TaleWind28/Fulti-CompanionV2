@@ -17,8 +17,8 @@ const ImageBlock = z.object({
 
 const LandingBlock = z.object({
     type: z.literal('object'),
-    objectives: z.array(z.string()),
-    wiki: z.array(z.object({name:z.string(),link:z.string()})),
+    objectives: z.array(z.string()).default([]),
+    wiki: z.array(z.object({name:z.string(),link:z.string()})).default([]),
     nextSessionAt: z.string().optional()
 })
 
@@ -39,16 +39,8 @@ export const PageScheme = z.object({
   coverImage: z.string().optional().nullable(),
 
   content: z.array(BlockSchema).default([]),
-  tags: z.array(z.string().min(1).max(30)).max(20).default([]),
-  masterID:z.string(),
+  masterId:z.string(),
   ownerId: z.string().min(1), // impostato lato server
-  visibility: PageVisibility.default('private'),
-  status: PageStatus.default('draft'),
-
-//   createdAt: z.number().int(),
-//   updatedAt: z.number().int(),
-
-  version: z.number().int().min(1).default(1)
 });
 
 export type Page = z.infer<typeof PageScheme>;

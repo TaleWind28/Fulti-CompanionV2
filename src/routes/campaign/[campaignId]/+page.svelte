@@ -13,11 +13,11 @@
     import { toast } from 'svelte-sonner';
     import Input from '$lib/components/ui/input/input.svelte';
     import type { Page } from '$lib/zodPages.js';
-    import { faArrowUpRightFromSquare, faMinus, faMinusCircle } from '@fortawesome/free-solid-svg-icons';
+    import { faArrowUpRightFromSquare, faMinusCircle } from '@fortawesome/free-solid-svg-icons';
     import Fa from 'svelte-fa';
     import ImageUploader2 from '$lib/components/imageUploader2.svelte';
     import * as Tooltip from '$lib/components/ui/tooltip/index.js';
-    import { user } from '$lib/stores/user.js';
+    import Separator from '$lib/components/ui/separator/separator.svelte';
 
     let {data} = $props();
 
@@ -257,13 +257,43 @@
         console.info("updated,list")
     }
 
+    async function deleteCampaign(){
+        
+
+        const response = await fetch(`/api/campaign`,{
+            method:"DELETE",
+            headers:{ 
+                'content-type':'application/json'
+            },
+            body:JSON.stringify(data)
+
+        })
+        console.log("risposta",response);
+        if(response.ok){
+            showCampaignDeletionDialog = false;
+            const data = await response.json();
+            toast.success(`${data.message}, sarai reindirizzato alla pagina delle campagne`,{
+                action:{
+                    label:"OK",
+                    onClick:()=>console.info('la campagna è morta...')
+                }
+            })
+            goto('/campaign');
+        }
+
+        
+        return;
+
+
+    }
+
     let imageUrl = $derived(
         campaign.pages[0].coverImage || ""
     )
 
     let playerToKill = $state("");
     let showKillDialog = $state(false);
-
+    let showCampaignDeletionDialog = $state(false);
 </script>
 
 <div class="bg-lion-900 flex flex-col gap-5 items-center justify-start p-5">
@@ -315,7 +345,6 @@
                         {#if isMaster}
                             <button onclick={()=>{playerToKill = player.nickname; showKillDialog = true}}> <Fa icon={faMinusCircle}/> </button>                    
                         {/if}
-                        <button>
                         <Tooltip.Provider>
                             <Tooltip.Root>
                                 <!-- il trim è necessario perchè player.uid a quanto apre ha uno spazio in fondo-->
@@ -329,7 +358,7 @@
                             </Tooltip.Root>
                         </Tooltip.Provider>
                             
-                        </button>
+
                     {/each}
                 </span>
                 {#if !isPlayer && !isMaster}
@@ -367,7 +396,25 @@
                 {/if}
             </span>
         </div>
-        
+
+        <Separator orientation="horizontal"></Separator>
+
+        <Button onclick={()=>showCampaignDeletionDialog = true}> Elimina Campagna </Button>
+
+        <Dialog.Root open={showCampaignDeletionDialog} onOpenChange={(v)=> showCampaignDeletionDialog = v}> 
+            <Dialog.Content> 
+                <Dialog.Header> 
+                    Confermare L'eliminazione della campagna?
+                </Dialog.Header>
+                    <p class="bg-red-600 text-white ">
+                        Questa scelta è irreversibile e tutti i dati relativi alla campagna verranno persi
+                    </p>
+                <Dialog.Footer> 
+                <Button onclick={deleteCampaign}> Distruggi il mondo da te creato :( </Button>
+            </Dialog.Footer>
+        </Dialog.Content>
+        </Dialog.Root>
+
         <Dialog.Root open={showConfirmationDialog} onOpenChange={(v)=> showConfirmationDialog = v}> 
             <Dialog.Content> 
                 <Dialog.Header> 

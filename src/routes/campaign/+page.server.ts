@@ -53,7 +53,8 @@ export const actions:Actions ={
         }
 
         const uid = currentUser.uid;
-        const {name, description} = form.data;
+        const {name, description } = form.data;
+        console.log("name & desc",name,"&",description);
         
 
         try{
@@ -68,12 +69,9 @@ export const actions:Actions ={
                 title:"landing",
                 summary:description,
                 coverImage:"",
-                content:[{type:'object',objectives:[],wiki:[]}],
-                tags:[],
+                content:[{type:'object',objectives:[],wiki:[],nextSessionAt:""}],
                 masterId:uid,//solo il master può creare la campagna e di conseguenza la landing
                 ownerId: uid,//forse è meglio avere questo del displayname
-                visibility:"private",
-                status:"draft",
             }
 
             //creo la campagna aggiungendo l'id ottenuto da firestore
@@ -88,7 +86,6 @@ export const actions:Actions ={
             }
             //aggiorno il documento creato
             await docRef.set(campaign);
-            console.info("form valido");
 
             return {
                 form,

@@ -4,8 +4,6 @@ import { adminDB } from '$lib/firebase_admin'; // Assumendo che tu abbia inizial
 
 export const DELETE: RequestHandler = async ({ params, locals }) => {
   // --- Sicurezza: Verifica che l'utente sia autenticato ---
-  // Questo 'locals' è un esempio. La tua logica di autenticazione potrebbe essere diversa.
-  // Qui assumiamo che tu abbia un middleware che popola `locals.user` con i dati dell'utente loggato.
   if (!locals.user) {
     throw error(401, 'Non autorizzato');
   }
@@ -22,9 +20,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
       .doc(userId)
       .collection('characters')
       .doc(characterId);
-
     // --- Sicurezza: Verifica dell'esistenza prima di cancellare ---
-    // Questo previene tentativi di cancellazione su ID inesistenti e conferma l'appartenenza.
     const doc = await characterRef.get();
     if (!doc.exists) {
       throw error(404, 'Personaggio non trovato o non ti appartiene');
