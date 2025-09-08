@@ -40,16 +40,14 @@
 	}
 
 	onMount(()=>{
-		// if('serviceWorker' in navigator){
-		// 	navigator.serviceWorker.register('/service-worker.js',{
-		// 		type:'module'
-		// 	}).catch(console.error)
-		// }
-		detectSWUpdate();
+		
 
 		initFcm()?.catch((err)=>{
 			console.error(err)
 		})
+
+		detectSWUpdate();
+
 		const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
 			await firebaseUser?.reload();
 			user.set(firebaseUser);

@@ -22,8 +22,8 @@ messaging.onBackgroundMessage((payload) => {
   const notificationTitle = payload.notification?.title || 'Notifica';
   const notificationOptions = {
     body: payload.notification?.body || 'Hai ricevuto una nuova notifica',
-    icon: '/icon-192x192.png',
-    badge: '/badge-72x72.png',
+    icon: 'favicon.png',
+    badge: 'favicon.png',
     tag: 'notification-tag',
     requireInteraction: true,
     actions: [
@@ -37,7 +37,7 @@ messaging.onBackgroundMessage((payload) => {
       }
     ]
   };
-
+  console.log("sto per mostrare")
   self.registration.showNotification(notificationTitle, notificationOptions);
 });
 
@@ -64,6 +64,10 @@ self.addEventListener('notificationclick', (event) => {
         })
     );
   }
+});
+
+self.addEventListener('message', (event) => {
+  if (event?.data?.type === 'SKIP_WAITING') self.skipWaiting();
 });
 
 console.log('Firebase Messaging Service Worker caricato');
