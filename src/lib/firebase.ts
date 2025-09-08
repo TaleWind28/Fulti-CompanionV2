@@ -6,6 +6,7 @@ import {updateProfile } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { writable, type Writable } from "svelte/store";
 import { user } from "./stores/user";
+import { getMessaging, getToken, onMessage, type Messaging } from 'firebase/messaging';
 
 // Configurazione Firebase utilizzando le variabili d'ambiente
 export const firebaseConfig = {
@@ -87,3 +88,12 @@ if (browser) {
 export const loading :Writable<boolean>= writable(true);
 
 export const isAuthenticated = writable(false);
+
+// Lazy getter (evita errori se non supportato)
+export function getMessagingSafe(): Messaging | null {
+  try {
+    return getMessaging(app);
+  } catch {
+    return null;
+  }
+}

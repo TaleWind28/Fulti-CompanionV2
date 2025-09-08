@@ -13,6 +13,7 @@
 	import { Toaster } from "$lib/components/ui/sonner/index.js";
 	import * as MenuBar from '$lib/components/ui/menubar/index';
     import { goto } from '$app/navigation';
+    import { initFcm } from '$lib/fcm';
 
   	
 		
@@ -43,7 +44,9 @@
 		const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
 			await firebaseUser?.reload();
 			user.set(firebaseUser);
-
+			if(firebaseUser){
+				initFcm();
+			}
 		});
 
 		return unsubscribe;

@@ -1,8 +1,9 @@
 /// <reference types="@sveltejs/kit"/>
 /// <reference lib="webworker" />
 
-declare let self: ServiceWorkerGlobalScope
 
+declare let self: ServiceWorkerGlobalScope
+export{};
 import {build, files, version } from '$service-worker';
 
 const CACHE = `cache-${version}`;
@@ -29,9 +30,12 @@ self.addEventListener('activate', event=>{
                 await caches.delete(key);
             }
         }
+        await self.clients.claim();
     }
 
     event.waitUntil(deleteOldCaches());
+
+
 })
 
 //ascoltare le Fetch
@@ -85,7 +89,6 @@ self.addEventListener('fetch', (event)=>{
             const isSuccess = response.status === 200;
             
             if(isNotExtension && isSuccess){
-                console.log("avevo rete");
                 cache.put(event.request, response.clone());
             }
             return response;
@@ -111,4 +114,4 @@ self.addEventListener('message', (event)=>{
     }
 })
 
-console.log("pino");
+console.info("Service-Worker(cache)Attivo")
