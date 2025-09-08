@@ -30,7 +30,7 @@
 			const newSW = registration.installing;
 			newSW?.addEventListener('statechange', () => {
 				if (newSW.state === 'installed') {
-					if(confirm("aggiorna")){
+					if(confirm("Nuovo aggiornamento dell'app, eseguirlo ora?")){
 						newSW.postMessage({ type: 'SKIP_WAITING' });
 						window.location.reload();
 					}
@@ -39,14 +39,49 @@
 		});
 	}
 
+	async function detectFCM_SWUpdate() {
+		const regs = await navigator.serviceWorker.getRegistrations(); // prende APP e FCM
+
+  let reloaded = false;
+  const applyUpdate = (reg: ServiceWorkerRegistration) => {
+    if (confirm('Nuovo aggiornamento disponibile per le notifiche, eseguirlo ora?')) {
+      reg.waiting?.postMessage({ type: 'SKIP_WAITING' });
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (reloaded) return;
+        reloaded = true;
+        location.reload();
+      });
+    }
+  };
+
+  const wire = (reg: ServiceWorkerRegistration) => {
+    // se al load c'è già un worker "waiting"
+    if (reg.waiting) applyUpdate(reg);
+
+    reg.addEventListener('updatefound', () => {
+      const sw = reg.installing;
+      sw?.addEventListener('statechange', () => {
+        if (sw.state === 'installed' && reg.waiting) {
+          applyUpdate(reg);
+        }
+      });
+    });
+  };
+
+  regs.forEach(wire);
+
+  // forza un check immediato su tutti
+  await Promise.all(regs.map((r) => r.update().catch(() => {})));
+	}
+
 	onMount(()=>{
 		
-
 		initFcm()?.catch((err)=>{
 			console.error(err)
 		})
 
 		detectSWUpdate();
+		detectFCM_SWUpdate();
 
 		const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
 			await firebaseUser?.reload();

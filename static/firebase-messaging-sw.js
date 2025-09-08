@@ -38,7 +38,8 @@ messaging.onBackgroundMessage((payload) => {
     ]
   };
   console.log("sto per mostrare")
-  self.registration.showNotification(notificationTitle, notificationOptions);
+  self.registration.showNotification(notificationTitle,notificationOptions);
+  console.log("sto mostrato")
 });
 
 // Gestione click sulle notifiche

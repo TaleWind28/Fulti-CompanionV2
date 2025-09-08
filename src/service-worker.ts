@@ -31,10 +31,7 @@ self.addEventListener('activate', event=>{
         }
         await self.clients.claim();
     }
-
     event.waitUntil(deleteOldCaches());
-
-
 })
 
 //ascoltare le Fetch
@@ -112,3 +109,5 @@ self.addEventListener('message', (event)=>{
         self.skipWaiting()
     }
 })
+
+console.log("Service Worker: Cache, Attivato");

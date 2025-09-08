@@ -2,6 +2,7 @@
 import { initializeApp } from 'firebase/app';
 import { getMessaging, getToken, onMessage, isSupported } from 'firebase/messaging';
 import { app } from './firebase';
+import { toast } from 'svelte-sonner';
 
 const firebaseConfig = {
   apiKey:        import.meta.env.VITE_FIREBASE_API_KEY,
@@ -46,6 +47,16 @@ export function initFcm() {
     // 4) Ascolta messaggi in FOREGROUND
     onMessage(messaging, (payload) => {
       console.log('Messaggio in foreground:', payload);
+      const {notification, ...rest} = payload;
+      if(!notification)return;
+      const {title, body} = notification;
+      toast.message(`${title}`,{
+          description:`${body}`,
+          action:{
+            label:"OK",
+            onClick:()=>console.info("notifica")
+          }
+      })
       // opzionale: mostra un toast/in-app notification
     });
   })();
