@@ -13,6 +13,7 @@
 	import { Toaster } from "$lib/components/ui/sonner/index.js";
 	import * as MenuBar from '$lib/components/ui/menubar/index';
     import { goto } from '$app/navigation';
+    import { initFcm } from '../fcm2';
 
   	
 		
@@ -39,7 +40,16 @@
 	}
 
 	onMount(()=>{
+		// if('serviceWorker' in navigator){
+		// 	navigator.serviceWorker.register('/service-worker.js',{
+		// 		type:'module'
+		// 	}).catch(console.error)
+		// }
 		detectSWUpdate();
+
+		initFcm()?.catch((err)=>{
+			console.error(err)
+		})
 		const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
 			await firebaseUser?.reload();
 			user.set(firebaseUser);

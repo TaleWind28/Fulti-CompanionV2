@@ -8,7 +8,6 @@ import {build, files, version } from '$service-worker';
 const CACHE = `cache-${version}`;
 const ASSETS = [...build, ...files];
 
-
 //installare il SW
 self.addEventListener('install',event=>{
 
@@ -85,12 +84,11 @@ self.addEventListener('fetch', (event)=>{
             const isSuccess = response.status === 200;
             
             if(isNotExtension && isSuccess){
-                console.log("avevo rete");
+                
                 cache.put(event.request, response.clone());
             }
             return response;
         }catch{
-            console.log("niente rete");
             //fallback to cache
             const cachedResponse = await cache.match(url.pathname);
             if(cachedResponse){
@@ -110,5 +108,3 @@ self.addEventListener('message', (event)=>{
         self.skipWaiting()
     }
 })
-
-console.log("pino");
