@@ -53,7 +53,9 @@
 		const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
 			await firebaseUser?.reload();
 			user.set(firebaseUser);
-
+			if(firebaseUser){
+				initFcm();
+			}
 		});
 
 		return unsubscribe;

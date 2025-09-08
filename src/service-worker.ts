@@ -1,8 +1,9 @@
 /// <reference types="@sveltejs/kit"/>
 /// <reference lib="webworker" />
 
-declare let self: ServiceWorkerGlobalScope
 
+declare let self: ServiceWorkerGlobalScope
+export{};
 import {build, files, version } from '$service-worker';
 
 const CACHE = `cache-${version}`;
@@ -28,9 +29,12 @@ self.addEventListener('activate', event=>{
                 await caches.delete(key);
             }
         }
+        await self.clients.claim();
     }
 
     event.waitUntil(deleteOldCaches());
+
+
 })
 
 //ascoltare le Fetch
