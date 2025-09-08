@@ -21,7 +21,7 @@ export const firebaseConfig = {
 };
 // Initialize Firebase
 
-const app = initializeApp(firebaseConfig);
+export const app = initializeApp(firebaseConfig);
 
 //npm install -g firebase-tools
 export const auth = getAuth(app);

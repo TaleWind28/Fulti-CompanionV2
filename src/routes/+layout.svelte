@@ -13,7 +13,7 @@
 	import { Toaster } from "$lib/components/ui/sonner/index.js";
 	import * as MenuBar from '$lib/components/ui/menubar/index';
     import { goto } from '$app/navigation';
-    import { initFcm } from '../fcm2';
+    import { initFcm } from '$lib/fcm';
 
   	
 		

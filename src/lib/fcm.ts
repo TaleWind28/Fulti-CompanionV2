@@ -1,6 +1,7 @@
 // src/lib/fcm.ts
 import { initializeApp } from 'firebase/app';
 import { getMessaging, getToken, onMessage, isSupported } from 'firebase/messaging';
+import { app } from './firebase';
 
 const firebaseConfig = {
   apiKey:        import.meta.env.VITE_FIREBASE_API_KEY,
@@ -31,7 +32,7 @@ export function initFcm() {
     );
 
     // 2) Inizializza Firebase app e messaging
-    const app = initializeApp(firebaseConfig);
+    // const app = initializeApp(firebaseConfig);
     const messaging = getMessaging(app);
 
     // 3) Richiedi il token passando la registration del SW FCM
