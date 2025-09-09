@@ -7,6 +7,7 @@ import { getFirestore } from "firebase/firestore";
 import { writable, type Writable } from "svelte/store";
 import { user } from "./stores/user";
 import { getMessaging, getToken, onMessage, type Messaging } from 'firebase/messaging';
+import { clearFcmToken } from "./fcm";
 
 
 // Configurazione Firebase utilizzando le variabili d'ambiente
@@ -73,7 +74,7 @@ export async function registerUser(email: string, password: string, username: st
 
 // Funzione di Logout AGGIORNATA
 export async function logout() {
-  //await clearFcmToken(); // Rimuovi il token FCM
+  await clearFcmToken(); // Rimuovi il token FCM
   await signOut(auth); // Esegui il logout dal client Firebase
   user.set(null); // Pulisci lo store Svelte
   await syncSessionWithServer(null); // Sincronizza con il server (per cancellare il cookie)

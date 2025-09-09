@@ -14,6 +14,7 @@ const firebaseConfig = {
 };
 
 let _initOnce: Promise<void> | null = null;
+let fcmToken: string | null = null;
 
 export function initFcm() {
   if (_initOnce) return _initOnce;
@@ -33,16 +34,18 @@ export function initFcm() {
     );
 
     // 2) Inizializza Firebase app e messaging
-    // const app = initializeApp(firebaseConfig);
     const messaging = getMessaging(app);
 
     // 3) Richiedi il token passando la registration del SW FCM
-    const token = await getToken(messaging, {
+    fcmToken = await getToken(messaging, {
       vapidKey: import.meta.env.VITE_FCM_VAPID_KEY,
       serviceWorkerRegistration: fcmRegistration
     });
 
-    console.log('FCM token:', token);
+    console.log('FCM token:', fcmToken);
+
+    // 4. Invia il token al tuo server per salvarlo
+    await saveFcmTokenToServer(fcmToken);
 
     // 4) Ascolta messaggi in FOREGROUND
     onMessage(messaging, (payload) => {
@@ -62,4 +65,38 @@ export function initFcm() {
   })();
 
   return _initOnce;
+}
+
+
+// Salva il token sul tuo server
+async function saveFcmTokenToServer(token: string) {
+  try {
+    await fetch('/api/fcm/token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ token })
+    });
+  } catch (error) {
+    console.error('Errore salvando token FCM:', error);
+  }
+}
+
+// Rimuovi il token (per logout)
+export async function clearFcmToken() {
+  if (fcmToken) {
+    try {
+      await fetch('/api/fcm/token', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ token: fcmToken })
+      });
+      fcmToken = null;
+    } catch (error) {
+      console.error('Errore rimozione token FCM:', error);
+    }
+  }
 }

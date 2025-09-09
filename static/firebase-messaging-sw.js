@@ -52,7 +52,7 @@ self.addEventListener('notificationclick', (event) => {
     event.waitUntil(
       clients.matchAll({ type: 'window', includeUncontrolled: true })
         .then((clientList) => {
-          // Se c'è già una finestra aperta, focusla
+          // Se c'è già una finestra aperta, focussala
           for (const client of clientList) {
             if (client.url.includes(self.location.origin) && 'focus' in client) {
               return client.focus();
