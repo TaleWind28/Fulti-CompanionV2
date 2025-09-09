@@ -25,39 +25,58 @@
     let campaign : Campaign  = $derived(data.campaign);
     
     type LinkItem = {name:string,link:string}
-    
+
+    let showLeaveCampaignDialog = $state(false);
+    //recuupero le informazioni riguardo la landing Page
+    let imageUrl = $derived(
+        campaign.pages[0].coverImage || ""
+    )
+
     let landing = $derived(campaign.pages[0]);
-    let objectives = $derived<string[]>(
-    landing.content[0]?.type === 'object' ? landing.content[0].objectives ?? [] : []);
     
+    let objectives = $derived<string[]>(
+        landing.content[0]?.type === 'object' ? landing.content[0].objectives ?? [] : []
+    );
     let wiki = $derived<LinkItem[]>(
         landing.content[0]?.type === 'object' ? (landing.content[0].wiki ?? []) : []
     );
 
-    let isMaster = $derived(
-        campaign.master === data.userId ? true : false
-    );
-
-    let isPlayer= $derived(
-        campaign.players.some((player)=> player.nickname === data.displayName)
-    );
-
-    let allowModify = $state(false);
-
+    //recupero la data della prossima sessione se disponibile 
     let retrievedData: DateValue | undefined = $derived(
         landing.content[0].type === 'object' ? isoToDateValue(landing.content[0].nextSessionAt) : undefined
     );
-    
+    //derivo il giorno selezionato dalla data recuperata
     let selected: DateValue | undefined = $derived(retrievedData);
-    // derived per ottenere la data in formato Date
+    
+    //infine derivo per ottenere il formato Date
     const isoDate = $derived(
         selected ? selected.toDate(getLocalTimeZone()) : null
     );
 
-    $inspect(isMaster, data.userId, data.campaign.master);
+    //controllo se l'utente è il master o se è un player
+    let isMaster = $derived(
+        campaign.master === data.userId ? true : false
+    );
+    //il master non viene considerato un player, inoltre un player deve essere registrato alla campagnia
+    let isPlayer= $derived(
+        !isMaster && campaign.players.some((player)=> player.nickname === data.displayName)
+    );
+    //variabile per consentire la modifica della pagina
+    let allowModify = $state(false);
+        
+    let newPageName = $state("");
 
+    let playerToKill = $state("");
+
+
+    //dialog variables
     let showConfirmationDialog = $state(false);
+    let showWikiPageCreationDialog = $state(false);    
+    let showKillDialog = $state(false);
+    let showCampaignDeletionDialog = $state(false);
 
+    //FUNZIONI
+    //SALVATAGGIO MODIFICHE
     async function save() {
         //controllo se l'utente è il master perchè solo lui può modificare tutti i campi della landingPage
         if(isMaster){
@@ -69,7 +88,8 @@
         
 
         }
-        else{//gli unici campi modificabili da tutti sono la wiki e i giocatori
+        else{
+            //gli unici campi modificabili da tutti sono la wiki e i giocatori
             campaign.pages[0].content[0].type === 'object' ? campaign.pages[0].content[0].wiki = wiki : null ;
         }
 
@@ -79,7 +99,7 @@
             headers:{'Content-type': 'application/json'},
             body:JSON.stringify(campaign)
         })
-        
+        //controllo se la chiamata è andata a buon fine
         if(!response.ok){
             const error = await response.json().catch(()=>({}));
             console.error('Save Failure',error);
@@ -91,8 +111,9 @@
             })
             return;
         }
-
+        //forzo un refresh della pagina per aggiornare il prop Data
         await invalidateAll();
+        //notifica all'utente del successo dell'operazione
         toast.success('Pagina modificata con successo',{
             action:{
                 label:'OK',
@@ -100,10 +121,9 @@
             }
         })
     }
-
+    //AGGIUNTA GIOCATORE ALLA CAMPAGNA
     async function addPlayer() {
         //non può succedere che uno sia loggato ma non abbia username però almeno typescript è contento
-        
         if(!data.displayName)return; 
         const newCharacter = FabulaUltimaCharacterScheme.parse(
             {
@@ -159,7 +179,7 @@
             }
         })
     }
-    
+    //RIMOZIONE GIOCATORE DALLA CAMPAGNA
     async function removePlayer(){
         let index = campaign.players.findIndex((player)=> player.nickname === data.userId);
         campaign.players.splice(index,1);
@@ -172,9 +192,7 @@
             }
         })
     }
-    
-    let showWikiPageCreationDialog = $state(false);
-    let newPageName = $state("");
+    //AGGIUNTA DI UNA PAGINA ALLA WIKI
     async function addWikiPage(){
         //se il nome della pagina è già presente allora esco subito 
         if(campaign.pages.some((page)=>page.title === newPageName)){
@@ -216,7 +234,7 @@
         newPageName = "";    
         await invalidateAll();
     }
-
+    //RIMOZIONE DI UNA PAGINA DALLA WIKI
     async function removeWikiPage(index:number){
 
         if(landing.content[0].type === 'object'){
@@ -229,7 +247,7 @@
         
         
     }
-
+    //AGGIORNAMENTO DEL NOME DI UNA PAGINA
     function updatePageName(oldName:string,newName:string){
         let index = campaign.pages.findIndex((page)=> page.title === oldName);
         if(index === -1) return false;
@@ -237,7 +255,7 @@
         console.info("updated");
         return true;
     }
-
+    //RIMOZIONE DI UN GIOCATORE DA PARTE DEL MASTER
     async function masterKill(name:string){
         let index = campaign.players.findIndex((player)=> player.nickname === name);
         campaign.players.splice(index,1);
@@ -250,13 +268,13 @@
             }
         })
     }
-
+    //AGGIORNAMENTO OBIETTIVI
     function updateItem(index: number, newValue: string) {
         objectives[index] = newValue;
         objectives = [...objectives]; // Triggera la reattività
         console.info("updated,list")
     }
-
+    //CANCELLAZIONE CAMPAGNA
     async function deleteCampaign(){
         
 
@@ -287,13 +305,7 @@
 
     }
 
-    let imageUrl = $derived(
-        campaign.pages[0].coverImage || ""
-    )
 
-    let playerToKill = $state("");
-    let showKillDialog = $state(false);
-    let showCampaignDeletionDialog = $state(false);
 </script>
 
 <div class="bg-lion-900 flex flex-col gap-5 items-center justify-start p-5">
@@ -321,6 +333,8 @@
                 <img src={campaign.pages[0].coverImage} alt="BackgroundPic" />
             {/if} 
         </div>
+
+        <!-- Container Principale per obiettivi, giocatori e data sessione -->
         <div class="flex flex-row justify-start px-5 gap-10">
             
             <!-- Obiettivi -->
@@ -366,7 +380,7 @@
                         Unisciti
                     </Button>
                 {:else if !isMaster}
-                    <Button class="w-20" onclick={removePlayer}>
+                    <Button class="w-20" onclick={()=>showLeaveCampaignDialog = true}>
                         Lascia
                     </Button>
                 {/if}
@@ -398,8 +412,9 @@
         </div>
 
         <Separator orientation="horizontal"></Separator>
-
-        <Button onclick={()=>showCampaignDeletionDialog = true}> Elimina Campagna </Button>
+        {#if isMaster}
+            <Button onclick={()=>showCampaignDeletionDialog = true}> Elimina Campagna </Button>
+        {/if}
 
         <Dialog.Root open={showCampaignDeletionDialog} onOpenChange={(v)=> showCampaignDeletionDialog = v}> 
             <Dialog.Content> 
@@ -452,6 +467,15 @@
             </Dialog.Content>    
         </Dialog.Root>
         
+        <Dialog.Root open={showLeaveCampaignDialog} onOpenChange={(v)=> showLeaveCampaignDialog = v}> 
+            <Dialog.Content> 
+                <Dialog.Header> 
+                    Vuoi davvero abbandonare la campagna {campaign.name}?
+                </Dialog.Header>
+                <Button class="bg-green-600 hover:bg-green-700" onclick={removePlayer}> SI</Button>
+                <Button class="bg-red-600 hover:bg-red-700" onclick={()=>showKillDialog=false}> NO </Button>
+            </Dialog.Content>    
+        </Dialog.Root>
         
    </section>
 </div>
