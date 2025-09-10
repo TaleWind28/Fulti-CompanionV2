@@ -295,13 +295,13 @@ export const FabulaUltimaPNGScheme = z.object({
     level:z.number(),
     description:z.string(),
     species:speciesScheme,
-    attributes:attributesScheme,
+    attributes:attributesScheme.default({DEX:{max:8,actual:8},INS:{max:8,actual:8},MIG:{max:8,actual:8},WLP:{max:8,actual:8}}),
     stats:statsScheme,
     affinities:affinitiesScheme,
     skills:z.array(z.object({name:z.string(),effect:z.string()})),
     specialRules:z.array(z.object({name:z.string,effect:z.string()})),
     statuses:statusScheme,
-    spells:spellScheme,
+    spells:z.array(spellScheme).default([]),
     pic:z.string().optional(),
     id:z.string()
 })

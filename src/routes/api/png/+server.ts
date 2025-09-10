@@ -1,11 +1,13 @@
 import { adminDB } from "$lib/firebase_admin";
 import type { RequestHandler } from "@sveltejs/kit";
-import { json } from "@sveltejs/kit";
+import { json} from "@sveltejs/kit";
+
 
 export const GET: RequestHandler = async ({url}) =>{
     const speciesName = url.searchParams.get('speciesName');
     if(speciesName){
-        return json({success:false})
+        //questo è da aggiustare
+        return json({success:true,species:[]})
     }
     else{
         const snapshot = await adminDB.collection('png_species').select('name').orderBy('name','asc').get();
@@ -13,3 +15,4 @@ export const GET: RequestHandler = async ({url}) =>{
         return json({success:true,speciesNames:names})
     }
 }
+

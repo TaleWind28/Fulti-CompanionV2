@@ -1,7 +1,7 @@
 import { adminDB } from '$lib/firebase_admin';
 import { FabulaUltimaPNGScheme, pngSchema, type FabulaUltimaPNG } from '$lib/zod';
-import { redirect } from '@sveltejs/kit';
-import { superValidate } from 'sveltekit-superforms';
+import { redirect, type Actions } from '@sveltejs/kit';
+import { fail, message, superValidate } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 
 export async function load({url,locals,fetch}){
@@ -55,5 +55,51 @@ export async function load({url,locals,fetch}){
             form:form,
             species:species
         }
+    }
+}
+
+export const actions: Actions = {
+    default: async ({request,locals,fetch}) =>{
+        const form = await superValidate(request,zod4(pngSchema));
+        
+        if(!form.valid){
+            return fail(400,{form,message:'Form non valido'});
+        }
+
+        const currentUser = locals.user;
+        if(!currentUser){
+            return fail(401,{form,message:'devi essere loggato per creare un personaggio'});
+        }
+
+        const uid = currentUser.uid;
+
+        const response = await fetch(`/api/png?speciesName=${form.data.specie}`);
+        const result = await response.json();
+        let specie;
+        if(result.success){
+            console.log(result);
+            specie = result.species
+        }
+
+        const createdPng = FabulaUltimaPNGScheme.parse({
+            name:form.data.name,
+            level:5,
+            description:"",
+            species:specie,
+            status:{},
+            affinities:{},
+            stats:{},
+            id:"notyetCreated"
+        })
+
+        try{
+            await  adminDB.collection('users').doc(uid).collection('png').add(createdPng)
+        }
+        catch(err){
+            console.error("Errore nel salvataggio del PNG completo su Firestore",err);
+            return fail(500, {form, message:"Impossibile salvare il personaggio nel database"});
+        }
+
+        return {form};
     }
 }
