@@ -302,6 +302,7 @@ export const FabulaUltimaPNGScheme = z.object({
     specialRules:z.array(z.object({name:z.string,effect:z.string()})),
     statuses:statusScheme,
     spells:spellScheme,
+    pic:z.string().optional(),
     id:z.string()
 })
 

@@ -9,12 +9,9 @@
 	import * as Select from "$lib/components/ui/select/index";
     import { superForm } from 'sveltekit-superforms';
     import { zod4Client } from 'sveltekit-superforms/adapters';
-    import { characterSchema, type FabulaUltimaCharacter } from '$lib/zod';
+    import { characterSchema } from '$lib/zod';
     import { uploadFile } from '$lib/utils';
-    import { PUT } from '../api/login/+server';
     import { invalidateAll } from '$app/navigation';
-
-
 
     let { data }: { data: PageData } = $props();
 	
@@ -118,13 +115,13 @@
 </script>
 
 <div class=" flex flex-col gap-10 bg-cafe_noir-900 items-center justify-center p-5">
-    
+    <!-- Action Bar per aggiungere un Personaggio -->
 	<div class="p-5 flex flex-row gap-10 bg-white items-center justify-center border rounded-2xl ">
 		<Input placeholder="Ricerca col nome del Personaggio" bind:value={searchQuery}/>
 		<Button id="character_creation_dialog" class="bg-cafe_noir-400 w-50" onclick={()=>{openCreationDialog = true}}>Crea un nuovo Personaggio</Button>
 		<Button class="bg-cafe_noir-400 w-50" onclick={handleImport}>Carica Personaggio da Json</Button>
 	</div>
-
+	<!-- Mostro le card dei Personaggi presenti in data che rispettano la query di ricerca -->
 	{#if data.characters && data.characters.length > 0}
 		{#if filteredCharacters.length>0}
 			{@const rows = (Math.floor(data.characters.length))}
@@ -135,7 +132,6 @@
 
 						</CharacterCard>
 					</div>
-					
 				{/each}
 			</div>
 		{:else}
@@ -175,25 +171,25 @@
 						<Form.Control>
 							<Form.Label >Prima Classe</Form.Label>
 							
-								<Select.Root type="single" name="prima_classe" bind:value={$formData.prima_classe as string} allowDeselect={true}>
-									
-									<Select.Trigger class="w-auto min-w-30 text-black bg-white">
-										{triggerFirstClass}
-									</Select.Trigger>
-									<Select.Content>
-										<Select.Group class="bg-white">
-											{#each classes as characterClass}
-												<Select.Item
-												value={characterClass}
-												label={characterClass}
-												disabled={characterClass.includes("Manuale")}
-												>
-													{characterClass}
-												</Select.Item>
-											{/each}
-										</Select.Group>
-									</Select.Content>
-								</Select.Root>
+							<Select.Root type="single" name="prima_classe" bind:value={$formData.prima_classe as string} allowDeselect={true}>
+								
+								<Select.Trigger class="w-auto min-w-30 text-black bg-white">
+									{triggerFirstClass}
+								</Select.Trigger>
+								<Select.Content>
+									<Select.Group class="bg-white">
+										{#each classes as characterClass}
+											<Select.Item
+											value={characterClass}
+											label={characterClass}
+											disabled={characterClass.includes("Manuale")}
+											>
+												{characterClass}
+											</Select.Item>
+										{/each}
+									</Select.Group>
+								</Select.Content>
+							</Select.Root>
 							
 						</Form.Control>
 						<Form.FieldErrors />

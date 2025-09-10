@@ -5,7 +5,7 @@ import { superValidate } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 
 export async function load({url,locals,fetch}){
-    const form = superValidate(zod4(pngSchema));
+    const form = await superValidate(zod4(pngSchema));
     const currentUser = locals.user;
 
     if(!currentUser){
@@ -14,20 +14,24 @@ export async function load({url,locals,fetch}){
     }
     let species: string[] = [];
     //recupero le specie dal db
-    const response = await fetch('/api/png',{
-        method:'GET',
-        headers:{
-            'Content-Type' : 'application/json'
-        }
-    })
+    // const response = await fetch('/api/png',{
+    //     method:'GET',
+    //     headers:{
+    //         'Content-Type' : 'application/json'
+    //     }
+    // })
 
-    const result = await response.json();
+    // const result = await response.json();
     
-    if(!result.success){
-        console.error("Errore nel recupero delle specie: ",result.message);
-    }
+    // if(!result.success){
+    //     console.error("Errore nel recupero delle specie: ",result.message);
+    // }
+    // else{
+    //     species = result.data
+    // }
 
-    let validPNGS;
+    
+    let validPNGS:FabulaUltimaPNG[] = [];
 
     try{
         const snapshot = await adminDB.collection('users').doc(currentUser.uid).collection('pngs').get();
