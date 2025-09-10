@@ -194,7 +194,7 @@
                 </span>
             </div>
 
-        </Card.Content>
+        </Card.Content> 
     
     </Card.Root>
 

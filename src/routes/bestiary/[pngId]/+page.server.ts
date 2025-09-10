@@ -35,7 +35,11 @@ export async function load({url,locals,fetch, params}){
 
 
     }
-    catch(error){
-
+    catch(error:any){
+        if(error.status !== 404 && error.status !== 500){
+            console.error("Errore del server nel caricare il personaggio:",error);
+            throw error(500, "Impossibile caricare il personaggio in questo momento.");
+        }
+        throw error;
     }
 }
