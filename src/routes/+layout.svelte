@@ -161,7 +161,10 @@
 	{/if}
 
 	<!-- componenti da renderizzare -->
-		{@render children()}
+	<div class="bg-cafe_noir-900">
+			{@render children()}
+	</div>
+
 	
 	<!-- footer -->
 	{#if page.url.pathname !== '/login'}
