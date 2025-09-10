@@ -56,7 +56,7 @@
   }
   async function handleExport(){
     const downloadableCharacter = JSON.stringify(character, null, 2);
-    downloadFile(downloadableCharacter,`${character.name.replace(/\s+/g, '') || 'accessorio'}.json`,'application/json')
+    downloadFile(downloadableCharacter,`${character.name.replace(/\s+/g, '') || 'personaggio'}.json`,'application/json')
     return;
   }
 

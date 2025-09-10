@@ -40,24 +40,26 @@
     )
     let openCreationDialog = $state(false);
 
-    let species = data.species;
+    let species:string[] = data.species;
 
-    let triggerSpecies = $derived(
-        species.find((p)=> p===$formData.specie || "Scegli una Specie ")
+    const triggerSpecies = $derived(
+        species.find((p)=> p === $formData.species) || "Scegli una Specie"
     )
 
     async function handleImport(){
 
     }
 
+    $inspect(searchQuery,"sq");
+
 </script>
 <div class="flex flex-col gap-10 bg-cafe_noir-900 items-center justify-center p-5">
     
     <!-- Action Bar per creare i png -->
     <div class="p-5 flex flex-row gap-10 bg-white items-center justify-center border rounded-2xl ">
-		<Input placeholder="Ricerca col nome del Personaggio" bind:value={searchQuery}/>
-		<Button id="character_creation_dialog" class="bg-cafe_noir-400 w-50" onclick={()=>{openCreationDialog = true}}>Crea un nuovo Personaggio</Button>
-		<Button class="bg-cafe_noir-400 w-50" onclick={handleImport}>Carica Personaggio da Json</Button>
+		<Input placeholder="Ricerca col nome del PNG" bind:value={searchQuery}/>
+		<Button id="png_creation_dialog" class="bg-cafe_noir-400 w-50" onclick={()=>{openCreationDialog = true}}>Crea un nuovo Personaggio</Button>
+		<Button class="bg-cafe_noir-400 w-50" onclick={handleImport}>Carica PNG da Json</Button>
 	</div>
     
     <!-- Mostro i png -->
@@ -66,7 +68,7 @@
             {#if filteredPngs.length>0}
                 {@const rows = (Math.floor(data.pngs.length))}
                 <div class="grid grid-cols-2 {`grid-rows-${rows}`}  gap-4">
-                    {#each data.pngs as png }
+                    {#each filteredPngs as png }
                         <PngCard png={png} showButtons={true}/> 
                     {/each}
                 </div>
@@ -86,7 +88,7 @@
                 </Dialog.Description>
             </Dialog.Header>
         
-            <form id="pngCreation" method="POST">
+            <form id="pngCreation" method="POST" use:enhance>
                 <!-- Nome PNG -->
                 <Form.Field {form} name="name"> 
                     <Form.Control> 
@@ -99,12 +101,12 @@
                 </Form.Field>
 
                 <div> 
-                    <Form.Field {form} name="specie">
+                    <Form.Field {form} name="species">
                         <Form.Control> 
                             <Form.Label> 
                                 Specie
                             </Form.Label>
-                            <Select.Root type="single" name="specie" bind:value={$formData.specie as string} allowDeselect={true}> 
+                            <Select.Root type="single" name="specie" bind:value={$formData.species as string} allowDeselect={true}> 
                                 <Select.Trigger class="w-auto min-w-30 text-black bg-white">
                                     {triggerSpecies}
                                 </Select.Trigger>
@@ -135,10 +137,3 @@
         </Dialog.Content>
     </Dialog.Root>
 </div>
-
-
-<!-- 
-<button> 
-    <a href={communityLink}> cerca PNG online</a>
-</button> 
--->

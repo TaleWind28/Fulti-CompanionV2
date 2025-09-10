@@ -285,9 +285,8 @@ export type Campaign = z.infer<typeof campaignScheme>;
 
 export const speciesScheme = z.object({
     name:z.string(),
-    bonusAP:z.number(),
-    restrictions:z.string(),
-    abilities:z.string()
+    bonusAp:z.number(),
+    rules:z.string()
 })
 
 export const FabulaUltimaPNGScheme = z.object({

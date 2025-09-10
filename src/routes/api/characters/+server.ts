@@ -18,9 +18,6 @@ export const PUT: RequestHandler = async ({request,locals}) =>{
 
     const uid = currentUser.uid;
     
-    
-    // const {id, ...characterWithoutId} = character;
-    // console.log(characterWithoutId);
     const fuCharacter = FabulaUltimaCharacterScheme.parse(data.character);
     console.log(fuCharacter, "fuc");
 

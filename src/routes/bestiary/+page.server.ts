@@ -1,7 +1,7 @@
 import { adminDB } from '$lib/firebase_admin';
 import { FabulaUltimaPNGScheme, pngSchema, type FabulaUltimaPNG } from '$lib/zod';
 import { redirect, type Actions } from '@sveltejs/kit';
-import { fail, message, superValidate } from 'sveltekit-superforms';
+import { fail, superValidate } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 
 export async function load({url,locals,fetch}){
@@ -13,38 +13,40 @@ export async function load({url,locals,fetch}){
         throw redirect(302,`/login?redirectTo=${encodeURIComponent(url.pathname)}`);
     }
     let species: string[] = [];
-    //recupero le specie dal db
-    // const response = await fetch('/api/png',{
-    //     method:'GET',
-    //     headers:{
-    //         'Content-Type' : 'application/json'
-    //     }
-    // })
+    //recupero i nomi delle specie dal db
+    const response = await fetch('/api/png',{
+        method:'GET',
+        headers:{
+            'Content-Type' : 'application/json'
+        }
+    })
 
-    // const result = await response.json();
+    const result = await response.json();
+
     
-    // if(!result.success){
-    //     console.error("Errore nel recupero delle specie: ",result.message);
-    // }
-    // else{
-    //     species = result.data
-    // }
+    if(!result.success){
+        console.error("Errore nel recupero delle specie: ",result.message);
+    }
+    else{
+        species = result.species
+    }
 
     
     let validPNGS:FabulaUltimaPNG[] = [];
 
     try{
-        const snapshot = await adminDB.collection('users').doc(currentUser.uid).collection('pngs').get();
-        const pngs = snapshot.docs.map( doc =>{
+        const snapshot = await adminDB.collection('users').doc(currentUser.uid).collection('png').get();
+        const png = snapshot.docs.map( doc =>{
             const result = FabulaUltimaPNGScheme.safeParse(doc.data());
 
             if(!result.success){
                 console.warn(`Dati non validi per il documento ${doc.id}`);
                 return null;
             }
+            console.log(result,"result");
             return result.data;
         })
-        validPNGS = pngs.filter((png):png is FabulaUltimaPNG => png !== null)
+        validPNGS = png.filter((png):png is FabulaUltimaPNG => png !== null)
     }
     catch(err){
         console.error("Errore nel recuperare i PNG da firestore");
@@ -73,27 +75,37 @@ export const actions: Actions = {
 
         const uid = currentUser.uid;
 
-        const response = await fetch(`/api/png?speciesName=${form.data.specie}`);
+        const response = await fetch(`/api/png?speciesName=${form.data.species}`);
         const result = await response.json();
         let specie;
         if(result.success){
             console.log(result);
             specie = result.species
+        }else{
+            return fail(400,{form,message:"specie non riconosciuta"});
         }
 
-        const createdPng = FabulaUltimaPNGScheme.parse({
-            name:form.data.name,
-            level:5,
-            description:"",
-            species:specie,
-            status:{},
-            affinities:{},
-            stats:{},
-            id:"notyetCreated"
-        })
+        console.log(specie,"specie");
 
         try{
-            await  adminDB.collection('users').doc(uid).collection('png').add(createdPng)
+            const docRef =   adminDB.collection('users').doc(uid).collection('png').doc()
+             
+            const id = docRef.id;
+
+            const createdPng = FabulaUltimaPNGScheme.parse({
+                name:form.data.name,
+                level:5,
+                description:"",
+                species:specie,
+                statuses:{},
+                affinities:{},
+                stats:{},
+                skills:[],
+                specialRules:[],
+                id:id
+            })
+
+            await docRef.set(createdPng);
         }
         catch(err){
             console.error("Errore nel salvataggio del PNG completo su Firestore",err);

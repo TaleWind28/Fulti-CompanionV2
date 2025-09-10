@@ -14,6 +14,7 @@ export const load: PageServerLoad = async ({ locals, params, fetch, url }) => {
     // 1. Ottieni l'ID del personaggio direttamente dall'URL
     const characterId = params.characterId;
     const uid = locals.user.uid;
+    //controllo se sto accedendo alla pagnia dalle campagna
     const otherPlayerUid = url.searchParams.get('uid');
     const master = url.searchParams.get('master') || "";
 
