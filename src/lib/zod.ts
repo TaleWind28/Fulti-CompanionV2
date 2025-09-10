@@ -1,6 +1,7 @@
-import type { ZodValidationSchema } from 'sveltekit-superforms/adapters';
+import { effect, type ZodValidationSchema } from 'sveltekit-superforms/adapters';
 import {object, string, z} from 'zod/v4';
 import { PageScheme } from './zodPages';
+import { message } from 'sveltekit-superforms';
 
 
 /* codici per schemi zod
@@ -282,6 +283,33 @@ export const campaignScheme = z.object({
 
 export type Campaign = z.infer<typeof campaignScheme>;
 
+export const speciesScheme = z.object({
+    name:z.string(),
+    bonusAP:z.number(),
+    restrictions:z.string(),
+    abilities:z.string()
+})
+
+export const FabulaUltimaPNGScheme = z.object({
+    name:z.string(),
+    level:z.number(),
+    description:z.string(),
+    species:speciesScheme,
+    attributes:attributesScheme,
+    stats:statsScheme,
+    affinities:affinitiesScheme,
+    skills:z.array(z.object({name:z.string(),effect:z.string()})),
+    specialRules:z.array(z.object({name:z.string,effect:z.string()})),
+    statuses:statusScheme,
+    spells:spellScheme,
+    id:z.string()
+})
+
+export type FabulaUltimaPNG = z.infer<typeof FabulaUltimaPNGScheme>;
+
+
+
+
 //FORM SCHEMES  
 export const characterSchema = z.object({
 	name: z.string().min(3, { message: "Il nome deve contenere almeno 3 caratteri." }).default(""),
@@ -327,3 +355,8 @@ export const campaignSchema = z.object({
 }) as ZodValidationSchema;
 
 export type FormCampaignScheme = typeof campaignSchema
+
+export const pngSchema = z.object({
+    name:z.string().min(3,{message:"Il nome deve contenere almeno 3 caratteri"}).default(""),
+    species:z.string().min(1,{message: "La specie è obbligatoria"})
+}) as ZodValidationSchema;
