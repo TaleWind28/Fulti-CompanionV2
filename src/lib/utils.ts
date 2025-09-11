@@ -156,7 +156,7 @@ export function isoToDateValue(iso: string | null | undefined): DateValue | unde
 export function createPage(data: {
   id: string;
   title: string;
-  masterID: string;
+  masterId: string;
   ownerId: string;
   summary?: string;
   coverImage?: string;

@@ -111,12 +111,12 @@
             <Separator orientation="horizontal"/>
             <!-- Secondo Blocco: Affinità -->
             <div>
-                <!-- <StatSheet
+                <StatSheet
                     affinity={png.affinities}
                     attributes={png.attributes}
                     statuses={png.statuses}
                     callbacks={()=>console.log()}
-                />  -->
+                /> 
             </div>
 
             <!-- Attacchi -->

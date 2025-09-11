@@ -13,7 +13,7 @@ export const PUT:RequestHandler = async ({request,locals}) =>{
     const page = createPage({
         id:payload.name,
         title:payload.name,
-        masterID:payload.masterId,
+        masterId:payload.masterId,
         ownerId:currentUser.uid
     })
     console.log(page);
