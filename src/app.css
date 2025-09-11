@@ -132,6 +132,18 @@
   --color-lavender_blush-700: #fff3f5;
   --color-lavender_blush-800: #fff7f8;
   --color-lavender_blush-900: #fffbfc;
+    /*Tyrian_Purple */
+ 
+    --color-tyran_purple: #70163c; 
+    --color-tyrian_purple-100: #16040c; 
+    --color-tyrian_purple-200: #2c0918; 
+    --color-tyrian_purple-300: #420d23; 
+    --color-tyrian_purple-400: #59122f; 
+    --color-tyrian_purple-500: #70163c; 
+    --color-tyrian_purple-600: #ae225c; 
+    --color-tyrian_purple-700: #da4281; 
+    --color-tyrian_purple-800: #e681ab; 
+    --color-tyrian_purple-900: #f3c0d5;
   
       /* Lion */
   --color-lion: #af9164;

@@ -2,13 +2,18 @@
 
     import * as Card from '$lib/components/ui/card/index';
     import * as Dialog from '$lib/components/ui/dialog/index';
+    import { Slider } from "bits-ui"
     import ImageUploader2 from "$lib/components/imageUploader2.svelte";
     import Button from "$lib/components/ui/button/button.svelte";
     import Label from '$lib/components/ui/label/label.svelte';
     import Input from '$lib/components/ui/input/input.svelte';
-  import Textarea from '$lib/components/ui/textarea/textarea.svelte';
-  import Separator from '$lib/components/ui/separator/separator.svelte';
-  import StatSheet from '$lib/components/sheets/statSheet.svelte';
+    import Textarea from '$lib/components/ui/textarea/textarea.svelte';
+    import Separator from '$lib/components/ui/separator/separator.svelte';
+    import StatSheet from '$lib/components/sheets/statSheet.svelte';
+    import { string } from 'zod';
+    import { elemGlams } from '$lib';
+    import Fa from 'svelte-fa';
+    import Checkbox from '$lib/components/ui/checkbox/checkbox.svelte';
     
     let { data } = $props();
     const png = data.png;
@@ -17,6 +22,9 @@
     let newImageUrl = $state("");
 
     function updateField(field:string,value:any){
+        return;
+    }
+    function updateAttribute(attribute:string,field:string,value:any){
         return;
     }
 </script>
@@ -109,31 +117,201 @@
             </div>
 
             <Separator orientation="horizontal"/>
-            <!-- Secondo Blocco: Affinità -->
-            <div>
-                <StatSheet
-                    affinity={png.affinities}
-                    attributes={png.attributes}
-                    statuses={png.statuses}
-                    callbacks={()=>console.log()}
-                /> 
+
+            <!-- Secondo Blocco: Caratteristiche -->
+            <Label> Caratteristiche</Label>
+            <div class="flex flex-row gap-5">
+                <div class="flex flex-col item-center gap-2 w-50">    
+                    {@render attributeRender(["DES","DEX"],png.attributes.DEX.max)}
+                    {@render attributeRender(["INT","INS"],png.attributes.INS.max)}
+                    {@render attributeRender(["VIG","MIG"],png.attributes.MIG.max)}
+                    {@render attributeRender(["VOL","WLP"],png.attributes.WLP.max)}
+                </div>
+                <!-- Spiegazione delle spread -->
+                <div class="rounded-md border border-tyrian_purple-700  bg-tyrian_purple-600   p-4 text-sm text-white">
+                    <p>
+                        <span class="font-semibold">Tuttofare:</span> d8, d8, d8, d8
+                    </p>
+                    <p>
+                        <span class="font-semibold">Standard:</span> d10, d8, d8, d6
+                    </p>
+                    <p>
+                        <span class="font-semibold">Specializzato:</span> d10, d10, d6, d6
+                    </p>
+
+                    <p>
+                        <span class="font-semibold">Iperspecializzato:</span> d12, d8, d6, d6
+                    </p>
+
+                    <hr class="my-2 border-gray-300" />
+
+                    <p class="w-80">
+                        Al raggiungimento dei livelli <span class="font-semibold">20</span>, <span class="font-semibold">40</span> e <span class="font-semibold">60</span>, 
+                        il Personaggio sceglie uno dei suoi Attributi e lo aumenta di una taglia di dado 
+                        (fino a un massimo di d12).
+                    </p>
+                </div>
+            </div>
+            <Separator orientation="horizontal"/>
+            
+            <!-- Terzo Blocco: Affinità -->
+            <Label> Affinità Elementali</Label>
+            <div class="flex flex-col gap-2 bg-white py-4">
+                {@render affinityRender("Fisico",png.affinities.fisico,elemGlams)}
+                {@render affinityRender("Fulmine",png.affinities.fulmine,elemGlams)}
+                {@render affinityRender("Aria",png.affinities.aria,elemGlams)}
+                {@render affinityRender("Terra",png.affinities.terra,elemGlams)}
+                {@render affinityRender("Fuoco",png.affinities.fuoco,elemGlams)}
+                {@render affinityRender("Ghiaccio",png.affinities.ghiaccio,elemGlams)}
+                {@render affinityRender("Oscurita",png.affinities.oscurita,elemGlams)}
+                {@render affinityRender("Luce",png.affinities.luce,elemGlams)}
+                {@render affinityRender("Veleno",png.affinities.veleno,elemGlams)}
+            </div>
+            <Separator orientation='horizontal' />
+            <Label>Status</Label>
+            <!-- Quarto Blocco: Status -->
+            <div class="grid grid-cols-2 gap-2 bg-white py-4">
+                {@render statusRender(["Lento","slow"],png.statuses.slow,"Destrezza ridotta di 2")}
+                {@render statusRender(["Confuso","dazed"],png.statuses.dazed,"Intuito ridotto di 2")}
+                {@render statusRender(["Furente","enraged"],png.statuses.enraged,"Destrezza ed Intuito sono ridotti di 2")}
+                {@render statusRender(["Debole","weak"],png.statuses.weak,"Vigore ridotto di 2")}
+                {@render statusRender(["Scosso","shaken"],png.statuses.shaken,"Volonta ridotta di 2")}
+                {@render statusRender(["Avvelenato","poisoned"],png.statuses.poisoned,"Vigore e Volontà sono ridotti di 2")}
+                <!-- <Separator orientation='horizontal' /> <Separator orientation='horizontal' /> -->
+                 <hr> <hr>
+                {@render statusRender(["DES UP","dexUp"],png.statuses.dexUp,"Destrezza aumentata di 2")}
+                {@render statusRender(["INT UP","insUp"],png.statuses.insUp,"Intuito aumentato di 2")}
+                {@render statusRender(["VIG UP","migUp"],png.statuses.migUp,"Vigore aumentato di 2")}
+                {@render statusRender(["VOL UP","wlpUp"],png.statuses.wlpUp,"Volontà aumentata di 2")}
+
             </div>
 
             <!-- Attacchi -->
             <div>
+
             </div> 
             <!-- Incantesmi -->
             <div>
+
             </div> 
             <!-- Altre Azioni -->
             <div>
+
             </div>    
             <!-- Regole Speciali -->
             <div>
-
+                
             </div>
         </Card.Content>    
     </Card.Root>
 </div>
 
 
+
+
+{#snippet attributeRender(attribute:string[],value:number)}
+    <div class="flex flex-row items-center justify-center">
+        <p class="w-20">{attribute[0]}</p>
+        <Slider.Root 
+            type="single" 
+            class="relative flex w-full touch-none select-none items-center" 
+            value={value}  
+            max={12} min={6} step={2}
+            onValueCommit={(value)=>{updateAttribute(attribute[1],"max",value)}}
+        >
+            {#snippet children({ tickItems, thumbItems })}
+                <!-- Traccia dello slider -->
+                <div class="relative h-2 w-full grow rounded-full bg-gray-200">
+                    <Slider.Range class="absolute h-full rounded-full bg-tyrian_purple-500 " />
+                </div>
+                    
+                <!-- Thumb -->
+                {#each thumbItems as { index } (index)}
+                <Slider.Thumb 
+                    {index}
+                    class="block h-5 w-5 rounded-full border-2 border-white border-rounded bg-white shadow transition-colors focus:outline-none  z-10"
+                />
+                {/each}
+                
+                <!-- Ticks e Labels -->
+                {#each tickItems as { index, value } (index)}
+                    <Slider.Tick 
+                        {index}
+                        class="absolute h-2 w-0.5 bg-gray-400 z-0"
+                    />
+                    {#if attribute[0] === "VOL"}    
+                        <Slider.TickLabel 
+                            {index}
+                            position="bottom"
+                            class="text-xs text-gray-600 mt-2 font-medium"
+                        >
+                            d{value}
+                        </Slider.TickLabel>
+                    {/if}
+                {/each}
+                
+            {/snippet}
+
+        </Slider.Root>
+    </div>
+           
+{/snippet}
+
+{#snippet affinityRender(affinity:string,value:any,elemGlams:any)}
+    {@const glam = elemGlams[affinity.toLowerCase()]}
+    {@const affinityValue = value.weak ? 1	: value.resistant ? 3	: value.absorb ? 4 	: value.immune ? 0 	: 2}
+    <div class="flex flex-row gap-2 items-center w-auto justify-center">
+        <Fa icon={glam.icon} class={glam.color}/>
+        <p class="w-20">{affinity}</p>
+        <Slider.Root 
+            type="single" 
+            class=" relative flex w-full touch-none select-none items-center" 
+            value={affinityValue} 
+            min={0} max={4} step={1} 
+            onValueCommit={(value)=>updateField(affinity.toLowerCase(),value)}
+            >
+            {#snippet children({ tickItems, thumbItems })}
+                <!-- Traccia dello slider -->
+                <div class="relative h-2 w-full grow rounded-full bg-gray-200">
+                    <Slider.Range class="absolute h-full rounded-full bg-tyrian_purple-500" />
+                </div>
+                    
+                <!-- Thumb -->
+                {#each thumbItems as { index } (index)}
+                <Slider.Thumb 
+                    {index}
+                    class="block h-5 w-5 rounded-full border-2 border-white border-rounded bg-white shadow transition-colors focus:outline-none  z-10"
+                />
+                {/each}
+                
+                <!-- Ticks e Labels -->
+                {#each tickItems as { index } (index)}
+                {@const labels = ["Immune","Debole","Normale","Resistente","Assorbe"]}
+                    <Slider.Tick 
+                        {index}
+                        class="absolute h-2 w-0.5 bg-gray-400 z-0"
+                    />
+                    {#if affinity === "Veleno"}    
+                        <Slider.TickLabel 
+                            {index}
+                            position="bottom"
+                            class="text-xs text-gray-600 mt-2 font-medium"
+                        >
+                            {labels[index]}
+                        </Slider.TickLabel>
+                    {/if}
+                {/each}
+            {/snippet}
+        </Slider.Root>
+    </div>
+{/snippet}
+
+
+{#snippet statusRender(status:string[],value:any,description:string)}
+    <div class="flex flex-row items-center justify-start gap-5">
+        <p class="w-20 font-semibold ">{status[0]}</p>
+        <Checkbox checked={value} onCheckedChange={(checked)=>updateField(status[1],checked)}></Checkbox>
+        <p class="text-xs">{description}</p>
+    </div>
+    
+{/snippet}
