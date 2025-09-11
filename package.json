@@ -60,5 +60,8 @@
 		"svelte-fa": "^4.0.4",
 		"sveltekit-superforms": "^2.27.1",
 		"zod": "^4.0.17"
-	}
+	},
+	"engines": {
+  "node": "20.x"
+}
 }
