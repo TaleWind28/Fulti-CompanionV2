@@ -17,7 +17,7 @@
     import Fa from 'svelte-fa';
     import Checkbox from '$lib/components/ui/checkbox/checkbox.svelte';
     import { faBullseye, faCircleMinus, faKhanda, faPlusCircle, faPlusMinus } from '@fortawesome/free-solid-svg-icons';
-  import { number, string } from 'zod';
+    import { number, string } from 'zod';
 
     
     let { data } = $props();
@@ -107,9 +107,6 @@
 <div class="flex m-5 items-center justify-center ">
     <!-- Nome, Descrizione Attributi, Livello, Specie -->
     <Card.Root class="flex flex-col w-180 bg-tyrian_purple-700 border-0"> 
-        <Card.Header> 
-            
-        </Card.Header>
         <Card.Content class="flex flex-col gap-5"> 
             <!-- Primo Blocco: Pic, Nome Livello e Descrizione -->
             <div class="flex flex-row justify-start gap-20 bg-white   p-5  rounded">
