@@ -18,6 +18,8 @@
     import Checkbox from '$lib/components/ui/checkbox/checkbox.svelte';
     import { faBullseye, faCircleMinus, faKhanda, faPlusCircle, faPlusMinus } from '@fortawesome/free-solid-svg-icons';
     import { number, string } from 'zod';
+    import PngAttackDescriptor from '$lib/components/pngComps/pngAttackDescriptor.svelte';
+    import SpellDescriptor from '$lib/components/spellDescriptor.svelte';
 
     
     let { data } = $props();
@@ -190,7 +192,7 @@
 
             <!-- Secondo Blocco: Caratteristiche -->
             <Label class="text-white"> Caratteristiche</Label>
-            <div class="flex flex-row gap-5 bg-white justify-between p-5 items-center">
+            <div class="flex flex-row gap-5 bg-white justify-between p-5 items-center rounded">
                 <div class="flex flex-col item-center gap-2 w-50">    
                     {@render attributeRender(["DES","DEX"],png.attributes.DEX.max)}
                     {@render attributeRender(["INT","INS"],png.attributes.INS.max)}
@@ -262,187 +264,21 @@
             <Label class="text-white">Attacchi</Label>
             <div class="flex flex-col gap-5 border p-2 bg-white rounded">
                 <!-- Display Attacchi -->
-                {#each png.attacks as attack, i }
-                    {@const attributes = ['DES','INT','VIG','VOL']}
-                    {@const triggerAttr1 = attributes.find(attr=>attr === attack.accuracy.first)}
-                    {@const triggerAttr2 = attributes.find(attr=>attr === attack.accuracy.second)}
-                    {@const dTrigger = damageTypes.find(type=> type.value === attack.type)?.label}
+                {#each png.attacks as attack, index }
+                    <!-- Visualizzazione con possibilità di modifica degli attacchi del personaggio -->
+                    <PngAttackDescriptor
+                        index={index}
+                        attack={attack}
+                        removeAttack={removeAttack}
+                        handleNameChange={handleNameChange}
+                        handleRangeChange={handleRangeChange}
+                        handleAttrChange={handleAttrChange}
+                        handleTypeChange={handleTypeChange}
+                        handleBonusChange={handleBonusChange}
+                        handleEffectChange={handleEffectChange}
                     
-                    <div class="grid grid-cols-2 ">
-                        <!-- Lato sx: Nome, Attributi, Tipo di danno e Range -->
-                        <span class="flex flex-col gap-2">
-                            <!-- Prima riga: Nome Attacco e Range -->
-                            <span class="flex flex-row items-center gap-5">
-                                <!-- Rimozioni Attacco -->
-                                <button onclick={()=>removeAttack(i)}>
-                                    <Fa icon={faCircleMinus}/>
-                                </button>
-                                <!-- Nome Attacco -->
-                                <span class="flex flex-col items-center gap-2">
-                                    <Label>
-                                        Nome Attacco
-                                    </Label>
-                                    <Input
-                                        value={attack.name}
-                                        placeholder="nome attacco"
-                                        oninput={(e)=>handleNameChange(i,(e.target as HTMLInputElement).value)}
-                                    />
-                                </span>
-                                <!-- Range -->
-                                <span class="flex flex-col gap-2 items-center">
-                                    <Label>Raggio</Label>
-                                    <!-- Toggle per scegliere se distanza o mischia -->
-                                    <ToggleGroup.Root type="single" value={attack.ranged} onValueChange={(v)=>handleRangeChange(i,v)}> 
-                                        <!-- Group Melee -->
-                                        <ToggleGroup.Item value="melee">
-                                            <!-- Tooltip per far capire all'utente che sta selezionando la mischia -->
-                                            <Tooltip.Provider>
-                                                <Tooltip.Root> 
-                                                    <Tooltip.Trigger> 
-                                                        <Fa icon={faKhanda}></Fa>
-                                                    </Tooltip.Trigger>
-                                                    <Tooltip.Content> 
-                                                        <p>Mischia</p>
-                                                    </Tooltip.Content>
-                                                </Tooltip.Root> 
-                                            </Tooltip.Provider>
-                                        </ToggleGroup.Item>
-
-                                        <!-- Group Ranged -->
-                                        <ToggleGroup.Item value="ranged">
-                                            <!-- Tooltip per far capire all'utente che sta selezionando la distanza -->
-                                            <Tooltip.Provider> 
-                                                <Tooltip.Root> 
-                                                    <Tooltip.Trigger> 
-                                                        <Fa icon={faBullseye}></Fa>
-                                                    </Tooltip.Trigger>
-                                                    <Tooltip.Content> 
-                                                        <p>Distanza</p>
-                                                    </Tooltip.Content>
-                                                </Tooltip.Root>
-                                            </Tooltip.Provider> 
-                                            
-                                        </ToggleGroup.Item>
-                                    </ToggleGroup.Root>
-                                </span>
-                            </span>
-                                
-
-                            <!-- Seconda Riga: Attributi e Tipo di Danno-->
-                            <span class="flex flex-row gap-2">
-
-                                <!-- Primo Attributo -->
-                                <span class="flex flex-col gap-2 items-center">
-                                    <Label>Primo Attr</Label>
-                                    <Select.Root  type="single" name="attr1" onValueChange={(v)=>handleAttrChange(v,'first',i)} value={attack.accuracy.first}>
-                                        <Select.Trigger class="w-auto min-w-15">
-                                            {triggerAttr1}
-                                        </Select.Trigger>
-                                        <Select.Content>
-                                            <Select.Group>
-                                                <Select.Label>Caratteritiche</Select.Label>
-                                                {#each attributes as attr}
-                                                    <Select.Item
-                                                        value={attr}
-                                                        label={attr}
-                                                    >
-                                                        {attr}
-                                                    </Select.Item>
-                                                {/each}
-                                            </Select.Group>
-                                        </Select.Content>
-                                    </Select.Root>
-                                </span>
-                                
-                                <!-- Secondo Attributo -->
-                                <span class="flex flex-col gap-2 items-center">
-                                    <Label>Secondo Attr</Label>
-                                    <Select.Root type="single" name="attr2" onValueChange={(v)=>handleAttrChange(v,'second',i)} value={attack.accuracy.second}>
-                                        <Select.Trigger class="w-auto min-w-15">
-                                            {triggerAttr2}
-                                        </Select.Trigger>
-                                        <Select.Content>
-                                            <Select.Group>
-                                                <Select.Label>Caratteritiche</Select.Label>
-                                                {#each attributes as attr}
-                                                    <Select.Item
-                                                        value={attr}
-                                                        label={attr}
-                                                    >
-                                                        {attr}
-                                                    </Select.Item>
-                                                {/each}
-                                            </Select.Group>
-                                        </Select.Content>
-                                    </Select.Root>
-                                </span>
-                                
-                                <!-- Damage Type -->
-                                <span class="flex flex-col gap-2 items-center">
-                                    <Label>Tipo</Label>
-                                    <Select.Root type='single' value={attack.type} onValueChange={(v)=>handleTypeChange(v,i)}>
-                                        <Select.Trigger class=" w-auto min-w-26"> 
-                                            {dTrigger}
-                                        </Select.Trigger>
-                                        <Select.Content>
-                                            <Select.Group> 
-                                                <Select.Label> 
-                                                    Tipo di Danno
-                                                </Select.Label>
-                                                {#each damageTypes as type (type.label)}
-                                                    <Select.Item
-                                                        value={type.value}
-                                                        label={type.label}
-                                                    > 
-                                                    {type.label} 
-                                                    </Select.Item>
-                                                {/each}
-                                            </Select.Group>
-                                        </Select.Content>
-                                    </Select.Root>
-                            </span>
-                                
-
-                            </span>
-                                <!-- Bonus -->
-                            <span class="flex flex-row gap-10">
-                                
-                                <!-- Accuracy -->
-                                <span class="flex flex-col w-15 gap-2 items-center">
-                                    <Label> Precisione </Label>
-                                    <Input
-                                        type='number'
-                                        value={attack.bonus.accuracy}
-                                        min={0}
-                                        oninput={(e)=>handleBonusChange('accuracy',Number((e.target as HTMLInputElement).value),i)}
-                                    />
-                                </span>
-
-                                <!-- Damage -->
-                                <span class="flex flex-col w-15 gap-2 items-center">
-                                    <Label> Danno </Label>
-                                    <Input
-                                        type='number'
-                                        value={attack.bonus.damage}
-                                        oninput={(e)=>handleBonusChange('accuracy',Number((e.target as HTMLInputElement).value),i)}
-                                    />
-                                </span>
-
-                                
-                            </span>
-
-                        </span>
-                                            
-                        <!-- Lato dx: Effetto Secondario dell'attacco -->
-                        <span class="flex flex-col gap-2 items-center">
-                            <Label> Effetto Secondario </Label>
-                            <Textarea 
-                                value={attack.effect}
-                                placeholder="Nessun Effetto Aggiuntivo"
-                                oninput={(e)=>handleEffectChange(i,(e.target as HTMLTextAreaElement).value)}
-                            />
-                        </span> 
-                    </div>
+                    />
+                    <Separator orientation="horizontal"/> 
                 {/each}
 
                 <!-- Aggiungi Attacco -->
@@ -455,6 +291,13 @@
             <!-- Incantesmi -->
             <div>
                 <!-- Display Incantesimi -->
+                {#each png.spells as spell,index }
+                    <SpellDescriptor
+                        spell={spell}
+                        onDelete={removeSpell}
+                        
+                    />
+                {/each}
                 <!-- Aggiungi Incantesimo -->
             </div> 
             

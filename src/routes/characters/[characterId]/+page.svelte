@@ -880,7 +880,7 @@
                 if(armor.def.toLowerCase().includes("taglia")){
                     const senzaSpazi = armor.def.replace(/\s+/g, "");
                     const add = senzaSpazi.split("+")[1];
-                    if(add.length === 0)return;
+                    if(add === undefined)return;
                     character.stats.DEF+= Number(add);
 
                 }else{
@@ -890,7 +890,7 @@
                 if(armor.mdef.toLowerCase().includes("taglia")){
                     const senzaSpazi = armor.mdef.replace(/\s+/g, "");
                     const add = senzaSpazi.split("+")[1];
-                    if(add.length === 0)return;
+                    if(add === undefined)return;
                     character.stats.MDEF+= Number(add);
                 }else{
                     //ho un numero da aggiungere
@@ -995,33 +995,32 @@
     }
 
     //gestione fetch delle spellList
-    async function handleFetch(){
-                
-				const characterSpellList: string[] = retrieveSpellClasses(character);
-                if (characterSpellList.length === 0){
-                    
-                
-                    return;
-                } 
-				const spellListParams = encodeURIComponent(JSON.stringify(characterSpellList));
-				const url = `/api/spells?spellList=${spellListParams}`;
-				try {
-					const res = await fetch(url, {
-						method: 'GET',
-						headers: {
-							'Content-Type': 'application/json'
-						}
-					});
-					const data = await res.json();
-                    if(!data.success){
-                        console.error("errore");
-                        return;
-                    }
-                    spellData = data.spells
-                    
-				} catch (err) {
-					console.error("Errore nel fetch spells:", err);
-				}
+    async function handleFetch(){            
+        const characterSpellList: string[] = retrieveSpellClasses(character);
+        if (characterSpellList.length === 0){
+            
+
+            return;
+        } 
+        const spellListParams = encodeURIComponent(JSON.stringify(characterSpellList));
+        const url = `/api/spells?spellList=${spellListParams}`;
+        try {
+            const res = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            const data = await res.json();
+            if(!data.success){
+                console.error("errore");
+                return;
+            }
+            spellData = data.spells
+            
+        } catch (err) {
+            console.error("Errore nel fetch spells:", err);
+        }
     }
 
     //funzione che viene invocata ogni volta che viene selezionata una nuova tab
