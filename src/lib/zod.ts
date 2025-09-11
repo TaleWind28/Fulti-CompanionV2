@@ -289,6 +289,16 @@ export const speciesScheme = z.object({
     rules:z.string()
 })
 
+export const pngAttackScheme = z.object({
+    name:z.string(),
+    accuracy:z.object({first:z.string(),second:z.string()}),
+    ranged:z.string(),
+    damage:z.number(),
+    type:z.string(),
+    bonus:z.object({accuracy:z.number(),damage:z.number()}),
+    effect:z.string()
+})
+
 export const FabulaUltimaPNGScheme = z.object({
     name:z.string(),
     level:z.number(),
@@ -300,8 +310,10 @@ export const FabulaUltimaPNGScheme = z.object({
     skills:z.array(z.object({name:z.string(),effect:z.string()})),
     specialRules:z.array(z.object({name:z.string,effect:z.string()})),
     statuses:statusScheme,
+    attacks:z.array(pngAttackScheme).default([]),
     spells:z.array(spellScheme).default([]),
     pic:z.string().optional(),
+    notes:z.array(notesScheme).default([]),
     id:z.string()
 })
 

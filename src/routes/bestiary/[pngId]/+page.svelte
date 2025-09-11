@@ -2,6 +2,8 @@
 
     import * as Card from '$lib/components/ui/card/index';
     import * as Dialog from '$lib/components/ui/dialog/index';
+    import * as ToggleGroup from "$lib/components/ui/toggle-group/index.js";
+    import * as Select from "$lib/components/ui/select/index.js";
     import { Slider } from "bits-ui"
     import ImageUploader2 from "$lib/components/imageUploader2.svelte";
     import Button from "$lib/components/ui/button/button.svelte";
@@ -9,31 +11,84 @@
     import Input from '$lib/components/ui/input/input.svelte';
     import Textarea from '$lib/components/ui/textarea/textarea.svelte';
     import Separator from '$lib/components/ui/separator/separator.svelte';
-    import StatSheet from '$lib/components/sheets/statSheet.svelte';
-    import { string } from 'zod';
     import { elemGlams } from '$lib';
     import Fa from 'svelte-fa';
     import Checkbox from '$lib/components/ui/checkbox/checkbox.svelte';
+    import { faBullseye, faKhanda, faPlusCircle } from '@fortawesome/free-solid-svg-icons';
+
     
     let { data } = $props();
-    const png = data.png;
-
+    let png = $derived(data.png);
+    let attributes = ['DES','INT','VIG','VOL'];
     let uploadPicDialog = $state(false);
     let newImageUrl = $state("");
+   
 
     function updateField(field:string,value:any){
+        png = {
+            ...png,
+            [field]:value
+        }
+        console.log(`campo ${field}:${value}`)
         return;
     }
+    
     function updateAttribute(attribute:string,field:string,value:any){
         return;
     }
+    
+    function handleRangeChange(index:number,range:string){
+        png.attacks[index].ranged = range;
+        png = {
+            ...png,
+            attacks:[...png.attacks]
+        }
+        
+    }
+
+    function handleBonusChange(field:'accuracy' | 'damage'){
+
+    }
+    
+    function handleEffectChange(){
+
+    }
+
+    function handleAttrChange(value:any,field:'first' | 'second',index:number){
+        png.attacks[index].accuracy[field] = value;
+        png = {
+            ...png,
+            attacks:png.attacks
+        }
+    }
+
+    function addAttack(){
+        png.attacks.push(
+            {
+                name:"",
+                accuracy:{first:"DES",second:"VIG"},
+                ranged:"melee",
+                damage:10,
+                type:"fisico",
+                bonus:{accuracy:0,damage:0},
+                effect:""
+            }
+        )
+        png = {
+            ...png,
+            attacks:png.attacks
+        }
+    }
+
+    
+    $inspect(png.attacks)
 </script>
 
 
 
 <div class="flex m-5 items-center justify-center">
     <!-- Nome, Descrizione Attributi, Livello, Specie -->
-    <Card.Root class="flex flex-col w-150"> 
+    <Card.Root class="flex flex-col w-180"> 
         <Card.Header> 
             
         </Card.Header>
@@ -168,6 +223,7 @@
                 {@render affinityRender("Veleno",png.affinities.veleno,elemGlams)}
             </div>
             <Separator orientation='horizontal' />
+            
             <Label>Status</Label>
             <!-- Quarto Blocco: Status -->
             <div class="grid grid-cols-2 gap-2 bg-white py-4">
@@ -185,27 +241,143 @@
                 {@render statusRender(["VOL UP","wlpUp"],png.statuses.wlpUp,"Volontà aumentata di 2")}
 
             </div>
-
+            <Separator orientation='horizontal' />
+             
             <!-- Attacchi -->
             <div>
+                <!-- Display Attacchi -->
+                {#each png.attacks as attack, i }
+                {@const triggerAttr1 = attributes.find(attr=>attr === attack.accuracy.first)}
+                {@const triggerAttr2 = attributes.find(attr=>attr === attack.accuracy.second)}
+                <div class="grid grid-cols-2 ">
+                    <span>
+                        <Input
+                        value={attack.name}
+                        placeholder="nome attacco"
+                    />
+                    <span class="flex flex-row">
+                        <!-- Primo Attributo -->
+                        <Select.Root type="single" name="attr1" onValueChange={(v)=>handleAttrChange(v,'first',i)} value={attack.accuracy.first}>
+                            <Select.Trigger class="w-auto min-w-30">
+                                {triggerAttr1}
+                            </Select.Trigger>
+                            <Select.Content>
+                                <Select.Group>
+                                    <Select.Label>Caratteritiche</Select.Label>
+                                    {#each ['DES','INT','VIG','VOL'] as attr}
+                                        <Select.Item
+                                            value={attr}
+                                            label={attr}
+                                        >
+                                            {attr}
+                                        </Select.Item>
+                                    {/each}
+                                </Select.Group>
+                            </Select.Content>
+                        </Select.Root>
+                        
+                        <!-- Secondo Attributo -->
+                        <Select.Root type="single" name="attr2" onValueChange={(v)=>handleAttrChange(v,'second',i)} value={attack.accuracy.second}>
+                            <Select.Trigger class="w-auto min-w-30">
+                                {triggerAttr2}
+                            </Select.Trigger>
+                            <Select.Content>
+                                <Select.Group>
+                                    <Select.Label>Caratteritiche</Select.Label>
+                                    {#each ['DES','INT','VIG','VOL'] as attr}
+                                        <Select.Item
+                                            value={attr}
+                                            label={attr}
+                                        >
+                                            {attr}
+                                        </Select.Item>
+                                    {/each}
+                                </Select.Group>
+                            </Select.Content>
+                        </Select.Root>
+                        
+                        <!-- Damage Type -->
+                        <span>
 
-            </div> 
+                        </span>
+
+                        <!-- Ranged -->
+                        <span class="">
+                            <ToggleGroup.Root type="single" value={attack.ranged} onValueChange={(v)=>handleRangeChange(i,v)}> 
+                                <ToggleGroup.Item value="melee"> 
+                                    <Fa icon={faKhanda}></Fa>
+                                </ToggleGroup.Item>
+                                <ToggleGroup.Item value="ranged"> 
+                                    <Fa icon={faBullseye}></Fa>
+                                </ToggleGroup.Item>
+                            </ToggleGroup.Root>
+                        </span>
+                    </span>
+                        <!-- Bonus -->
+                    <span class="flex flex-row">
+                        
+                        <!-- Accuracy -->
+                        <span class="flex flex-col">
+                            <Label> Precisione </Label>
+                            <Input
+                                type='number'
+                                value={attack.bonus.accuracy}
+                                min={0}
+                                oninput={()=>handleBonusChange('accuracy')}
+                            />
+                        </span>
+
+                        <!-- Damage -->
+                        <span class="flex flex-col">
+                            <Label> Danno </Label>
+                            <Input
+                                type='number'
+                                value={attack.bonus.damage}
+                                min={0}
+                                oninput={()=>handleBonusChange('damage')}
+                            />
+                        </span>
+
+                    </span>
+                </span>
+                                        
+                    <!-- Effetto -->
+                    <Textarea 
+                        value={attack.effect}
+                        placeholder="Nessun Effetto Aggiuntivo"
+                        oninput={handleEffectChange}
+                    />
+                </div>
+                    
+
+                {/each}
+                <!-- Aggiungi Attacco -->
+                <button onclick={addAttack}>
+                    <Fa icon={faPlusCircle}/>
+                </button>
+
+            </div>
+
             <!-- Incantesmi -->
             <div>
-
+                <!-- Display Incantesimi -->
+                <!-- Aggiungi Incantesimo -->
             </div> 
+            
             <!-- Altre Azioni -->
             <div>
-
+                <!-- Display Azioni -->
+                <!-- Aggiungi Azione -->
             </div>    
+            
             <!-- Regole Speciali -->
             <div>
-                
+                <!-- Display Regole -->
+                <!-- Aggiungi Regole -->
             </div>
         </Card.Content>    
     </Card.Root>
 </div>
-
 
 
 
