@@ -238,7 +238,7 @@
             
             <Label>Status</Label>
             <!-- Quarto Blocco: Status -->
-            <div class="grid grid-cols-2 gap-2 bg-white py-4">
+            <div class="grid grid-cols-2 gap-2 bg-white py-4 gap-5 border p-2">
                 {@render statusRender(["Lento","slow"],png.statuses.slow,"Destrezza ridotta di 2")}
                 {@render statusRender(["Confuso","dazed"],png.statuses.dazed,"Intuito ridotto di 2")}
                 {@render statusRender(["Furente","enraged"],png.statuses.enraged,"Destrezza ed Intuito sono ridotti di 2")}
@@ -256,11 +256,10 @@
             <Separator orientation='horizontal' />
              
             <!-- Attacchi -->
-            <div class="flex flex-col gap-5">
+            <div class="flex flex-col gap-5 border p-2 ">
                 <!-- Display Attacchi -->
                 {#each png.attacks as attack, i }
                     {@const attributes = ['DES','INT','VIG','VOL']}
-
                     {@const triggerAttr1 = attributes.find(attr=>attr === attack.accuracy.first)}
                     {@const triggerAttr2 = attributes.find(attr=>attr === attack.accuracy.second)}
                     {@const dTrigger = damageTypes.find(type=> type.value === attack.type)?.label}
@@ -270,9 +269,11 @@
                         <span class="flex flex-col gap-2">
                             <!-- Prima riga: Nome Attacco e Range -->
                             <span class="flex flex-row items-center gap-5">
+                                <!-- Rimozioni Attacco -->
                                 <button onclick={()=>removeAttack(i)}>
                                     <Fa icon={faCircleMinus}/>
                                 </button>
+                                <!-- Nome Attacco -->
                                 <span class="flex flex-col items-center gap-2">
                                     <Label>
                                         Nome Attacco
@@ -287,7 +288,6 @@
                                     <Label>Raggio</Label>
                                     <!-- Toggle per scegliere se distanza o mischia -->
                                     <ToggleGroup.Root type="single" value={attack.ranged} onValueChange={(v)=>handleRangeChange(i,v)}> 
-                                        
                                         <!-- Group Melee -->
                                         <ToggleGroup.Item value="melee">
                                             <!-- Tooltip per far capire all'utente che sta selezionando la mischia -->
