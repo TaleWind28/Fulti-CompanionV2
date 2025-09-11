@@ -17,6 +17,7 @@
     import Fa from 'svelte-fa';
     import Checkbox from '$lib/components/ui/checkbox/checkbox.svelte';
     import { faBullseye, faCircleMinus, faKhanda, faPlusCircle, faPlusMinus } from '@fortawesome/free-solid-svg-icons';
+  import { number, string } from 'zod';
 
     
     let { data } = $props();
@@ -71,6 +72,11 @@
 
     }
 
+    function handleNameChange(index:number, value:string){
+        png.attacks[index].name = value;
+        updateField('attacks',png.attacks);
+    }
+
     function addAttack(){
         png.attacks.push(
             {
@@ -98,15 +104,15 @@
 
 
 
-<div class="flex m-5 items-center justify-center">
+<div class="flex m-5 items-center justify-center ">
     <!-- Nome, Descrizione Attributi, Livello, Specie -->
-    <Card.Root class="flex flex-col w-180"> 
+    <Card.Root class="flex flex-col w-180 bg-tyrian_purple-700 border-0"> 
         <Card.Header> 
             
         </Card.Header>
         <Card.Content class="flex flex-col gap-5"> 
             <!-- Primo Blocco: Pic, Nome Livello e Descrizione -->
-            <div class="flex flex-row justify-start gap-20">
+            <div class="flex flex-row justify-start gap-20 bg-white   p-5  rounded">
                 <!-- Immagine PNG -->
                 <span class="flex flex-col gap-2">
                     <img src={png?.pic} alt="charPic" class="w-40 h-40 border border-black">
@@ -186,8 +192,8 @@
             <Separator orientation="horizontal"/>
 
             <!-- Secondo Blocco: Caratteristiche -->
-            <Label> Caratteristiche</Label>
-            <div class="flex flex-row gap-5">
+            <Label class="text-white"> Caratteristiche</Label>
+            <div class="flex flex-row gap-5 bg-white justify-between p-5 items-center">
                 <div class="flex flex-col item-center gap-2 w-50">    
                     {@render attributeRender(["DES","DEX"],png.attributes.DEX.max)}
                     {@render attributeRender(["INT","INS"],png.attributes.INS.max)}
@@ -222,8 +228,8 @@
             <Separator orientation="horizontal"/>
             
             <!-- Terzo Blocco: Affinità -->
-            <Label> Affinità Elementali</Label>
-            <div class="flex flex-col gap-2 bg-white py-4">
+            <Label class="text-white"> Affinità Elementali</Label>
+            <div class="flex flex-col gap-2 bg-white py-4 rounded p-4">
                 {@render affinityRender("Fisico",png.affinities.fisico,elemGlams)}
                 {@render affinityRender("Fulmine",png.affinities.fulmine,elemGlams)}
                 {@render affinityRender("Aria",png.affinities.aria,elemGlams)}
@@ -236,9 +242,9 @@
             </div>
             <Separator orientation='horizontal' />
             
-            <Label>Status</Label>
+            <Label class="text-white">Status</Label>
             <!-- Quarto Blocco: Status -->
-            <div class="grid grid-cols-2 gap-2 bg-white py-4 gap-5 border p-2">
+            <div class="grid grid-cols-2 bg-white py-4 gap-5 rounded p-2">
                 {@render statusRender(["Lento","slow"],png.statuses.slow,"Destrezza ridotta di 2")}
                 {@render statusRender(["Confuso","dazed"],png.statuses.dazed,"Intuito ridotto di 2")}
                 {@render statusRender(["Furente","enraged"],png.statuses.enraged,"Destrezza ed Intuito sono ridotti di 2")}
@@ -256,7 +262,8 @@
             <Separator orientation='horizontal' />
              
             <!-- Attacchi -->
-            <div class="flex flex-col gap-5 border p-2 ">
+            <Label class="text-white">Attacchi</Label>
+            <div class="flex flex-col gap-5 border p-2 bg-white rounded">
                 <!-- Display Attacchi -->
                 {#each png.attacks as attack, i }
                     {@const attributes = ['DES','INT','VIG','VOL']}
@@ -279,8 +286,9 @@
                                         Nome Attacco
                                     </Label>
                                     <Input
-                                    value={attack.name}
-                                    placeholder="nome attacco"
+                                        value={attack.name}
+                                        placeholder="nome attacco"
+                                        oninput={(e)=>handleNameChange(i,(e.target as HTMLInputElement).value)}
                                     />
                                 </span>
                                 <!-- Range -->
