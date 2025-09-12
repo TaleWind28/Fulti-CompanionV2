@@ -9,9 +9,8 @@
     import { superForm } from 'sveltekit-superforms';
     import { zod4Client } from 'sveltekit-superforms/adapters';
     import { pngSchema, type FabulaUltimaPNG } from '$lib/zod.js';
-
-    //pensare se implementare
-    let communityLink = "/bestiary/communityBestiary/";
+    import { invalidateAll } from '$app/navigation';
+    import { uploadFile } from '$lib/utils.js';
 
     let { data } = $props();
     //inizializzo il superform, e gestisco l'update
@@ -47,9 +46,58 @@
     )
 
     async function handleImport(){
+        try{
+			
+			const {name, content} = await uploadFile('.json');
+			
+			const parsedCharacter = await JSON.parse(content);
+			
 
+			if(parsedCharacter.code !== 6) throw new Error("Il File non Rappresenta un PNG")
+
+			const response = await fetch('/api/png',{
+				method:'PUT',
+				headers:{
+					'Content-Type':'application/json'
+				},
+				body:JSON.stringify({
+					png: parsedCharacter
+				})
+				
+			});
+
+			if(!response.ok){
+
+				toast.error( 'Impossibile importare il PNG.',{
+					action:{
+						label:"OK",
+						onClick: () =>{console.info("undo")}
+					}
+				});
+				return;
+			}
+
+			await invalidateAll();
+			toast.success('Personaggio importato con successo',{
+				action:{
+						label:"OK",
+						onClick: () =>{console.info("undo")}
+					}
+			});
+
+		}catch(error){
+			toast.error(`Errore nell'importazione del file`,{
+				description: `Il file selezionato non rappresenta PNG Json : ${error}`,
+				action: {
+					label: "OK",
+					onClick: () => console.info("Undo")
+				}
+			});
+		}
     }
 
+        // Questa funzione verrà chiamata al click del pulsante
+  
     $inspect(searchQuery,"sq");
 
 </script>

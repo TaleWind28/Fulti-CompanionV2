@@ -7,11 +7,51 @@
     import { elemGlams } from '$lib';
     import { downloadFile } from '$lib/utils';
     import { toast } from 'svelte-sonner';
+    import { invalidateAll } from '$app/navigation';
 
     let {png, showButtons} : {png:FabulaUltimaPNG, showButtons:boolean} = $props();
-    async function handleDelete(pngId:string) {
-      toast.error("implementami");
+    async function handleDelete(pngId: string) {
+    // 1. Chiedi conferma all'utente (buona pratica UX)
+    if (!confirm('Sei sicuro di voler eliminare questo personaggio? L\'azione è irreversibile.')) {
+      return;
     }
+
+    // 2. Esegui la chiamata all'endpoint API
+    try {
+      const response = await fetch(`/api/png`, {
+        method: 'DELETE',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({pngId})
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(`Errore: 'Impossibile eliminare il personaggio.'`,{
+        action:{
+                label:"OK",
+                onClick: () =>{console.info("undo")}
+            }
+        });
+        return;
+      }
+
+      //ricarica la pagina
+      await invalidateAll();
+      toast.success('Personaggio eliminato con successo!',{
+        action:{
+						label:"OK",
+						onClick: () =>{console.info("undo")}
+					}
+      });
+
+    } catch (err) {
+      console.error('Errore nella richiesta di cancellazione:', err);
+      toast.error('Si è verificato un errore di rete. Riprova.',{action:{
+						label:"OK",
+						onClick: () =>{console.info("undo")}
+					}});
+    }
+  }
 
     async function handleExport() {
       const downloadablePNG = JSON.stringify(png, null, 2);

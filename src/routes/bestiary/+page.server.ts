@@ -102,6 +102,7 @@ export const actions: Actions = {
                 stats:{},
                 skills:[],
                 specialRules:[],
+                bonus:{hp:0,mp:0,def:0,mdef:0},
                 id:id
             })
 

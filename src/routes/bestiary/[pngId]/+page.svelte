@@ -199,7 +199,7 @@
             const response = await fetch(`/api/png`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(png)
+                body: JSON.stringify({png})
             });
             
             if (response.ok) {
@@ -301,7 +301,15 @@
     <!-- PNG -->
     <Card.Root class="flex flex-col w-180 bg-tyrian_purple-700 border-0"> 
         <Card.Content class="flex flex-col gap-5"> 
-            <!-- Primo Blocco: Pic, Nome Livello e Descrizione -->
+            <!-- Primo Blocco: Spiegazione bonus di specie -->
+            <Label> Specie </Label>
+            <div class="flex flex-col bg-white p-5 rounded">
+                <h1 class="flex flex-row">
+                    <p class="font-bold">{png.species.name}</p>: {png.species.rules}
+                </h1>
+                <h2 class="flex flex-row">Numero minimo di abilità: <p>{png.species.bonusAp}</p></h2>
+            </div>
+            <!-- Secondo Blocco: Pic, Nome Livello e Descrizione -->
             <div class="flex flex-row justify-start gap-20 bg-white   p-5  rounded">
                 <!-- Immagine PNG -->
                 <span class="flex flex-col gap-2">
@@ -360,7 +368,7 @@
                                 id="name"
                                 value={png.level}
                                 type="number"
-                                oninput={(e)=> updateField('level',(e.target as HTMLInputElement).value)}
+                                oninput={(e)=> updateField('level',Number((e.target as HTMLInputElement).value))}
                             />
                         </span>
                     </section>
@@ -381,7 +389,7 @@
 
             <Separator orientation="horizontal"/>
 
-            <!-- Secondo Blocco: Caratteristiche -->
+            <!-- Terzo Blocco: Caratteristiche -->
             <Label class="text-white"> Caratteristiche</Label>
             <div class="flex flex-row gap-5 bg-white justify-between p-5 items-center rounded">
                 <div class="flex flex-col item-center gap-2 w-50">    
@@ -417,7 +425,7 @@
             </div>
             <Separator orientation="horizontal"/>
 
-            <!-- Terzo Blocco: Modifica Manuale -->
+            <!-- Quarto Blocco: Modifica Manuale -->
             <div class="grid grid-cols-4 gap-5 items-center bg-white rounded p-5">
                 <!-- Colonna Sx: Visualizzazione Statistiche -->
                     <!-- HP ed MP -->
@@ -480,7 +488,7 @@
                     
             </div>
             
-            <!-- Terzo Blocco: Affinità -->
+            <!-- Quinto Blocco: Affinità -->
             <Label class="text-white"> Affinità Elementali</Label>
             <div class="flex flex-col gap-2 bg-white py-4 rounded p-4">
                 {@render affinityRender({label:"Fisico",value:"fisico"},png.affinities.fisico,elemGlams)}

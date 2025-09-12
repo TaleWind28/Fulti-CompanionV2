@@ -315,7 +315,8 @@ export const FabulaUltimaPNGScheme = z.object({
     pic:z.string().optional(),
     notes:z.array(notesScheme).default([]),
     bonus:z.object({hp:z.number(),mp:z.number(),def:z.number(),mdef:z.number()}),
-    id:z.string()
+    id:z.string(),
+    code:z.number().default(6)
 })
 
 export type FabulaUltimaPNG = z.infer<typeof FabulaUltimaPNGScheme>;

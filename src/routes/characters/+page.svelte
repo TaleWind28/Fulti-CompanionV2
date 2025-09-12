@@ -96,8 +96,8 @@
 			});
 
 		}catch(error){
-			toast.error("Errore nell'importazione del file",{
-				description: "Il file selezionato non rappresenta un'accessorio Json",
+			toast.error(`Errore nell'importazione del file: ${error}`,{
+				description: "Il file selezionato non rappresenta Personaggio Json",
 				action: {
 					label: "OK",
 					onClick: () => console.info("Undo")

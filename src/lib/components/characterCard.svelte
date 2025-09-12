@@ -13,7 +13,7 @@
     
 
 
-    // Questa funzione verrà chiamata al click del pulsante
+  
   async function handleDelete(characterId: string) {
     // 1. Chiedi conferma all'utente (buona pratica UX)
     if (!confirm('Sei sicuro di voler eliminare questo personaggio? L\'azione è irreversibile.')) {
