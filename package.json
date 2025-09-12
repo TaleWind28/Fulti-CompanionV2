@@ -61,7 +61,7 @@
 		"sveltekit-superforms": "^2.27.1",
 		"zod": "^4.0.17"
 	},
-	"engines": {
-  "node": "20.x"
-}
+	 "overrides": {
+    "cookie": "^0.7.1"
+  }
 }
