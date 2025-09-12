@@ -12,10 +12,14 @@
     import { elemGlams } from '$lib';
     import Fa from 'svelte-fa';
     import Checkbox from '$lib/components/ui/checkbox/checkbox.svelte';
-    import {  faPlusCircle } from '@fortawesome/free-solid-svg-icons';
+    import {  faPlusCircle, faSave } from '@fortawesome/free-solid-svg-icons';
 
     import PngAttackDescriptor from '$lib/components/pngComps/pngAttackDescriptor.svelte';
     import SimpleDescriptor from '$lib/components/pngComps/simpleDescriptor.svelte';
+    import SpellCrafter from '$lib/components/pngComps/spellCrafter.svelte';
+    import type { Spell } from '$lib/zod.js';
+    import { toast } from 'svelte-sonner';
+    import { invalidateAll } from '$app/navigation';
 
     
     let { data } = $props();
@@ -23,6 +27,9 @@
     
     let uploadPicDialog = $state(false);
     let newImageUrl = $state("");
+    let hasBeenChanged = $state(false);
+
+    $inspect(png)
    
 
     function updateField(field:string,value:any){
@@ -137,9 +144,106 @@
         updateField(superField,png[superField]);
     }
 
+    function addSpell(){
+        png.spells.push(
+            {
+                name:"",
+                description:"",
+                targets:{max:0,description:""},
+                cost:0,
+                duration:"",
+                special:"",
+                offensive:false,
+                list:"png"
+            }
+        )
+        updateField('spells',png.spells);
+    }
+
+    const spellBacks = {
+        updateSpell: handleSpellChange,
+        updateMaxTargets: handleSpellMaxTargetsChange,
+        updateTargetsDescription: handleSpellTargetsDescriptionChange,
+        updateOffensiveSpell:(index:number,value:string) => { 
+            if(value === 'offensive')png.spells[index].offensive = true;
+            else png.spells[index].offensive = false;
+
+            updateField('spells',png.spells);
+        },
+        removeSpell: (index:number) => { 
+            png.spells.splice(index,1);
+            updateField('spells',png.spells);
+        }
+    }
+
+    function handleSpellChange<K extends Exclude<keyof Spell, 'targets'>>(index: number,field: K,value: Spell[K]) {
+        png.spells[index][field] = value;
+        updateField('spells', png.spells);
+    }
     
+    function handleSpellMaxTargetsChange(index:number, value: number){
+        png.spells[index].targets.max = value
+        updateField('spells',png.spells)
+    }
+
+    function handleSpellTargetsDescriptionChange(index:number, value: string){
+        png.spells[index].targets.description = value
+        updateField('spells',png.spells)
+    }
     
-    $inspect(png)
+    async function save(){
+         try {
+               
+
+                const response = await fetch(`/api/png`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(png)
+                });
+                
+                if (response.ok) {
+                   
+                    toast.success('Personaggio salvato con successo!',{
+                        action:{
+                            label:"OK",
+                            onClick:()=>console.info("Undo")
+                        }
+                    })
+                    await invalidateAll();
+                    hasBeenChanged = false;
+                } else {
+                    console.error(response.status);
+                    let errorMessage = "";
+                    switch(response.status){
+                        case 404:errorMessage = 'PNG non trovato o non appartenente a te';break;
+                        case 500: errorMessage = 'Errore del Server'
+                    }
+                    toast.error(`${response.status}: ${errorMessage}`,{
+                        action:{
+                            label:"OK",
+                            onClick:()=>console.info(`Save Error: ${response.status}: ${errorMessage}`)
+                        }
+                    })
+                    console.error('Errore nel salvataggio');
+                }
+            } catch (error) {
+                console.error('Errore di rete:', error);
+            }
+        return;
+    }
+
+   $effect(()=>{        
+        if(JSON.stringify($state.snapshot(png)) !== JSON.stringify(data.png)){
+            hasBeenChanged = true;
+            console.info("cambiato");  
+        }
+
+        else{
+            hasBeenChanged = false;
+            console.info("annullato");
+        }
+    });
+
 </script>
 
 
@@ -329,12 +433,21 @@
            
 
             <!-- Incantesmi -->
-            <div>
+            <Label class="text white"> Incantesimi </Label>
+            <div class="flex flex-col gap-5 border p-2 bg-white rounded">
                 <!-- Display Incantesimi -->
-                <!-- {#each png.spells as spell,index }
-                    
-                {/each} -->
+                {#each png.spells as spell,index }
+                    <SpellCrafter
+                        spell={spell}
+                        index={index}
+                        callbacks={spellBacks}
+                    />
+                {/each}
+                <Separator orientation="horizontal"/>
                 <!-- Aggiungi Incantesimo -->
+                <button onclick={addSpell}>
+                    <Fa icon={faPlusCircle}/>
+                 </button>
             </div> 
             
             <Separator orientation="horizontal"/> 
@@ -382,6 +495,16 @@
             </div>
         </Card.Content>    
     </Card.Root>
+    <!-- Pulsante per salvare modifiche -->
+    {#if hasBeenChanged}
+        <button 
+            onclick={save}
+            class="fixed bottom-6 right-6 bg-green-600 hover:bg-green-700 text-white p-4 rounded-full shadow-lg transition-all duration-300 ease-in-out hover:scale-110 focus:outline-none focus:ring-4 focus:ring-green-300"
+            aria-label="Salva modifiche"
+        >
+            <Fa icon={faSave}/>
+        </button>
+    {/if}
 </div>
 
 
