@@ -20,6 +20,8 @@
     import type { Spell } from '$lib/zod.js';
     import { toast } from 'svelte-sonner';
     import { invalidateAll } from '$app/navigation';
+    import Note from '$lib/components/note.svelte';
+    import { setContext } from 'svelte';
 
     
     let { data } = $props();
@@ -247,24 +249,19 @@
         updateField('bonus',png.bonus);
     }
     
-    function checkUp() {        
+    function checkUp() { 
+   
         //calcolo HP ed MP 
         png.stats.HP.max = (5*png.attributes.MIG.max) + Number(png.level);
         png.stats.MP.max = (5*png.attributes.WLP.max) + Number(png.level);
         
-        //applico i valori aggiuntivi 
-        let totals = png.bonus;
 
         //aggiorno i massimi
-        png.stats.HP.max += totals.hp
-        png.stats.MP.max += totals.mp
+        png.stats.HP.max += png.bonus.hp;
+        png.stats.MP.max += png.bonus.mp;
         //calcolo difesa e difesa magica 
-        png.stats.DEF = png.attributes.DEX.actual + totals.def;
-        png.stats.MDEF = png.attributes.INS.actual +totals.mdef; 
-    
-        //controllo se gli attuali sono maggiori dei massimi ed in caso li normalizzo
-        png.stats.HP.actual = Math.min(png.stats.HP.max,png.stats.HP.actual);
-        png.stats.MP.actual = Math.min(png.stats.MP.max,png.stats.MP.actual);
+        png.stats.DEF = png.attributes.DEX.max  + png.bonus.def;
+        png.stats.MDEF = png.attributes.INS.max + png.bonus.mdef; 
 
         //aggiorno i valori attuali con i massimi -> il png non deve "usato" online
         updateActuals();
@@ -281,7 +278,21 @@
             console.info("annullato");
         }
     });
+    type DeleteNote = (noteId:number)=>boolean;
+    type UpdateNote = (noteId:number,field:'description' | 'title',value:string)=>boolean;
+    function updateNote(noteId:number,field:"description" | "title" ,value:string){
+        png.notes[noteId][field] = value;
+        updateField('notes',png.notes);
+        return true;
+    }
 
+    function deleteNote(noteId:number){
+        let deleteIndex = png.notes.findIndex((n)=>n.id === noteId);
+        png.notes.splice(deleteIndex,1);
+        return true;
+    }
+    setContext<DeleteNote>('deleteNote',deleteNote);
+    setContext<UpdateNote>('updateNote',updateNote);
 </script>
 
 
@@ -407,77 +418,66 @@
             <Separator orientation="horizontal"/>
 
             <!-- Terzo Blocco: Modifica Manuale -->
-            <div class="grid grid-cols-2 gap-5 items-center bg-white rounded p-5">
+            <div class="grid grid-cols-4 gap-5 items-center bg-white rounded p-5">
                 <!-- Colonna Sx: Visualizzazione Statistiche -->
-                <span class="flex flex-col gap-5">
                     <!-- HP ed MP -->
-                    <span class="flex flex-row items-center gap-5">
-                        <span class="flex flex-col gap-2">
-                            <Label>HP</Label>
-                            <p>{png.stats.HP.max}</p>
-                        </span>
-                        <span class="flex flex-col gap-2">
-                            <Label>MP</Label>
-                            <p>{png.stats.MP.max}</p>
-                        </span>
+                    <span class="flex flex-col gap-2">
+                        <Label>HP</Label>
+                        <p>{png.stats.HP.max}</p>
                     </span>
-
+                    <span class="flex flex-col gap-2">
+                        <Label>MP</Label>
+                        <p>{png.stats.MP.max}</p>
+                    </span>
+                
                     <!-- DEF, MDEF -->
-                    <span class="flex flex-row items-center gap-5">
-                        <span class="flex flex-col gap-2">
-                            <Label>DEF</Label>
-                            <p>{png.stats.DEF}</p>
-                        </span>
-                        <span class="flex flex-col gap-2">
-                            <Label>MDEF</Label>
-                            <p>{png.stats.MDEF}</p>
-                        </span>
+                    <span class="flex flex-col gap-2">
+                        <Label>DEF</Label>
+                        <p>{png.stats.DEF}</p>
                     </span>
-                </span> 
+                    <span class="flex flex-col gap-2">
+                        <Label>MDEF</Label>
+                        <p>{png.stats.MDEF}</p>
+                    </span>
                 
                 
                 <!-- Colonna Dx: Modifica Statistiche -->
-                <span class="flex flex-col gap-5">
                     <!-- HP ed MP -->
-                    <span class="flex flex-row items-center gap-5">
-                        <span class="flex flex-col gap-2">
-                            <Label>HP</Label>
-                            <Input
-                                value={png.bonus.hp}
-                                type='number'
-                                oninput={(e)=>updateBonus('hp',Number((e.target as HTMLInputElement).value))}
-                            />
-                        </span>
-                        <span class="flex flex-col gap-2">
-                            <Label>MP</Label>
-                            <Input
-                                value={png.bonus.mp}
-                                type='number'
-                                oninput={(e)=>updateBonus('mp',Number((e.target as HTMLInputElement).value))}
-                            />
-                        </span>
+                    <span class="flex flex-col gap-2">
+                        <Label>HP</Label>
+                        <Input
+                            value={png.bonus.hp}
+                            type='number'
+                            oninput={(e)=>updateBonus('hp',Number((e.target as HTMLInputElement).value))}
+                        />
                     </span>
-
+                    <span class="flex flex-col gap-2">
+                        <Label>MP</Label>
+                        <Input
+                            value={png.bonus.mp}
+                            type='number'
+                            oninput={(e)=>updateBonus('mp',Number((e.target as HTMLInputElement).value))}
+                        />
+                    </span>
+                   
                     <!-- DEF, MDEF -->
-                    <span class="flex flex-row items-center gap-5">
                         <span class="flex flex-col gap-2">
-                            <Label>DEF</Label>
-                            <Input
-                                value={png.bonus.def}
-                                type='number'
-                                oninput={(e)=>updateBonus('def',Number((e.target as HTMLInputElement).value))}
-                            />
-                        </span>
-                        <span class="flex flex-col gap-2">
-                            <Label>MDEF</Label>
-                            <Input
-                                value={png.bonus.mdef}
-                                type='number'
-                                oninput={(e)=>updateBonus('mdef',Number((e.target as HTMLInputElement).value))}
-                            />
-                        </span>
+                        <Label>DEF</Label>
+                        <Input
+                            value={png.bonus.def}
+                            type='number'
+                            oninput={(e)=>updateBonus('def',Number((e.target as HTMLInputElement).value))}
+                        />
                     </span>
-                </span>
+                    <span class="flex flex-col gap-2">
+                        <Label>MDEF</Label>
+                        <Input
+                            value={png.bonus.mdef}
+                            type='number'
+                            oninput={(e)=>updateBonus('mdef',Number((e.target as HTMLInputElement).value))}
+                        />
+                    </span>
+                    
             </div>
             
             <!-- Terzo Blocco: Affinità -->
@@ -584,6 +584,19 @@
                 {/each}
                 <!-- Aggiungi Regole -->
                 <button onclick={()=>addDescriptor('specialRules')}>
+                    <Fa icon={faPlusCircle}/>
+                </button>
+            </div>
+
+            <!-- Note -->
+            <Label class="text-white"> Note </Label>
+            <div class="rounded bg-white p-2 flex flex-col gap-5">  
+                {#each png.notes as nota}
+                    <Note
+                        note={nota}
+                    />
+                {/each}
+                <button onclick={()=>{png.notes.push({title:"",description:"",id:png.notes.length}); updateField('notes',png.notes)}}>
                     <Fa icon={faPlusCircle}/>
                 </button>
             </div>
