@@ -1,4 +1,4 @@
-import { FabulaUltimaCharacterScheme, type Benefits, type FabulaUltimaCharacter, type ritualKey, type statusKey } from "./zod";
+import { FabulaUltimaCharacterScheme, type Benefits, type FabulaUltimaCharacter, type FabulaUltimaPNG, type ritualKey, type statusKey } from "./zod";
 
 export function getClassBenefits(character:FabulaUltimaCharacter, className:string) {
     if (!character.classes) return null;
@@ -15,6 +15,9 @@ export function hasStatus(character:FabulaUltimaCharacter, statusName:statusKey)
   return character.status && character.status[statusName] === true;
 }
 
+export function pngHasStatus(png:FabulaUltimaPNG, statusName:statusKey) {
+  return png.statuses && png.statuses[statusName] === true;
+}
 
 export function hasAbility(character:FabulaUltimaCharacter,skillName:string){
   for(const classe of character.classes){

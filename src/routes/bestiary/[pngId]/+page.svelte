@@ -20,6 +20,7 @@
     import type { Spell } from '$lib/zod.js';
     import { toast } from 'svelte-sonner';
     import { invalidateAll } from '$app/navigation';
+    import { pngHasStatus } from '$lib/characterUtils.js';
 
     
     let { data } = $props();
@@ -193,55 +194,138 @@
     
     async function save(){
          try {
-               
-
-                const response = await fetch(`/api/png`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(png)
-                });
+            const response = await fetch(`/api/png`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(png)
+            });
+            
+            if (response.ok) {
                 
-                if (response.ok) {
-                   
-                    toast.success('Personaggio salvato con successo!',{
-                        action:{
-                            label:"OK",
-                            onClick:()=>console.info("Undo")
-                        }
-                    })
-                    await invalidateAll();
-                    hasBeenChanged = false;
-                } else {
-                    console.error(response.status);
-                    let errorMessage = "";
-                    switch(response.status){
-                        case 404:errorMessage = 'PNG non trovato o non appartenente a te';break;
-                        case 500: errorMessage = 'Errore del Server'
+                toast.success('Personaggio salvato con successo!',{
+                    action:{
+                        label:"OK",
+                        onClick:()=>console.info("Undo")
                     }
-                    toast.error(`${response.status}: ${errorMessage}`,{
-                        action:{
-                            label:"OK",
-                            onClick:()=>console.info(`Save Error: ${response.status}: ${errorMessage}`)
-                        }
-                    })
-                    console.error('Errore nel salvataggio');
+                })
+                await invalidateAll();
+                hasBeenChanged = false;
+            } else {
+                console.error(response.status);
+                let errorMessage = "";
+                switch(response.status){
+                    case 404:errorMessage = 'PNG non trovato o non appartenente a te';break;
+                    case 500: errorMessage = 'Errore del Server'
                 }
-            } catch (error) {
-                console.error('Errore di rete:', error);
+                toast.error(`${response.status}: ${errorMessage}`,{
+                    action:{
+                        label:"OK",
+                        onClick:()=>console.info(`Save Error: ${response.status}: ${errorMessage}`)
+                    }
+                })
+                console.error('Errore nel salvataggio');
             }
+        } catch (error) {
+            console.error('Errore di rete:', error);
+        }
         return;
     }
 
-   $effect(()=>{        
-        if(JSON.stringify($state.snapshot(png)) !== JSON.stringify(data.png)){
-            hasBeenChanged = true;
-            console.info("cambiato");  
+
+     function statusCheckUp(){
+        //status che diminuiscono caratteristiche
+        if (pngHasStatus(png,"slow")){
+            png.attributes.DEX.actual-=2;
+        }
+        if (pngHasStatus(png,"dazed")){
+            png.attributes.INS.actual-=2;
+        }
+        if (pngHasStatus(png,"enraged")){
+            png.attributes.INS.actual-=2;
+            png.attributes.DEX.actual-=2;
+        }
+        if (pngHasStatus(png,"weak")){
+            png.attributes.MIG.actual-=2;
+        }
+        if (pngHasStatus(png,"shaken")){
+            png.attributes.WLP.actual-=2;
+        }
+        if (pngHasStatus(png,"poisoned")){
+            png.attributes.MIG.actual-=2;
+            png.attributes.WLP.actual-=2;
+        }
+        
+        //status che aumentano caratteristiche
+        if (pngHasStatus(png,"dexUp")){
+            png.attributes.DEX.actual+=2;
         }
 
+        if (pngHasStatus(png,"insUp")){
+            png.attributes.INS.actual+=2;
+        }
+
+        if (pngHasStatus(png,"migUp")){
+            png.attributes.MIG.actual+=2;
+        }
+
+        if (pngHasStatus(png,"wlpUp")){
+            png.attributes.WLP.actual+=2;
+        }
+        
+        //Normalizzo i punteggi di caratteristica se sforano
+        if (png.attributes.DEX.actual<6)png.attributes.DEX.actual = 6;
+        if (png.attributes.DEX.actual>12)png.attributes.DEX.actual = 12;
+
+        if (png.attributes.INS.actual<6)png.attributes.INS.actual = 6;
+        if (png.attributes.INS.actual>12)png.attributes.INS.actual = 12;
+        
+        if (png.attributes.MIG.actual<6)png.attributes.MIG.actual = 6;
+        if (png.attributes.MIG.actual>12)png.attributes.MIG.actual = 12;
+        
+        if (png.attributes.WLP.actual<6)png.attributes.WLP.actual = 6;
+        if (png.attributes.WLP.actual>12)png.attributes.WLP.actual = 12;
+        
+        return;
+    }
+
+    function checkUp() {
+
+        
+        //calcolo HP ed MP 
+        png.stats.HP.max = (5*png.attributes.MIG.max) + Number(png.level);
+        png.stats.MP.max = (5*png.attributes.WLP.max) + Number(png.level);
+        
+        //applico i valori aggiuntivi 
+        let totals = {hp:0,mp:0, def:0, mdef:0}
+
+        //aggiorno i massimi
+        png.stats.HP.max += totals.hp
+        png.stats.MP.max += totals.mp
+
+        statusCheckUp()
+
+        //controllo se gli attuali sono maggiori dei massimi ed in caso li normalizzo
+        png.stats.HP.actual = Math.min(png.stats.HP.max,png.stats.HP.actual);
+        png.stats.MP.actual = Math.min(png.stats.MP.max,png.stats.MP.actual);
+
+        //calcolo difesa e difesa magica 
+        png.stats.DEF = png.attributes.DEX.actual + totals.def;
+        png.stats.MDEF = png.attributes.INS.actual +totals.mdef; 
+
+
+    }
+
+   $effect( ()=>{        
+        if(JSON.stringify($state.snapshot(png)) !== JSON.stringify(data.png)){
+            hasBeenChanged = true;
+            console.info("cambiato");
+        }
         else{
             hasBeenChanged = false;
             console.info("annullato");
         }
+
+        checkUp();
     });
 
 </script>
