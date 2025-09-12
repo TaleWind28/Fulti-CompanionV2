@@ -2,7 +2,8 @@
   import { goto } from "$app/navigation";
   import Grid from "$lib/components/grid.svelte";
   import Button from "$lib/components/ui/button/button.svelte";
-  import {faDiceD20,faCloud, faKhanda, faScroll, faBookSkull, faBookBookmark} from '@fortawesome/free-solid-svg-icons';   
+    import { icon } from "@fortawesome/fontawesome-svg-core";
+  import {faDiceD20,faCloud, faKhanda, faScroll, faBookSkull, faBookBookmark, faHammer} from '@fortawesome/free-solid-svg-icons';   
 
 
 
@@ -17,7 +18,7 @@ const features = [
       icon:faBookSkull,
       iconColor:"",
       title: "Bestiario Integrato",
-      description: "Consulta rapidamente mostri e PNG, filtra per livello o tipo. Accessibile offline e durante le sessioni."
+      description: "Consulta rapidamente mostri e PNG, anche durante le sessioni."
     },
     {
       icon:faBookBookmark,
@@ -25,24 +26,13 @@ const features = [
       title: "Gestione Campagne & Wiki",
       description: "Organizza le tue campagne, invita giocatori e costruite insieme ad una Wiki condivisa per lore e appunti."
     },
-    // {
-    //   icon:faDiceD20,
-    //   iconColor:"text-purple-900",
-    //   title: "Dice Roller Avanzato",
-    //   description: "Tira dadi personalizzati con un click. Log storico dei tiri per non perdere nulla."
-    // },
-    // {
-    //   icon:faKhanda,
-    //   iconColor:" text-red-900",
-    //   title: "Combat Helper",
-    //   description: "Un simulatore di combattimento per tenere tenere sempre alta l'attenzione dei giocatori."
-    // },
     {
-      icon:faCloud,
-      iconColor:"text-grey-900",
-      title: "Offline Availability",
-      description: "Lavora offline senza problemi, i tuoi dati si sincronizzeranno automaticamente appena torni online."
-    }];
+      icon:faHammer,
+      iconColor:"text-gray",
+      title:"Creazione di Oggetti",
+      description:"Crea Armi, Armature ed Oggetti da poter usare con il tuo personaggio"
+    }
+    ];
 </script>
 
 <div class="flex flex-col items-center justify-center bg-cafe_noir-900 p-10">

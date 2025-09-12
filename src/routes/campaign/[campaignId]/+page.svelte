@@ -74,6 +74,7 @@
     let showWikiPageCreationDialog = $state(false);    
     let showKillDialog = $state(false);
     let showCampaignDeletionDialog = $state(false);
+    let hasBeenSet = $state(false);
 
     //FUNZIONI
     //SALVATAGGIO MODIFICHE
@@ -97,7 +98,7 @@
         const response = await fetch('/api/campaign/landing-save',{
             method:'POST',
             headers:{'Content-type': 'application/json'},
-            body:JSON.stringify(campaign)
+            body:JSON.stringify({payload:campaign,wasChanged:hasBeenSet})
         })
         //controllo se la chiamata è andata a buon fine
         if(!response.ok){
@@ -113,6 +114,7 @@
         }
         //forzo un refresh della pagina per aggiornare il prop Data
         await invalidateAll();
+        hasBeenSet = false;
         //notifica all'utente del successo dell'operazione
         toast.success('Pagina modificata con successo',{
             action:{
@@ -305,7 +307,11 @@
 
     }
 
-
+    $effect(()=>{
+        if(JSON.stringify($state.snapshot(selected)) !== JSON.stringify(retrievedData)){
+            hasBeenSet = true;
+        }
+    })
 </script>
 
 <div class="bg-lion-900 flex flex-col gap-5 items-center justify-start p-5">

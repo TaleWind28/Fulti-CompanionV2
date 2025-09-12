@@ -7,7 +7,7 @@ import { error, json, type RequestHandler } from "@sveltejs/kit";
 export const POST:RequestHandler = async ({request,locals, fetch})=>{
 
     
-    const payload: Campaign = await request.json();
+    const {payload, wasChanged}: {payload: Campaign, wasChanged:boolean} = await request.json();
     
     const currentUser = locals.user;
     if(!currentUser){
@@ -27,10 +27,9 @@ export const POST:RequestHandler = async ({request,locals, fetch})=>{
         }
 
         await campaignRef.update(payload);
-
-        console.log("aggiornato");
+        //invio notifiche
         if(payload.pages[0].content[0].type == 'object'){
-            if(payload.pages[0].content[0].nextSessionAt){
+            if(payload.pages[0].content[0].nextSessionAt && wasChanged){
                 const title = "Data prossima sessione";
                 const body = `Prossima Sessione fissata per:${payload.pages[0].content[0].nextSessionAt}`
                 //manda notifica a tutti i giocatori, non al master

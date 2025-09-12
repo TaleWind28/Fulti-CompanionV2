@@ -4,13 +4,11 @@ Per avviare il progetto:
 3) npm run preview per avviare il server di produzione
 4) per testare appieno il progetto è sufficiente registrare 2 utenti, in quanto uno assumerà il ruolo di master e l'altro di giocatore, di seguito è spiegato come farlo.
 
-Pagina Campagne:
-1)creare una campagna con un utente, con un secondo utente unirsi a tale campagna come player
+Breve Introduzione:
+Fulti-Companion è una PWA che consente di creare Personaggi, giocanti e non, Oggetti e Campagne per Fabula Ultima.
+Tali creazioni avvengono nelle pagine dedicate.
 
-Pagina Schede Personaggio:
 
-Pagina Schede Personaggio:
+Testing Particolari:
+notifiche: per testare le notifiche occorre usare 2 browser diversi, si conisglia di installare l'app per una migliore visualizzazione dei messaggi in background. La notifica viene inviata quando si salva una nuova data per la sessione. In quel caso vengono avvisati tutti i giocatori che fanno parte della campagna
 
-Pagina Generatore di Oggetti:
-
-Pagina Schede Bestiario:
