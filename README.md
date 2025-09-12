@@ -21,3 +21,7 @@ email:taleWind27@gmail.com
 password:MaMa2002..
 nickname:Player
 
+
+è inoltre possibile usare la versione del sito hostata su vercel. La versione è quella dell'ultimo commit di github, pertanto è l'ultima prima della consegna.
+
+link sito hostato: fulti-companion-bz6xgo6b4-talewinds-projects.vercel.app
