@@ -2,11 +2,7 @@
 
     import * as Card from '$lib/components/ui/card/index';
     import * as Dialog from '$lib/components/ui/dialog/index';
-    import * as ToggleGroup from "$lib/components/ui/toggle-group/index.js";
-    import * as Select from "$lib/components/ui/select/index.js";
-    import * as Tooltip from "$lib/components/ui/tooltip/index.js";
     import { Slider } from "bits-ui"
-    import damageTypes from '$lib/data/damageTypes.json';
     import ImageUploader2 from "$lib/components/imageUploader2.svelte";
     import Button from "$lib/components/ui/button/button.svelte";
     import Label from '$lib/components/ui/label/label.svelte';
@@ -16,10 +12,10 @@
     import { elemGlams } from '$lib';
     import Fa from 'svelte-fa';
     import Checkbox from '$lib/components/ui/checkbox/checkbox.svelte';
-    import { faBullseye, faCircleMinus, faKhanda, faPlusCircle, faPlusMinus } from '@fortawesome/free-solid-svg-icons';
-    import { number, string } from 'zod';
+    import {  faPlusCircle } from '@fortawesome/free-solid-svg-icons';
+
     import PngAttackDescriptor from '$lib/components/pngComps/pngAttackDescriptor.svelte';
-    import SpellDescriptor from '$lib/components/spellDescriptor.svelte';
+    import SimpleDescriptor from '$lib/components/pngComps/simpleDescriptor.svelte';
 
     
     let { data } = $props();
@@ -38,15 +34,37 @@
         return;
     }
     
-    function updateAttribute(attribute:string,field:string,value:any){
+    function updateAttribute(attribute:'DEX' | 'INS' | 'MIG' | 'WLP',field:'max' | 'actual',value:any){
+        png.attributes[attribute][field] = value;
+        updateField('attributes',png.attributes);
         return;
     }
-    
-    function handleAttackFieldChange(index:number,value:any,field:string){
-        
-        png.attacks[index] = value;
-    }
 
+    function updateAffinity(affinity: "fisico"|"aria"|"fulmine"|"fuoco"|"ghiaccio"|"luce"|"oscurita"|"terra"|"veleno", value:any){
+        let affinityType = value === 0 ? "immune" : value === 1 ? "weak" : value === 3 ? "resistant" : value === 4 ? "absorb" : "";
+        png.affinities = {
+            ...png.affinities,
+            [affinity]:{
+                weak:false,
+                immune:false,
+                resistant:false,
+                absorb:false,
+            }
+        };
+
+        if( affinityType === "") return;
+
+        png.affinities = {
+            ...png.affinities,
+            [affinity]:{
+                ...png.affinities[affinity],
+                [affinityType]:true
+            }
+        }
+
+        updateField('affinities',png.affinities);
+    }
+    
     function handleRangeChange(index:number,range:string){
         png.attacks[index].ranged = range;
         updateField('attacks',png.attacks);
@@ -99,9 +117,29 @@
         updateField('attacks',png.attacks);
     }
 
+    function handleDescriptorChange(superField: 'skills' |'specialRules', field:'name'|'effect', value:any, index:number){
+        png[superField][index][field] = value;
+        updateField(superField,png[superField]);
+    }
+
+    function handleStatusUpdate(status:'poisoned'|'dazed'|'shaken'|'enraged'|'slow'|'weak'|'dexUp'| 'insUp'| 'migUp'|'wlpUp', value:any){
+        png.statuses[status] = value;
+        updateField('statuses',png.statuses)
+    }
+
+    function handleDescriptorDelete(superField:'skills' | 'specialRules', index:number){
+       png[superField].splice(index,1);
+        updateField(superField,png[superField]);
+    }
+
+    function addDescriptor(superField:'skills' | 'specialRules'){
+        png[superField].push({name:"",effect:""});
+        updateField(superField,png[superField]);
+    }
 
     
-    $inspect(png.attacks)
+    
+    $inspect(png)
 </script>
 
 
@@ -194,10 +232,10 @@
             <Label class="text-white"> Caratteristiche</Label>
             <div class="flex flex-row gap-5 bg-white justify-between p-5 items-center rounded">
                 <div class="flex flex-col item-center gap-2 w-50">    
-                    {@render attributeRender(["DES","DEX"],png.attributes.DEX.max)}
-                    {@render attributeRender(["INT","INS"],png.attributes.INS.max)}
-                    {@render attributeRender(["VIG","MIG"],png.attributes.MIG.max)}
-                    {@render attributeRender(["VOL","WLP"],png.attributes.WLP.max)}
+                    {@render attributeRender("DES","DEX",png.attributes.DEX.max)}
+                    {@render attributeRender("INT","INS",png.attributes.INS.max)}
+                    {@render attributeRender("VIG","MIG",png.attributes.MIG.max)}
+                    {@render attributeRender("VOL","WLP",png.attributes.WLP.max)}
                 </div>
                 <!-- Spiegazione delle spread -->
                 <div class="rounded-md border border-tyrian_purple-700  bg-tyrian_purple-600   p-4 text-sm text-white">
@@ -229,33 +267,33 @@
             <!-- Terzo Blocco: Affinità -->
             <Label class="text-white"> Affinità Elementali</Label>
             <div class="flex flex-col gap-2 bg-white py-4 rounded p-4">
-                {@render affinityRender("Fisico",png.affinities.fisico,elemGlams)}
-                {@render affinityRender("Fulmine",png.affinities.fulmine,elemGlams)}
-                {@render affinityRender("Aria",png.affinities.aria,elemGlams)}
-                {@render affinityRender("Terra",png.affinities.terra,elemGlams)}
-                {@render affinityRender("Fuoco",png.affinities.fuoco,elemGlams)}
-                {@render affinityRender("Ghiaccio",png.affinities.ghiaccio,elemGlams)}
-                {@render affinityRender("Oscurita",png.affinities.oscurita,elemGlams)}
-                {@render affinityRender("Luce",png.affinities.luce,elemGlams)}
-                {@render affinityRender("Veleno",png.affinities.veleno,elemGlams)}
+                {@render affinityRender({label:"Fisico",value:"fisico"},png.affinities.fisico,elemGlams)}
+                {@render affinityRender({label:"Fulmine",value:"fulmine"},png.affinities.fulmine,elemGlams)}
+                {@render affinityRender({label:"Aria",value:"aria"},png.affinities.aria,elemGlams)}
+                {@render affinityRender({label:"Terra",value:"terra"},png.affinities.terra,elemGlams)}
+                {@render affinityRender({label:"Fuoco",value:"fuoco"},png.affinities.fuoco,elemGlams)}
+                {@render affinityRender({label:"Ghiaccio",value:"ghiaccio"},png.affinities.ghiaccio,elemGlams)}
+                {@render affinityRender({label:"Oscurita",value:"oscurita"},png.affinities.oscurita,elemGlams)}
+                {@render affinityRender({label:"Luce",value:"luce"},png.affinities.luce,elemGlams)}
+                {@render affinityRender({label:"Veleno",value:"veleno"},png.affinities.veleno,elemGlams)}
             </div>
             <Separator orientation='horizontal' />
             
             <Label class="text-white">Status</Label>
             <!-- Quarto Blocco: Status -->
             <div class="grid grid-cols-2 bg-white py-4 gap-5 rounded p-2">
-                {@render statusRender(["Lento","slow"],png.statuses.slow,"Destrezza ridotta di 2")}
-                {@render statusRender(["Confuso","dazed"],png.statuses.dazed,"Intuito ridotto di 2")}
-                {@render statusRender(["Furente","enraged"],png.statuses.enraged,"Destrezza ed Intuito sono ridotti di 2")}
-                {@render statusRender(["Debole","weak"],png.statuses.weak,"Vigore ridotto di 2")}
-                {@render statusRender(["Scosso","shaken"],png.statuses.shaken,"Volonta ridotta di 2")}
-                {@render statusRender(["Avvelenato","poisoned"],png.statuses.poisoned,"Vigore e Volontà sono ridotti di 2")}
+                {@render statusRender("Lento","slow",png.statuses.slow,"Destrezza ridotta di 2")}
+                {@render statusRender("Confuso","dazed",png.statuses.dazed,"Intuito ridotto di 2")}
+                {@render statusRender("Furente","enraged",png.statuses.enraged,"Destrezza ed Intuito sono ridotti di 2")}
+                {@render statusRender("Debole","weak",png.statuses.weak,"Vigore ridotto di 2")}
+                {@render statusRender("Scosso","shaken",png.statuses.shaken,"Volonta ridotta di 2")}
+                {@render statusRender("Avvelenato","poisoned",png.statuses.poisoned,"Vigore e Volontà sono ridotti di 2")}
                 <!-- <Separator orientation='horizontal' /> <Separator orientation='horizontal' /> -->
                  <hr> <hr>
-                {@render statusRender(["DES UP","dexUp"],png.statuses.dexUp,"Destrezza aumentata di 2")}
-                {@render statusRender(["INT UP","insUp"],png.statuses.insUp,"Intuito aumentato di 2")}
-                {@render statusRender(["VIG UP","migUp"],png.statuses.migUp,"Vigore aumentato di 2")}
-                {@render statusRender(["VOL UP","wlpUp"],png.statuses.wlpUp,"Volontà aumentata di 2")}
+                {@render statusRender("DES UP","dexUp",png.statuses.dexUp,"Destrezza aumentata di 2")}
+                {@render statusRender("INT UP","insUp",png.statuses.insUp,"Intuito aumentato di 2")}
+                {@render statusRender("VIG UP","migUp",png.statuses.migUp,"Vigore aumentato di 2")}
+                {@render statusRender("VOL UP","wlpUp",png.statuses.wlpUp,"Volontà aumentata di 2")}
 
             </div>
             <Separator orientation='horizontal' />
@@ -288,29 +326,59 @@
 
             </div>
 
+           
+
             <!-- Incantesmi -->
             <div>
                 <!-- Display Incantesimi -->
-                {#each png.spells as spell,index }
-                    <SpellDescriptor
-                        spell={spell}
-                        onDelete={removeSpell}
-                        
-                    />
-                {/each}
+                <!-- {#each png.spells as spell,index }
+                    
+                {/each} -->
                 <!-- Aggiungi Incantesimo -->
             </div> 
             
+            <Separator orientation="horizontal"/> 
+
             <!-- Skill -->
-            <div>
-                <!-- Display Azioni -->
+            <Label class="text-white">Azioni/Abilità</Label>
+            <div class="rounded bg-white p-2 flex flex-col gap-5">
+                <!-- Display Abilità -->
+                {#each png.skills as skill, index}
+                    <SimpleDescriptor
+                        obj={skill}
+                        index={index}
+                        handleChange={handleDescriptorChange}
+                        superField={'skills'}
+                        onDelete={handleDescriptorDelete}
+                    />
+                {/each}
                 <!-- Aggiungi Azione -->
+                 <button onclick={()=>addDescriptor('skills')}>
+                    <Fa icon={faPlusCircle}/>
+                 </button>
             </div>    
             
+            <Separator orientation="horizontal"/> 
+
             <!-- Regole Speciali -->
-            <div>
+            <Label class="text-white">Regole Speciali</Label>
+            <div class="rounded bg-white p-2 flex flex-col gap-5">
                 <!-- Display Regole -->
+                {#each png.specialRules as rule, index}     
+                    <SimpleDescriptor
+                        obj={rule}
+                        index={index}
+                        handleChange={handleDescriptorChange}
+                        superField={'specialRules'}
+                        onDelete={handleDescriptorDelete}
+                    />
+                    
+                    <Separator orientation="horizontal"/>
+                {/each}
                 <!-- Aggiungi Regole -->
+                <button onclick={()=>addDescriptor('specialRules')}>
+                    <Fa icon={faPlusCircle}/>
+                </button>
             </div>
         </Card.Content>    
     </Card.Root>
@@ -318,15 +386,15 @@
 
 
 
-{#snippet attributeRender(attribute:string[],value:number)}
+{#snippet attributeRender(attribute:string,field:'DEX' | 'INS' | 'MIG' | 'WLP',value:number)}
     <div class="flex flex-row items-center justify-center">
-        <p class="w-20">{attribute[0]}</p>
+        <p class="w-20">{attribute}</p>
         <Slider.Root 
             type="single" 
             class="relative flex w-full touch-none select-none items-center" 
             value={value}  
             max={12} min={6} step={2}
-            onValueCommit={(value)=>{updateAttribute(attribute[1],"max",value)}}
+            onValueCommit={(value)=>{updateAttribute(field,"max",value)}}
         >
             {#snippet children({ tickItems, thumbItems })}
                 <!-- Traccia dello slider -->
@@ -366,18 +434,18 @@
            
 {/snippet}
 
-{#snippet affinityRender(affinity:string,value:any,elemGlams:any)}
-    {@const glam = elemGlams[affinity.toLowerCase()]}
+{#snippet affinityRender(affinity:{label:string,value:"fisico"|"aria"|"fulmine"|"fuoco"|"ghiaccio"|"luce"|"oscurita"|"terra"|"veleno"},value:any,elemGlams:any)}
+    {@const glam = elemGlams[affinity.value]}
     {@const affinityValue = value.weak ? 1	: value.resistant ? 3	: value.absorb ? 4 	: value.immune ? 0 	: 2}
     <div class="flex flex-row gap-2 items-center w-auto justify-center">
         <Fa icon={glam.icon} class={glam.color}/>
-        <p class="w-20">{affinity}</p>
+        <p class="w-20">{affinity.label}</p>
         <Slider.Root 
             type="single" 
             class=" relative flex w-full touch-none select-none items-center" 
             value={affinityValue} 
             min={0} max={4} step={1} 
-            onValueCommit={(value)=>updateField(affinity.toLowerCase(),value)}
+            onValueCommit={(value)=>updateAffinity(affinity.value,value)}
             >
             {#snippet children({ tickItems, thumbItems })}
                 <!-- Traccia dello slider -->
@@ -400,7 +468,7 @@
                         {index}
                         class="absolute h-2 w-0.5 bg-gray-400 z-0"
                     />
-                    {#if affinity === "Veleno"}    
+                    {#if affinity.label === "Veleno"}    
                         <Slider.TickLabel 
                             {index}
                             position="bottom"
@@ -416,10 +484,10 @@
 {/snippet}
 
 
-{#snippet statusRender(status:string[],value:any,description:string)}
+{#snippet statusRender(status:string,field:'poisoned'|'dazed'|'shaken'|'enraged'|'slow'|'weak'|'dexUp'| 'insUp'| 'migUp'|'wlpUp',value:any,description:string)}
     <div class="flex flex-row items-center justify-start gap-5">
-        <p class="w-20 font-semibold ">{status[0]}</p>
-        <Checkbox checked={value} onCheckedChange={(checked)=>updateField(status[1],checked)}></Checkbox>
+        <p class="w-20 font-semibold ">{status}</p>
+        <Checkbox checked={value} onCheckedChange={(checked)=>handleStatusUpdate(field,checked)}></Checkbox>
         <p class="text-xs">{description}</p>
     </div>
     
