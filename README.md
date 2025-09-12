@@ -12,3 +12,12 @@ Tali creazioni avvengono nelle pagine dedicate.
 Testing Particolari:
 notifiche: per testare le notifiche occorre usare 2 browser diversi, si conisglia di installare l'app per una migliore visualizzazione dei messaggi in background. La notifica viene inviata quando si salva una nuova data per la sessione. In quel caso vengono avvisati tutti i giocatori che fanno parte della campagna
 
+Utenti di Test:
+email:taleWind28@gmail.com
+password:MaMa2002..
+nickname:Master
+
+email:taleWind27@gmail.com
+password:MaMa2002..
+nickname:Player
+

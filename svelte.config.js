@@ -8,11 +8,7 @@ const config = {
 	preprocess: vitePreprocess(),
 	kit: {
 		adapter: 
-			adapter({
-				// Opzioni opzionali
-				runtime: 'nodejs18.x', // o 'edge' per edge runtime
-				regions: ['fra1'], // Frankfurt per l'Europa
-			})
+			adapter()
 	}
 };
 
