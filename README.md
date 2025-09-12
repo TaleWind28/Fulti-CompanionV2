@@ -1,39 +1,16 @@
-# sv
+Per avviare il progetto:
+1) installare le dipendenze con npm install
+2) creare una build con npm run build
+3) npm run preview per avviare il server di produzione
+4) per testare appieno il progetto è sufficiente registrare 2 utenti, in quanto uno assumerà il ruolo di master e l'altro di giocatore, di seguito è spiegato come farlo.
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+Pagina Campagne:
+1)creare una campagna con un utente, con un secondo utente unirsi a tale campagna come player
 
-## Creating a project
+Pagina Schede Personaggio:
 
-If you're seeing this, you've probably already done this step. Congrats!
+Pagina Schede Personaggio:
 
-```bash
-# create a new project in the current directory
-npx sv create
+Pagina Generatore di Oggetti:
 
-# create a new project in my-app
-npx sv create my-app
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
-
+Pagina Schede Bestiario:

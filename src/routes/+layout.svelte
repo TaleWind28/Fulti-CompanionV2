@@ -12,7 +12,7 @@
 	import { auth, logout } from '$lib/firebase';
 	import { Toaster } from "$lib/components/ui/sonner/index.js";
 	import * as MenuBar from '$lib/components/ui/menubar/index';
-    import { goto } from '$app/navigation';
+    import { afterNavigate, beforeNavigate, goto } from '$app/navigation';
     import { initFcm } from '$lib/fcm';
 
   	
@@ -93,6 +93,19 @@
 
 		return unsubscribe;
 	})
+	afterNavigate(({ to, from }) => {
+		console.log('ho navigato da', from?.url.pathname, 'a', to?.url.pathname);
+		
+	});
+
+	beforeNavigate(({ to, from, cancel }) => {
+		console.log('Sto per navigare da', from?.url.pathname, 'a', to?.url.pathname);
+        if (!navigator.onLine && to?.url.pathname !== '/itemGenerator/') {
+
+            // redirect a una pagina offline personalizzata
+           goto('/fallback');
+        }
+    });
 </script>
 
 

@@ -9,7 +9,7 @@
     import { superForm } from 'sveltekit-superforms';
     import { zod4Client } from 'sveltekit-superforms/adapters';
     import { pngSchema, type FabulaUltimaPNG } from '$lib/zod.js';
-    import { invalidateAll } from '$app/navigation';
+    import { afterNavigate, beforeNavigate, goto, invalidateAll } from '$app/navigation';
     import { uploadFile } from '$lib/utils.js';
 
     let { data } = $props();
@@ -96,8 +96,19 @@
 		}
     }
 
-        // Questa funzione verrà chiamata al click del pulsante
-  
+     afterNavigate(({ to, from }) => {
+        console.log('ho navigato da', from?.url.pathname, 'a', to?.url.pathname);
+	
+    });
+
+    beforeNavigate(({to,from})=>{
+        if (!navigator.onLine) {
+
+				// redirect a una pagina offline personalizzata
+				goto('/fallback');
+			}
+    })
+
     $inspect(searchQuery,"sq");
 
 </script>
@@ -120,8 +131,13 @@
                         <PngCard png={png} showButtons={true}/> 
                     {/each}
                 </div>
-            {/if}
-        {/if}
+            {:else}
+			    <p class="font-bold"> Non è stato trovato alcun PNG</p>
+		    {/if}
+	    {:else}
+		    <p class="font-bold">Non hai ancora creato nessun PNG.</p>
+	    {/if}
+    
     </div>
 
     <!-- Dialog creazione PNG -->

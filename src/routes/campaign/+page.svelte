@@ -11,6 +11,7 @@
     import { goto, invalidateAll } from "$app/navigation";
     
     let {data} : {data: PageData} = $props();
+    $inspect(data);
 
     let searchCampaign = $state("");
     let filteredCampaigns:Campaign[] = $derived(

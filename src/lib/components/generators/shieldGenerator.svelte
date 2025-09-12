@@ -12,7 +12,7 @@
     import { toast } from "svelte-sonner";
     import EquipProcessor from "../imageProcessors/equipProcessor.svelte";
 
-    let {showImageProcessor = true, dim="w-150", onSave=null} = $props();
+    let {showImageProcessor = true, dim="w-150", onSave=null,offline=false} = $props();
 
     let equipName = $state("");
     let equipImageUrl = $state();
@@ -277,13 +277,18 @@
                     Salva Equipaggiamento
                 </Button>
             {/if}
+            {#if !offline}
+                <Button class="bg-cafe_noir-400 w-38" onclick={handleExport}>
+                    Esporta in Json
+                </Button>
+            {/if}
             </Card.Footer>
         </Card.Root>
     </div>
 
     <!--ImageProcessor -->
     <div>
-        {#if showImageProcessor}
+        {#if showImageProcessor && !offline}
         
             <EquipProcessor requestedData={requestedData} isMartial={isMartial} equipImageUrl={equipImageUrl}/>
 

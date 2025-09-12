@@ -12,7 +12,7 @@
     import { toast } from "svelte-sonner";
     import AccessoryProcessor from "../imageProcessors/accessoryProcessor.svelte";
 
-    let {showImageProcessor = true,dim = "w-150",onSave=null} = $props();
+    let {showImageProcessor = true,dim = "w-150",onSave=null,offline=false} = $props();
 
 
     let accessoryName = $state("");
@@ -20,7 +20,6 @@
     let customQuality = $state("");
     let customCost = $state(0);
     let isRealCustomQuality = $state(false);
-    let offline = $state(false);
 
     //sarà da fetchare
     let requestedData = $state({
@@ -135,10 +134,7 @@
         if(result.success){
             console.log(result);
             if (result.data.offline){
-                offline=true;
                 return;
-            }else{
-                offline = false;
             }
             requestedData = result.data;
             if(requestedData.quality !== "Nessuna Qualità" && isRealCustomQuality === false){
@@ -159,8 +155,6 @@
     $effect(()=>{    
         calculateParams();
     })
-
-    $inspect(offline,"offline");
 </script>
 
 <div class=" flex gap-5 justify-evenly">
@@ -230,6 +224,11 @@
                 {#if onSave}
                     <Button class="bg-cafe_noir-400 w-30" onclick={handleExport}>
                         Salva Accessorio
+                    </Button>
+                {/if}
+                {#if !offline}
+                    <Button class="bg-cafe_noir-400 w-38" onclick={handleExport}>
+                        Esporta in Json
                     </Button>
                 {/if}
             </Card.Footer>

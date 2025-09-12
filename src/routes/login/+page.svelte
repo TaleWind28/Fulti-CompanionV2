@@ -41,7 +41,7 @@
 		console.log('ho navigato da', from?.url.pathname, 'a', to?.url.pathname);
 
 		if(from){
-			if(from?.url.pathname === "/")successRoute = "/"; //cambiare con userHomePage <-------------------------------------------------------------
+			if(from?.url.pathname === "/")successRoute = "/"; 
 			else successRoute = from?.url.pathname;
 		}
 		if(data.redirectTo !== '/')successRoute = data.redirectTo;
