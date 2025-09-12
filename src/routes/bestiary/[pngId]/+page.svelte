@@ -20,7 +20,6 @@
     import type { Spell } from '$lib/zod.js';
     import { toast } from 'svelte-sonner';
     import { invalidateAll } from '$app/navigation';
-    import { pngHasStatus } from '$lib/characterUtils.js';
 
     
     let { data } = $props();
@@ -38,6 +37,7 @@
             ...png,
             [field]:value
         }
+        checkUp();
         console.log(`campo ${field}:${value}`)
         return;
     }
@@ -231,91 +231,47 @@
         return;
     }
 
-
-     function statusCheckUp(){
-        //status che diminuiscono caratteristiche
-        if (pngHasStatus(png,"slow")){
-            png.attributes.DEX.actual-=2;
-        }
-        if (pngHasStatus(png,"dazed")){
-            png.attributes.INS.actual-=2;
-        }
-        if (pngHasStatus(png,"enraged")){
-            png.attributes.INS.actual-=2;
-            png.attributes.DEX.actual-=2;
-        }
-        if (pngHasStatus(png,"weak")){
-            png.attributes.MIG.actual-=2;
-        }
-        if (pngHasStatus(png,"shaken")){
-            png.attributes.WLP.actual-=2;
-        }
-        if (pngHasStatus(png,"poisoned")){
-            png.attributes.MIG.actual-=2;
-            png.attributes.WLP.actual-=2;
-        }
-        
-        //status che aumentano caratteristiche
-        if (pngHasStatus(png,"dexUp")){
-            png.attributes.DEX.actual+=2;
-        }
-
-        if (pngHasStatus(png,"insUp")){
-            png.attributes.INS.actual+=2;
-        }
-
-        if (pngHasStatus(png,"migUp")){
-            png.attributes.MIG.actual+=2;
-        }
-
-        if (pngHasStatus(png,"wlpUp")){
-            png.attributes.WLP.actual+=2;
-        }
-        
-        //Normalizzo i punteggi di caratteristica se sforano
-        if (png.attributes.DEX.actual<6)png.attributes.DEX.actual = 6;
-        if (png.attributes.DEX.actual>12)png.attributes.DEX.actual = 12;
-
-        if (png.attributes.INS.actual<6)png.attributes.INS.actual = 6;
-        if (png.attributes.INS.actual>12)png.attributes.INS.actual = 12;
-        
-        if (png.attributes.MIG.actual<6)png.attributes.MIG.actual = 6;
-        if (png.attributes.MIG.actual>12)png.attributes.MIG.actual = 12;
-        
-        if (png.attributes.WLP.actual<6)png.attributes.WLP.actual = 6;
-        if (png.attributes.WLP.actual>12)png.attributes.WLP.actual = 12;
-        
-        return;
+    function updateActuals(){
+        png.attributes.DEX.actual = png.attributes.DEX.max;
+        png.attributes.INS.actual = png.attributes.INS.max;
+        png.attributes.MIG.actual = png.attributes.MIG.max;
+        png.attributes.WLP.actual = png.attributes.WLP.max;
+        png.stats.HP.actual = png.stats.HP.max;
+        png.stats.MP.actual = png.stats.MP.max;
+        png.stats.DEF = png.stats.DEF;
+        png.stats.MDEF = png.stats.MDEF;
     }
 
-    function checkUp() {
-
-        
+    function updateBonus(field:'hp' | 'mp' | 'def' | 'mdef', value:number){
+        png.bonus[field] = value;
+        updateField('bonus',png.bonus);
+    }
+    
+    function checkUp() {        
         //calcolo HP ed MP 
         png.stats.HP.max = (5*png.attributes.MIG.max) + Number(png.level);
         png.stats.MP.max = (5*png.attributes.WLP.max) + Number(png.level);
         
         //applico i valori aggiuntivi 
-        let totals = {hp:0,mp:0, def:0, mdef:0}
+        let totals = png.bonus;
 
         //aggiorno i massimi
         png.stats.HP.max += totals.hp
         png.stats.MP.max += totals.mp
-
-        statusCheckUp()
-
+        //calcolo difesa e difesa magica 
+        png.stats.DEF = png.attributes.DEX.actual + totals.def;
+        png.stats.MDEF = png.attributes.INS.actual +totals.mdef; 
+    
         //controllo se gli attuali sono maggiori dei massimi ed in caso li normalizzo
         png.stats.HP.actual = Math.min(png.stats.HP.max,png.stats.HP.actual);
         png.stats.MP.actual = Math.min(png.stats.MP.max,png.stats.MP.actual);
 
-        //calcolo difesa e difesa magica 
-        png.stats.DEF = png.attributes.DEX.actual + totals.def;
-        png.stats.MDEF = png.attributes.INS.actual +totals.mdef; 
-
-
+        //aggiorno i valori attuali con i massimi -> il png non deve "usato" online
+        updateActuals();
     }
 
-   $effect( ()=>{        
+
+    $effect( ()=>{        
         if(JSON.stringify($state.snapshot(png)) !== JSON.stringify(data.png)){
             hasBeenChanged = true;
             console.info("cambiato");
@@ -324,8 +280,6 @@
             hasBeenChanged = false;
             console.info("annullato");
         }
-
-        checkUp();
     });
 
 </script>
@@ -333,7 +287,7 @@
 
 
 <div class="flex m-5 items-center justify-center ">
-    <!-- Nome, Descrizione Attributi, Livello, Specie -->
+    <!-- PNG -->
     <Card.Root class="flex flex-col w-180 bg-tyrian_purple-700 border-0"> 
         <Card.Content class="flex flex-col gap-5"> 
             <!-- Primo Blocco: Pic, Nome Livello e Descrizione -->
@@ -451,6 +405,80 @@
                 </div>
             </div>
             <Separator orientation="horizontal"/>
+
+            <!-- Terzo Blocco: Modifica Manuale -->
+            <div class="grid grid-cols-2 gap-5 items-center bg-white rounded p-5">
+                <!-- Colonna Sx: Visualizzazione Statistiche -->
+                <span class="flex flex-col gap-5">
+                    <!-- HP ed MP -->
+                    <span class="flex flex-row items-center gap-5">
+                        <span class="flex flex-col gap-2">
+                            <Label>HP</Label>
+                            <p>{png.stats.HP.max}</p>
+                        </span>
+                        <span class="flex flex-col gap-2">
+                            <Label>MP</Label>
+                            <p>{png.stats.MP.max}</p>
+                        </span>
+                    </span>
+
+                    <!-- DEF, MDEF -->
+                    <span class="flex flex-row items-center gap-5">
+                        <span class="flex flex-col gap-2">
+                            <Label>DEF</Label>
+                            <p>{png.stats.DEF}</p>
+                        </span>
+                        <span class="flex flex-col gap-2">
+                            <Label>MDEF</Label>
+                            <p>{png.stats.MDEF}</p>
+                        </span>
+                    </span>
+                </span> 
+                
+                
+                <!-- Colonna Dx: Modifica Statistiche -->
+                <span class="flex flex-col gap-5">
+                    <!-- HP ed MP -->
+                    <span class="flex flex-row items-center gap-5">
+                        <span class="flex flex-col gap-2">
+                            <Label>HP</Label>
+                            <Input
+                                value={png.bonus.hp}
+                                type='number'
+                                oninput={(e)=>updateBonus('hp',Number((e.target as HTMLInputElement).value))}
+                            />
+                        </span>
+                        <span class="flex flex-col gap-2">
+                            <Label>MP</Label>
+                            <Input
+                                value={png.bonus.mp}
+                                type='number'
+                                oninput={(e)=>updateBonus('mp',Number((e.target as HTMLInputElement).value))}
+                            />
+                        </span>
+                    </span>
+
+                    <!-- DEF, MDEF -->
+                    <span class="flex flex-row items-center gap-5">
+                        <span class="flex flex-col gap-2">
+                            <Label>DEF</Label>
+                            <Input
+                                value={png.bonus.def}
+                                type='number'
+                                oninput={(e)=>updateBonus('def',Number((e.target as HTMLInputElement).value))}
+                            />
+                        </span>
+                        <span class="flex flex-col gap-2">
+                            <Label>MDEF</Label>
+                            <Input
+                                value={png.bonus.mdef}
+                                type='number'
+                                oninput={(e)=>updateBonus('mdef',Number((e.target as HTMLInputElement).value))}
+                            />
+                        </span>
+                    </span>
+                </span>
+            </div>
             
             <!-- Terzo Blocco: Affinità -->
             <Label class="text-white"> Affinità Elementali</Label>
@@ -464,25 +492,6 @@
                 {@render affinityRender({label:"Oscurita",value:"oscurita"},png.affinities.oscurita,elemGlams)}
                 {@render affinityRender({label:"Luce",value:"luce"},png.affinities.luce,elemGlams)}
                 {@render affinityRender({label:"Veleno",value:"veleno"},png.affinities.veleno,elemGlams)}
-            </div>
-            <Separator orientation='horizontal' />
-            
-            <Label class="text-white">Status</Label>
-            <!-- Quarto Blocco: Status -->
-            <div class="grid grid-cols-2 bg-white py-4 gap-5 rounded p-2">
-                {@render statusRender("Lento","slow",png.statuses.slow,"Destrezza ridotta di 2")}
-                {@render statusRender("Confuso","dazed",png.statuses.dazed,"Intuito ridotto di 2")}
-                {@render statusRender("Furente","enraged",png.statuses.enraged,"Destrezza ed Intuito sono ridotti di 2")}
-                {@render statusRender("Debole","weak",png.statuses.weak,"Vigore ridotto di 2")}
-                {@render statusRender("Scosso","shaken",png.statuses.shaken,"Volonta ridotta di 2")}
-                {@render statusRender("Avvelenato","poisoned",png.statuses.poisoned,"Vigore e Volontà sono ridotti di 2")}
-                <!-- <Separator orientation='horizontal' /> <Separator orientation='horizontal' /> -->
-                 <hr> <hr>
-                {@render statusRender("DES UP","dexUp",png.statuses.dexUp,"Destrezza aumentata di 2")}
-                {@render statusRender("INT UP","insUp",png.statuses.insUp,"Intuito aumentato di 2")}
-                {@render statusRender("VIG UP","migUp",png.statuses.migUp,"Vigore aumentato di 2")}
-                {@render statusRender("VOL UP","wlpUp",png.statuses.wlpUp,"Volontà aumentata di 2")}
-
             </div>
             <Separator orientation='horizontal' />
              
@@ -514,10 +523,10 @@
 
             </div>
 
-           
-
+            <Separator orientation="horizontal"/> 
+            
             <!-- Incantesmi -->
-            <Label class="text white"> Incantesimi </Label>
+            <Label class="text-white"> Incantesimi </Label>
             <div class="flex flex-col gap-5 border p-2 bg-white rounded">
                 <!-- Display Incantesimi -->
                 {#each png.spells as spell,index }
@@ -526,8 +535,9 @@
                         index={index}
                         callbacks={spellBacks}
                     />
+                    <Separator orientation="horizontal"/>
                 {/each}
-                <Separator orientation="horizontal"/>
+                
                 <!-- Aggiungi Incantesimo -->
                 <button onclick={addSpell}>
                     <Fa icon={faPlusCircle}/>
@@ -623,7 +633,7 @@
                         {index}
                         class="absolute h-2 w-0.5 bg-gray-400 z-0"
                     />
-                    {#if attribute[0] === "VOL"}    
+                    {#if attribute === "VOL"}    
                         <Slider.TickLabel 
                             {index}
                             position="bottom"
@@ -697,5 +707,4 @@
         <Checkbox checked={value} onCheckedChange={(checked)=>handleStatusUpdate(field,checked)}></Checkbox>
         <p class="text-xs">{description}</p>
     </div>
-    
 {/snippet}

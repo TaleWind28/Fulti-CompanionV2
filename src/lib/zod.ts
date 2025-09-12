@@ -314,6 +314,7 @@ export const FabulaUltimaPNGScheme = z.object({
     spells:z.array(spellScheme).default([]),
     pic:z.string().optional(),
     notes:z.array(notesScheme).default([]),
+    bonus:z.object({hp:z.number(),mp:z.number(),def:z.number(),mdef:z.number()}),
     id:z.string()
 })
 

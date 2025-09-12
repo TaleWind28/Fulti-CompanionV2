@@ -100,8 +100,7 @@
             />
         </span>
     </span>
-
-    <!-- Terza Riga: Effetto incantesimo -->
+    <!-- Quarta Riga: Effetto incantesimo -->
     <Label>Effetto</Label>
     <Textarea
         value={spell.special}
