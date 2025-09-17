@@ -18,7 +18,7 @@
     import ImageUploader2 from '$lib/components/imageUploader2.svelte';
     import * as Tooltip from '$lib/components/ui/tooltip/index.js';
     import Separator from '$lib/components/ui/separator/separator.svelte';
-  import { Select } from 'bits-ui';
+    import * as Select from '$lib/components/ui/select/index.js';
 
     let {data} = $props();
 
@@ -51,7 +51,7 @@
     
     //infine derivo per ottenere il formato Date
     const isoDate = $derived(
-        selected ? selected.toDate(getLocalTimeZone()) : null
+        selected ? selected.toDate(getLocalTimeZone()) : null       
     );
 
     //controllo se l'utente è il master o se è un player
@@ -63,11 +63,13 @@
         !isMaster && campaign.players.some((player)=> player.nickname === data.displayName)
     );
 
-    let characterName = $state("");
+    let selectedCharacter = $state("");
 
     const triggerCharacter = $derived(
-        data.characters.find(char => char === characterName ? characterName : "Scegli un personaggio" )
+        data.characters.find(char => char.name === selectedCharacter)?.name ?? "Scegli un personaggio"
     );
+
+    $inspect(triggerCharacter,"char");  
 
     //variabile per consentire la modifica della pagina
     let allowModify = $state(false);
@@ -134,8 +136,10 @@
     //AGGIUNTA GIOCATORE ALLA CAMPAGNA
     async function addPlayer() {
         //non può succedere che uno sia loggato ma non abbia username però almeno typescript è contento
-        if(!data.displayName)return; 
-        const newCharacter = FabulaUltimaCharacterScheme.parse(
+        if(!data.displayName)return;
+        let id;
+        if(selectedCharacter === ""){
+            const newCharacter = FabulaUltimaCharacterScheme.parse(
             {
             name:"-",
             traits:{},
@@ -145,33 +149,39 @@
             info:{},
             inventory:{},
             classes:[],
+            }
+            )
+            //bisogna fetchare
+            const response = await fetch('/api/characters',{
+                    method:'PUT',
+                    headers:{
+                        'Content-Type':'application/json'
+                    },
+                    body:JSON.stringify({
+                        character: newCharacter
+                    })
+                    
+                })
+
+            if (!response.ok){
+                toast.error( 'Impossibile creare il personaggio.',{
+                    action:{
+                        label:"OK",
+                        onClick: () =>{console.info("undo")}
+                    }
+                });
+                return;
+            }
+            const characterData = await response.json();
+
+            id = characterData.id;    
+        }else{
+            id = data.characters.find(char => char.name === selectedCharacter)?.id;
+            console.log(`id: ${id}`);
         }
-        )
-        //bisogna fetchare
-        const response = await fetch('/api/characters',{
-				method:'PUT',
-				headers:{
-					'Content-Type':'application/json'
-				},
-				body:JSON.stringify({
-					character: newCharacter
-				})
-				
-			})
+        
 
-        if (!response.ok){
-            toast.error( 'Impossibile creare il personaggio.',{
-                action:{
-                    label:"OK",
-                    onClick: () =>{console.info("undo")}
-                }
-            });
-            return;
-        }
-
-        const characterData = await response.json();
-
-        const id = characterData.id;
+        
 
         campaign.players.push({nickname:data.displayName,uid:data.userId,characterId:id}),
         
@@ -440,7 +450,7 @@
                         Questa scelta è irreversibile e tutti i dati relativi alla campagna verranno persi
                     </p>
                 <Dialog.Footer> 
-                <Button onclick={deleteCampaign}> Distruggi il mondo da te creato :( </Button>
+                <Button onclick={deleteCampaign}> Distruggi il mondo da te creato  </Button>
             </Dialog.Footer>
         </Dialog.Content>
         </Dialog.Root>
@@ -452,18 +462,18 @@
                 </Dialog.Header>
                     <p>Usare un personaggio esistente?</p>
                     
-                    <Select.Root type="single" bind:value={characterName}>
-                        <Select.Trigger class="bg-cafe_noir-700" > 
+                    <Select.Root type="single" bind:value={selectedCharacter}>
+                        <Select.Trigger class="w-50"> 
                             {triggerCharacter}
                         </Select.Trigger> 
-                        <Select.Content > 
+                        <Select.Content> 
                             <Select.Group>
-                                {#each data.characters as name }
+                                {#each data.characters as char }
                                     <Select.Item
-                                        value={name}
-                                        label={name}
+                                        value={char.name}
+                                        label={char.name}
                                     >
-                                        {name}
+                                        {char.name}
                                     </Select.Item>
 
                                 {/each}

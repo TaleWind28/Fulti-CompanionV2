@@ -20,7 +20,7 @@ export const load: PageServerLoad = async ({ locals, params, fetch, url }) => {
 
     let classNames:string[] = [];
     //fetcho l'api per il recupero delle classi e le memorizzo nella variabile classnames
-    const response = await fetch('/api/characters',{
+    const response = await fetch('/api/characters?',{
         method:'GET',
         headers: {
             'Content-Type': 'application/json'

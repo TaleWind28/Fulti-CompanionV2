@@ -41,29 +41,23 @@ export async function load({url, locals, fetch}) {
 
     /*recupero personaggi per mostrarli nella pagina*/
     try {
-        const snapshot = await adminDB.collection('users').doc(uid).collection('characters').get();
 
-        const characters = snapshot.docs
-            .map(doc => {
-                console.log("provo a parsare");
-                // `safeParse` tenta di validare i dati del documento
-                const result = FabulaUltimaCharacterScheme.safeParse(doc.data());
-                
-                console.log(result.success);
+        const response = await fetch(`/api/characters?id=${uid}`,{
+            method:'GET',
+            headers:{
+                'Content-Type' : 'application/json'
+            },
+        })
+    
+        if(response.ok){
+            const result = await response.json();
+            if(!result.success){
+                throw Error("La richiesta non ha avuto successo");
+            }
+            validCharacters = result.characters
+            console.log(validCharacters);
 
-                // Se la validazione ha successo, restituisci l'oggetto validato e tipizzato, aggiungendo l'ID del documento che non fa parte dello schema.
-                if (result.success) {
-                    return {
-                        id: doc.id,
-                        ...result.data
-                    };
-                } else {
-                    // Se i dati non sono validi, logga l'errore per il debug
-                    console.warn(`Dati non validi per il documento ${doc.id}:`, result.error.flatten());
-                    return null; // Restituisci null per i dati non validi
-                }
-            })
-        validCharacters = characters.filter((character):character is FabulaUltimaCharacter & {id:string} => character !==null)
+        }
 
     } catch (err) {
         console.error("Errore nel recuperare i personaggi da Firestore:", err);
