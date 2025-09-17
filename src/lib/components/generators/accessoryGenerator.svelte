@@ -226,7 +226,7 @@
                         Salva Accessorio
                     </Button>
                 {/if}
-                {#if !offline}
+                {#if offline}
                     <Button class="bg-cafe_noir-400 w-38" onclick={handleExport}>
                         Esporta in Json
                     </Button>

@@ -75,20 +75,13 @@
 	}
 
 	onMount(()=>{
-		
-		initFcm()?.catch((err)=>{
-			console.error(err)
-		})
 
 		detectSWUpdate();
 		detectFCM_SWUpdate();
 
 		const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
 			await firebaseUser?.reload();
-			user.set(firebaseUser);
-			if(firebaseUser){
-				initFcm();
-			}
+			user.set(firebaseUser);	
 		});
 
 		return unsubscribe;

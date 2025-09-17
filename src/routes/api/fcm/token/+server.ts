@@ -1,7 +1,7 @@
 // src/routes/api/fcm/token/+server.ts
 import { json } from '@sveltejs/kit';
 import { adminAuth, adminDB } from '$lib/firebase_admin';
-import type { RequestHandler } from '../$types';
+import type { RequestHandler } from '@sveltejs/kit';
 
 // Salva token FCM
 export const POST: RequestHandler = async ({ request, cookies }) => {

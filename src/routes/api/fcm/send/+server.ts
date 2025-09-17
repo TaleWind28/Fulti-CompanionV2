@@ -1,7 +1,7 @@
 // src/routes/api/fcm/send/+server.ts
 import { json } from '@sveltejs/kit';
 import { adminDB } from '$lib/firebase_admin';
-import type { RequestHandler } from '../$types';
+import type { RequestHandler } from '@sveltejs/kit';
 import { getMessaging } from 'firebase-admin/messaging';
 
 export const POST: RequestHandler = async ({ request }) => {
@@ -18,9 +18,11 @@ export const POST: RequestHandler = async ({ request }) => {
     if (!tokenDoc.exists) {
       return json({ error: 'Token FCM non trovato per l\'utente' }, { status: 404 });
     }
-
+    
     const { token } = tokenDoc.data()!;
 
+    console.log(`token fcm: ${token}`);
+    
     // Prepara il messaggio
     const message = {
       token,
