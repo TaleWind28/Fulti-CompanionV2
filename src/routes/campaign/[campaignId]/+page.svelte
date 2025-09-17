@@ -18,6 +18,7 @@
     import ImageUploader2 from '$lib/components/imageUploader2.svelte';
     import * as Tooltip from '$lib/components/ui/tooltip/index.js';
     import Separator from '$lib/components/ui/separator/separator.svelte';
+  import { Select } from 'bits-ui';
 
     let {data} = $props();
 
@@ -61,6 +62,13 @@
     let isPlayer= $derived(
         !isMaster && campaign.players.some((player)=> player.nickname === data.displayName)
     );
+
+    let characterName = $state("");
+
+    const triggerCharacter = $derived(
+        data.characters.find(char => char === characterName ? characterName : "Scegli un personaggio" )
+    );
+
     //variabile per consentire la modifica della pagina
     let allowModify = $state(false);
         
@@ -193,6 +201,7 @@
                 onClick:()=>console.info("Campaign Left")
             }
         })
+        showLeaveCampaignDialog = false;
     }
     //AGGIUNTA DI UNA PAGINA ALLA WIKI
     async function addWikiPage(){
@@ -441,10 +450,31 @@
                 <Dialog.Header> 
                     Confermare l'adesione alla campagna?
                 </Dialog.Header>
-                Puoi sempre lasciare la campagna in qualsiasi momento
+                    <p>Usare un personaggio esistente?</p>
+                    
+                    <Select.Root type="single" bind:value={characterName}>
+                        <Select.Trigger class="bg-cafe_noir-700" > 
+                            {triggerCharacter}
+                        </Select.Trigger> 
+                        <Select.Content > 
+                            <Select.Group>
+                                {#each data.characters as name }
+                                    <Select.Item
+                                        value={name}
+                                        label={name}
+                                    >
+                                        {name}
+                                    </Select.Item>
+
+                                {/each}
+                            </Select.Group>
+                        </Select.Content>
+                    </Select.Root>
+
+
                 <Dialog.Footer> 
-                <Button onclick={addPlayer}> Iscriviti</Button>
-            </Dialog.Footer>
+                    <Button onclick={addPlayer}> Iscriviti</Button>
+                </Dialog.Footer>
         </Dialog.Content>
         </Dialog.Root>
 
