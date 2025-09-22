@@ -467,6 +467,7 @@
     type EquipArmor = (equipName:string,value:boolean) => boolean;
     type DeleteNote = (noteId:number)=>boolean;
     type UpdateNote = (noteId:number,field:"description" | "title",value:string)=>boolean;
+    type benefitChoice = (className:string, benefitName:'hp' | 'mp')=> boolean;
     
     function ArmorUp(equipName:string){
         //controllo prima le armature
@@ -679,6 +680,18 @@
         }
         return true;
     }
+
+    function chooseBenefit(className:string,benefitName:'hp' | 'mp'){
+        const desiredClass = character.classes.find(classe => classe.name === className);
+        if(!desiredClass)return false;
+        //resetto i benefici gratuiti
+        desiredClass.benefits.hp.active = false;
+        desiredClass.benefits.mp.active = false;
+        //attivo solo quello richiesto
+        desiredClass.benefits[benefitName].active = true;
+        desiredClass.benefits.other.content = `Hai scelto di aumentare permanentemente i tuoi ${benefitName} di ${desiredClass.benefits[benefitName].quantity}`;
+        return true;
+    }
     
     //setto tutti i context per poterli riusare nei componenti
     setContext<DeleteNote>('deleteNote',deleteNote);
@@ -689,9 +702,9 @@
     setContext<DeleteClass>('delete',deleteClass)
     setContext<WearArmor>('CheckArmor',ArmorUp);
     setContext<EquipArmor>('WearArmor',EquipArmor);
+    setContext<benefitChoice>('benefit',chooseBenefit);
     
-    
-	 type TabContent = {
+    type TabContent = {
         value: string;
         text: string;
         component: any;

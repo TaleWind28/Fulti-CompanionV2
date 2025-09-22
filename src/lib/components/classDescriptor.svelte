@@ -1,6 +1,8 @@
 <script lang="ts">
     import * as Card from "$lib/components/ui/card/index";
     import * as Dialog from "$lib/components/ui/dialog/index";
+    import * as ToggleGroup from "$lib/components/ui/toggle-group/index.js";
+    import * as Tooltip from "$lib/components/ui/tooltip/index.js";
     import type { CharacterClass, Skill } from "$lib/zod";
     import {faChevronDown, faChevronUp, faPencilRuler, faTrashCan } from "@fortawesome/free-solid-svg-icons";
     import Fa from "svelte-fa";
@@ -10,6 +12,8 @@
     import { getContext } from "svelte";
     import { toast } from "svelte-sonner";
     import ClassBenefits from "./classBenefits.svelte";
+    import Label from "./ui/label/label.svelte";
+
 
     let { characterClass } : {characterClass : CharacterClass} = $props();
     let editHeroicSkill = $state(false);
@@ -41,6 +45,16 @@
     type DeleteClass = (className:string)=>boolean;
     const deleteClass = getContext<DeleteClass>('delete');
     
+
+    let showBenefitSelector = $state(false);
+    type benefitChoice = (className:string, benefitName:'hp' | 'mp')=> boolean;
+    const chooseBenefit = getContext<benefitChoice>('benefit');
+    let chosenBenefit: 'hp' | 'mp' | ''= $state("");
+
+    function handleBenefitSelection(){
+        if(chosenBenefit === '')return;
+        else chooseBenefit(characterClass.name,chosenBenefit)
+    }
 </script>
 
     <Card.Root class="border-0 bg-cafe_noir-700"> 
@@ -63,8 +77,12 @@
                         </div>
                     </h1>
                 </span> 
-
-                <ClassBenefits benefits = {characterClass.benefits} caller={characterClass.name}/> 
+                <span class="flex flex-row justify-between">
+                    <ClassBenefits benefits = {characterClass.benefits} caller={characterClass.name}/> 
+                    <button onclick={()=>showBenefitSelector = true}> 
+                        <Fa class="cursor-pointer" icon={faPencilRuler}/>
+                    </button>
+                </span>
             </Card.Title>
         </Card.Header>
         
@@ -142,3 +160,34 @@
     </div>
     
 {/snippet}
+
+
+<Dialog.Root open={showBenefitSelector} onOpenChange={(v) => showBenefitSelector = v}> 
+    
+    <Dialog.Content> 
+        <Dialog.Header> 
+            Scegli il beneficio gratuito per la classe {characterClass.name}
+        </Dialog.Header>
+             <span class="flex flex-col gap-2 items-center">
+                <Label>Raggio</Label>
+                <!-- Toggle per scegliere se distanza o mischia -->
+                <ToggleGroup.Root type="single" bind:value={chosenBenefit}> 
+                    <!-- Group HP -->
+                    <ToggleGroup.Item value="hp">
+                        PV
+                    </ToggleGroup.Item>
+
+                    <!-- Group MP -->
+                    <ToggleGroup.Item value="mp">
+                        PM
+                    </ToggleGroup.Item>
+                    
+                </ToggleGroup.Root>
+            </span>
+            <Dialog.Footer> 
+                <Button class="cursor-pointer" onclick={handleBenefitSelection}> 
+                    Conferma
+                </Button>
+            </Dialog.Footer>
+    </Dialog.Content>
+</Dialog.Root>
