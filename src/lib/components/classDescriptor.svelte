@@ -53,7 +53,9 @@
 
     function handleBenefitSelection(){
         if(chosenBenefit === '')return;
-        else chooseBenefit(characterClass.name,chosenBenefit)
+        else chooseBenefit(characterClass.name,chosenBenefit);
+        showBenefitSelector = false;
+        return;
     }
 </script>
 
@@ -169,7 +171,7 @@
             Scegli il beneficio gratuito per la classe {characterClass.name}
         </Dialog.Header>
              <span class="flex flex-col gap-2 items-center">
-                <Label>Raggio</Label>
+                
                 <!-- Toggle per scegliere se distanza o mischia -->
                 <ToggleGroup.Root type="single" bind:value={chosenBenefit}> 
                     <!-- Group HP -->
