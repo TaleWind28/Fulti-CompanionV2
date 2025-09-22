@@ -378,25 +378,26 @@
             <!-- Giocatori -->
             <span class="flex flex-col gap-5 border border-black p-5">
                 <p>Giocatori Attuali</p>
-                <span class="flex flex-row gap-5 items-center justify-center">
+                <span class="flex flex-col gap-5 items-center justify-center">
                     {#each campaign.players as player}
-                        <p>{player.nickname}</p>
-                        {#if isMaster}
-                            <button onclick={()=>{playerToKill = player.nickname; showKillDialog = true}}> <Fa icon={faMinusCircle}/> </button>                    
-                        {/if}
-                        <Tooltip.Provider>
-                            <Tooltip.Root>
-                                <!-- il trim è necessario perchè player.uid a quanto apre ha uno spazio in fondo-->
-                                <Tooltip.Trigger class={buttonVariants({ variant: "outline" } )} onclick={()=>goto(`/characters/${player.characterId}?uid=${player.uid.trim()}&master=${campaign.master.trim()}`)}>
-                                    <Fa icon={faArrowUpRightFromSquare}/>    
-                                </Tooltip.Trigger>
-                                    
-                                <Tooltip.Content>
-                                <p>Mostra scheda Personaggio</p>
-                                </Tooltip.Content>
-                            </Tooltip.Root>
-                        </Tooltip.Provider>
-                            
+                        <span class="flex flex-row gap-5 items-center justify-center">
+                            <p>{player.nickname}</p>
+                            {#if isMaster}
+                                <button onclick={()=>{playerToKill = player.nickname; showKillDialog = true}}> <Fa icon={faMinusCircle}/> </button>                    
+                            {/if}
+                            <Tooltip.Provider>
+                                <Tooltip.Root>
+                                    <!-- il trim è necessario perchè player.uid a quanto apre ha uno spazio in fondo-->
+                                    <Tooltip.Trigger class={buttonVariants({ variant: "outline" } )} onclick={()=>goto(`/characters/${player.characterId}?uid=${player.uid.trim()}&master=${campaign.master.trim()}`)}>
+                                        <Fa icon={faArrowUpRightFromSquare}/>    
+                                    </Tooltip.Trigger>
+                                        
+                                    <Tooltip.Content>
+                                    <p>Mostra scheda Personaggio</p>
+                                    </Tooltip.Content>
+                                </Tooltip.Root>
+                            </Tooltip.Provider>
+                        </span>    
 
                     {/each}
                 </span>
