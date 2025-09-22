@@ -9,6 +9,7 @@
     import Button from "./ui/button/button.svelte";
     import { getContext } from "svelte";
     import { toast } from "svelte-sonner";
+    import ClassBenefits from "./classBenefits.svelte";
 
     let { characterClass } : {characterClass : CharacterClass} = $props();
     let editHeroicSkill = $state(false);
@@ -44,23 +45,26 @@
 
     <Card.Root class="border-0 bg-cafe_noir-700"> 
         <Card.Header> 
-            <Card.Title class="text-white flex flex-row justify-between"> 
-                <h1>
-                    {characterClass.name.toUpperCase()}
-                </h1>
-                
-                <h1 class="flex flex-row items-center gap-2">
-                    {characterClass.level} / 10
-                    <div class="flex flex-col">
-                        <button onclick={()=> levelClass(characterClass.name,true)}>
-                            <Fa icon={faChevronUp} class="text-cafe_noir-500 cursor-pointer"/>
-                        </button>
-                        <button onclick={()=> levelClass(characterClass.name,false)}>
-                            <Fa icon={faChevronDown} class="text-cafe_noir-500 cursor-pointer"/>
-                        </button>
-                    </div>
-                </h1> 
-                
+            <Card.Title class="text-white flex flex-col"> 
+                <span class="flex flex-row justify-between">
+                    <h1>
+                        {characterClass.name.toUpperCase()}
+                    </h1>
+                    
+                    <h1 class="flex flex-row items-center gap-2">
+                        {characterClass.level} / 10
+                        <div class="flex flex-col">
+                            <button onclick={()=> levelClass(characterClass.name,true)}>
+                                <Fa icon={faChevronUp} class="text-cafe_noir-500 cursor-pointer"/>
+                            </button>
+                            <button onclick={()=> levelClass(characterClass.name,false)}>
+                                <Fa icon={faChevronDown} class="text-cafe_noir-500 cursor-pointer"/>
+                            </button>
+                        </div>
+                    </h1>
+                </span> 
+
+                <ClassBenefits benefits = {characterClass.benefits} caller={characterClass.name}/> 
             </Card.Title>
         </Card.Header>
         
