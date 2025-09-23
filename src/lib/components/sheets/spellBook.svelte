@@ -7,6 +7,7 @@
     import ScrollArea from "../ui/scroll-area/scroll-area.svelte";
     import Separator from "../ui/separator/separator.svelte";
     import SpellDescriptor from "../spellDescriptor.svelte";
+  import Button from "../ui/button/button.svelte";
 
     /*  PROP  */
     let {
@@ -17,28 +18,10 @@
     } : {spellBook:Spellbook, callbacks:any, availableSpells:any, character:FabulaUltimaCharacter} =$props();
     /* FINE PROP */
 
+    let noSpell = $state(false);
     //controllo necessario per le classi non magiche
     if (Object.keys(availableSpells).length === 0){
-        availableSpells = {
-            "spiritista":{
-                spells:[
-                    {
-                        name:"Guarigione",
-                        offensive:"false",
-                        special:"nessuno",
-                        targets:{
-                            max:3,
-                            description:"Fino a 3 creature"
-                        },
-                        list:"spiritista",
-                        duration:"istantanea",
-                        cost:10,
-                        description:"Infondi vigore nei tuoi compagni, lenendone il dolore e la stanchezza. Ciascun bersaglio recupera 40 Punti Vita. Questo ammontare aumenta a 50 Punti Vita se sei di livello 20 o superiore, oppure a 60 Punti Vita se sei di livello 40 o superiore.",
-
-                    }
-                ]
-            }
-        } 
+        noSpell = true;
     }
 
 
@@ -50,9 +33,13 @@
         lists.find(sp=>sp === selectedSpellClass) || lists[0]
     );
     
-    let selectedSpell:Spell = $derived(availableSpells[selectedSpellClass].spells[0]);
-    // let selectedSpell:Spell = $state(spells[0]);
+    let selectedSpell:Spell = $derived(
+        Object.keys(availableSpells).length !== 0
+        ? availableSpells[selectedSpellClass].spells[0]
+        : null
+    );
     let selectedButton = $state();
+
 
     $inspect(availableSpells,"spData");
 </script>
@@ -84,9 +71,15 @@
             </Select.Root>
 
             <!-- Aggiunta Incantesimo -->
-            <Dialog.Root> 
-                <Dialog.Trigger class={buttonVariants({ variant: "default" })}> 
-                    Aggiungi un'incantesimo
+            <Dialog.Root>
+                <Dialog.Trigger  onclick={(e) => {
+                    if (Object.keys(availableSpells).length === 0) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        }
+                    }
+                }>
+                    <Button disabled={Object.keys(availableSpells).length === 0} >Aggiungi un'incantesimo</Button>
                 </Dialog.Trigger>
                 <Dialog.Content class="!max-w-none w-250 bg-lion-600 border-0"> 
                     <div class="flex flex-row border bg-white">
