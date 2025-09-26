@@ -109,7 +109,7 @@
 	let searchQuery = $state('');
 
 	let filteredCharacters= $derived(
-		data.characters?.filter(character => character.name.toLowerCase().includes(searchQuery.toLowerCase())) || []
+		data.characters.filter(character => character.name.toLowerCase().includes(searchQuery.toLowerCase())) || []
 	)
 	   
 </script>
