@@ -37,7 +37,7 @@ export async function load({url, locals, fetch}) {
     //memorizzo l'uid dell'utente
     const uid = currentUser.uid;
 
-    let validCharacters;
+    let validCharacters:(FabulaUltimaCharacter & {id:string}) [] = [];
 
     /*recupero personaggi per mostrarli nella pagina*/
     try {
