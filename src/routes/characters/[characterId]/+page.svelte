@@ -965,10 +965,7 @@
         character.stats.MP.max += totals.mp
         character.stats.IP.max += totals.ip
 
-        //controllo se gli attuali sono maggiori dei massimi ed in caso li normalizzo
-        character.stats.HP.actual = Math.min(character.stats.HP.max,character.stats.HP.actual);
-        character.stats.MP.actual = Math.min(character.stats.MP.max,character.stats.MP.actual);
-        character.stats.IP.actual = Math.min(character.stats.IP.max,character.stats.MP.actual);
+        
 
         //aggiungo Fortezza 
         addFortress();
@@ -987,6 +984,11 @@
 
         //aggiungo Schivata
         addDodge();
+
+        //controllo se gli attuali sono maggiori dei massimi ed in caso li normalizzo
+        character.stats.HP.actual = Math.min(character.stats.HP.max,character.stats.HP.actual);
+        character.stats.MP.actual = Math.min(character.stats.MP.max,character.stats.MP.actual);
+        character.stats.IP.actual = Math.min(character.stats.IP.max,character.stats.MP.actual);
 
     }
 
@@ -1042,7 +1044,7 @@
         await handleFetch();
     }
 
-$inspect("master",data.master,"owner",data.owner)
+$inspect(character.stats.MP.actual,character.stats.MP.max)
 </script>
 
 
