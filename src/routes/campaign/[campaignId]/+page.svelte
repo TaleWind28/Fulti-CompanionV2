@@ -202,6 +202,7 @@
     //RIMOZIONE GIOCATORE DALLA CAMPAGNA
     async function removePlayer(){
         let index = campaign.players.findIndex((player)=> player.nickname === data.userId);
+        if(index === -1) return;
         campaign.players.splice(index,1);
         await save()
         await invalidateAll()
