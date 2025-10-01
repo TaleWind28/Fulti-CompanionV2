@@ -1,68 +1,74 @@
 <script lang="ts">
     import Bond from '$lib/components/bond.svelte';
     import CharacterCard from '$lib/components/characterCard.svelte';
-  import ClassDescriptor from '$lib/components/classDescriptor.svelte';
+    import ClassDescriptor from '$lib/components/classDescriptor.svelte';
     import EconomicInfo from '$lib/components/economicInfo.svelte';
     import AccessoryProcessor from '$lib/components/imageProcessors/accessoryProcessor.svelte';
     import ArcanaProcessor from '$lib/components/imageProcessors/arcanaProcessor.svelte';
     import EquipProcessor from '$lib/components/imageProcessors/equipProcessor.svelte';
     import WeaponProcessor from '$lib/components/imageProcessors/weaponProcessor.svelte';
-  import Note from '$lib/components/note.svelte';
-  import SpellDescriptor from '$lib/components/spellDescriptor.svelte';
+    import Note from '$lib/components/note.svelte';
+    import SpellDescriptor from '$lib/components/spellDescriptor.svelte';
+    import html2pdf from "html2pdf.js";
     import * as Card from '$lib/components/ui/card/index.js';
-    import Input from '$lib/components/ui/input/input.svelte';
-    import Label from '$lib/components/ui/label/label.svelte';
-  import type { Spell } from '$lib/zod.js';
-  import { setContext } from 'svelte';
-    type WearArmor = (equipName:string)=>boolean;
-    type EquipArmor = (equipName:string,value:boolean) => boolean;
-    function EquipArmor(equipName:string,value:boolean){
-        return false;
-    }
+    import type { Spell } from '$lib/zod.js';
+    import { setContext } from 'svelte';
+  import Button from '$lib/components/ui/button/button.svelte';
 
     let {data} = $props();
-    let character = data.character;
-    $inspect(character,"char")
+
+    type WearArmor = (equipName:string)=>boolean;
+    type EquipArmor = (equipName:string,value:boolean) => boolean;
+    setContext<WearArmor>('CheckArmor',ArmorUp);
+    setContext<EquipArmor>('WearArmor',EquipArmor);
+
+    const character = data.character;
     const shields = character.inventory.shields;
     const armor = character.inventory.armor;
     const weapon = character.inventory.weapons;
     const arcana = character.inventory.arcanas;
     const notes = character.notes;
+  
+    function EquipArmor(equipName:string,value:boolean){
+        return false;
+    }
+    
     function ArmorUp(equipName:string){
         return false;
     }
-    setContext<WearArmor>('CheckArmor',ArmorUp);
-    setContext<EquipArmor>('WearArmor',EquipArmor);
-
 </script>
 
+    <Button onclick={downloadPdf}>
+        Scarica in pdf
+    </Button>
 
-<div class="grid grid-cols-2 p-5 justify-between gap-5">
-    <section class="flex flex-col justify-between gap-5">
+    <div class="flex flex-wrap p-5 justify-center items-start gap-5" id="pdf">
         <!-- Card Personaggio-->    
         <CharacterCard character={character}/>
+        <span class="flex flex-col items-center justify-center gap-10">
+            <!-- EconomicInfo -->
+            <Card.Root> 
+                <Card.Content> 
+                    <EconomicInfo info={character.info} callbacks={()=>console.log("moio")}/>
+                </Card.Content>
+            </Card.Root>
 
-        <!-- EconomicInfo -->
-        <Card.Root> 
-            <Card.Content> 
-                <EconomicInfo info={character.info} callbacks={()=>console.log("moio")}/>
-            </Card.Content>
-        </Card.Root>
+            <!-- Bonds -->
+            <Card.Root class="border-0 bg-cafe_noir-800"> 
+                <Card.Header class="flex flex-row justify-between"> 
+                    <p>Legami</p>
+                </Card.Header>
+                <Card.Content class="flex flex-col gap-7"> 
+                    {#each character.bonds as bond,i }
+                        <Bond bond={bond} updateBond={()=>console.log()} removeBond={()=>console.log()} id={i}/> 
+                    {/each}
+                </Card.Content>
+            </Card.Root>
+        </span>
 
-        <!-- Bonds -->
-        <Card.Root class="border-0 bg-cafe_noir-800"> 
-            <Card.Header class="flex flex-row justify-between"> 
-                <p>Legami</p>
-            </Card.Header>
-            <Card.Content class="flex flex-col gap-7"> 
-                {#each character.bonds as bond,i }
-                    <Bond bond={bond} updateBond={()=>console.log()} removeBond={()=>console.log()} id={i}/> 
-                {/each}
-            </Card.Content>
-        </Card.Root>
-
+        
         <!-- Weapons -->
-        <Card.Root class="bg-cafe_noir-600 border-0"> 
+        <Card.Root class="bg-cafe_noir-600 border-0 w-150"> 
             <Card.Header class="flex flex-row justify-between items-center"> 
                 <p class="text-white">ARMI</p>
             </Card.Header>
@@ -105,9 +111,9 @@
                     {/if}
             </Card.Content>
         </Card.Root>
-
+<div class="break-before-page"></div>
         <!-- Armature -->
-        <Card.Root class="bg-cafe_noir-600 border-0"> 
+        <Card.Root class="bg-cafe_noir-600 border-0 w-150"> 
             <Card.Header class="flex flex-row justify-between items-center"> 
                 <p class="text-white">ARMATURE</p>
             </Card.Header>
@@ -138,7 +144,7 @@
         </Card.Root>
 
         <!-- Scudi -->
-        <Card.Root class="bg-cafe_noir-600 border-0"> 
+        <Card.Root class="bg-cafe_noir-600 border-0 w-150"> 
             <Card.Header class="flex flex-row justify-between items-center"> 
                 <p class="text-white">SCUDI</p>
             </Card.Header>
@@ -171,7 +177,7 @@
         </Card.Root>
 
         <!-- Accessori -->
-        <Card.Root class="bg-cafe_noir-600 border-0"> 
+        <Card.Root class="bg-cafe_noir-600 border-0 w-150"> 
             <Card.Header class="text-white "> 
                 ACCESSORI
             </Card.Header>
@@ -198,7 +204,7 @@
         </Card.Root>
         
         <!-- Arcanum -->
-        <Card.Root class="bg-cafe_noir-600 border-0"> 
+        <Card.Root class="bg-cafe_noir-600 border-0 w-150"> 
             <Card.Header class="flex flex-row justify-between items-center"> 
                 <p class="text-white">ARCANUM</p>
             </Card.Header>
@@ -231,10 +237,25 @@
                 {/if}
             </Card.Content>
         </Card.Root>
+
+        <div class="break-before-page"></div>
+
+        <!-- Classi -->
+        {#each character.classes as clas}
+            <ClassDescriptor characterClass = {clas}/>
+        {/each}
         
+        <div class="break-before-page"></div>
+        
+        <!-- Incantesimi -->
+        {#each Object.entries(character.spellbook) as [sectionName, spellsArray]}
+            {@render spellBookSections(sectionName, spellsArray)}
+        {/each}
+
+        <div class="break-before-page"></div>
 
         <!-- Notes -->
-        <Card.Root class="bg-cafe_noir-700 border-0">
+        <Card.Root class="bg-cafe_noir-700 border-0 w-150">
             <Card.Header class="text-white text-xl flex flex-row justify-between"> 
                 <p>NOTE</p>        
             </Card.Header>
@@ -246,21 +267,10 @@
             </Card.Content>    
             
         </Card.Root>
-    </section>
-    <section class="flex flex-col justify-between gap-5">
-        <!-- Classi -->
-        <div class="flex flex-col gap-10">
-        {#each character.classes as clas}
-            <ClassDescriptor characterClass = {clas}/>
-        {/each}
-    </div>
-        <!-- Incantesimi -->
-        {#each Object.entries(character.spellbook) as [sectionName, spellsArray]}
-            {@render spellBookSections(sectionName, spellsArray)}
-        {/each}
 
-    </section>
 </div>
+
+
 
 
 {#snippet spellBookSections(section:string,incantesimi:Spell[])}
@@ -280,3 +290,4 @@
         </Card.Content>
     </Card.Root>
 {/snippet}
+
