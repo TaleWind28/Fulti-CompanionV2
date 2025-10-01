@@ -4,7 +4,7 @@
     import { toast } from "svelte-sonner";
     import { invalidateAll } from "$app/navigation";
     import Fa from "svelte-fa";
-    import { faFileExport, faKhanda, faMagicWandSparkles, faPencil, faShield, faTrash, type IconDefinition } from "@fortawesome/free-solid-svg-icons";
+    import { faFileExport, faIdCard, faKhanda, faMagicWandSparkles, faPencil, faShield, faTrash, type IconDefinition } from "@fortawesome/free-solid-svg-icons";
     import { downloadFile } from "$lib/utils";
     import { elemGlams, type Traits } from "$lib";
     import {  type Attributes} from "$lib/zod";
@@ -136,7 +136,14 @@
     </Card.Content>
     <Card.Footer class="flex justify-end items-center gap-5">
       
+      
+
       {#if showButtons}
+        
+        <a href="/characters/{character.id}/viewSheet">
+          <Fa icon={faIdCard} class="cursor-pointer px-2 w-auto"></Fa>
+        </a>
+
         <a href="/characters/{character.id}" class="card-link">
           <Fa icon={faPencil}></Fa>
         </a>
