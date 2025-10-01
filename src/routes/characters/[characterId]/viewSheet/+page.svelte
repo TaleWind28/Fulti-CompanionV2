@@ -37,11 +37,6 @@
         return false;
     }
 </script>
-
-    <Button onclick={downloadPdf}>
-        Scarica in pdf
-    </Button>
-
     <div class="flex flex-wrap p-5 justify-center items-start gap-5" id="pdf">
         <!-- Card Personaggio-->    
         <CharacterCard character={character}/>
