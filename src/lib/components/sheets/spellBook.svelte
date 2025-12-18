@@ -7,7 +7,7 @@
     import ScrollArea from "../ui/scroll-area/scroll-area.svelte";
     import Separator from "../ui/separator/separator.svelte";
     import SpellDescriptor from "../spellDescriptor.svelte";
-  import Button from "../ui/button/button.svelte";
+    import Button from "../ui/button/button.svelte";
 
     /*  PROP  */
     let {

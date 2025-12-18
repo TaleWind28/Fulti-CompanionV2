@@ -6,7 +6,7 @@ import {updateProfile } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { writable, type Writable } from "svelte/store";
 import { user } from "./stores/user";
-import { getMessaging, getToken, onMessage, type Messaging } from 'firebase/messaging';
+import { getMessaging, type Messaging } from 'firebase/messaging';
 import { clearFcmToken } from "./fcm";
 
 

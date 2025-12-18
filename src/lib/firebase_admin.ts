@@ -3,7 +3,6 @@ import { getApps, initializeApp, cert } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { getAuth } from 'firebase-admin/auth';
 
-
 import {
     FIREBASE_PROJECT_ID,
     FIREBASE_CLIENT_EMAIL,

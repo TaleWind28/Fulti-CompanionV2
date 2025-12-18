@@ -1,4 +1,4 @@
-import { FabulaUltimaCharacterScheme, type Benefits, type FabulaUltimaCharacter, type FabulaUltimaPNG, type ritualKey, type statusKey } from "./zod";
+import { type Benefits, type FabulaUltimaCharacter, type FabulaUltimaPNG, type ritualKey, type statusKey } from "./zod";
 
 export function getClassBenefits(character:FabulaUltimaCharacter, className:string) {
     if (!character.classes) return null;
