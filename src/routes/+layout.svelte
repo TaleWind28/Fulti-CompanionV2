@@ -14,7 +14,7 @@
 	import * as MenuBar from '$lib/components/ui/menubar/index';
     import { afterNavigate, beforeNavigate, goto } from '$app/navigation';
     import { initFcm } from '$lib/fcm';
-  import Button from '$lib/components/ui/button/button.svelte';
+  	import Button from '$lib/components/ui/button/button.svelte';
 
   	
 		
